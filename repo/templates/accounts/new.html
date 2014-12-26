@@ -1,0 +1,25 @@
+{% extends "../layout.html" %}
+{% block title %}
+Login
+{% end %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            {% if errors %}
+                {% for error in errors %}
+                    {{ error }}
+                {% end %}
+            {% end %}
+            <form action="/accounts/new" method="post">
+                {% module xsrf_form_html() %}
+                <input type="text" name="username">
+                <input type="email" name="email">
+                <input type="email" name="confirm_email">
+                <input type="password" name="password">
+                <input type="submit" value="Login">
+            </form>
+        </div>
+    </div>
+</div>
+{% end %}

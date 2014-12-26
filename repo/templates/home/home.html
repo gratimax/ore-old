@@ -1,0 +1,24 @@
+{% extends "../layout.html" %}
+{% block title %}
+  Ore
+{% end %}
+
+{% block all %}
+    <header class="hero">
+        <img src="/static/img/sponge-logo.png" alt="Sponge logo" class="logo">
+        <div class="logo-text">
+            Sponge <strong>Powered</strong>
+            <div class="smaller">
+                The future of Minecraft modding
+            </div>
+        </div>
+    </header>
+
+    {% include "../navbar.html" %}
+    {% block navbarfixed %}{% end %}
+
+{% end %}
+{% block scripts %}
+<script src="/static/js/app.js"></script>
+<script src="/static/js/home.js"></script>
+{% end %}

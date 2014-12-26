@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+
+        <title>{% block title %}Sponge ~ Ore{% end %}</title>
+
+        <meta charset="UTF-8">
+
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" type="text/css">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+        <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+        
+    </head>
+
+    <body class="sp-navbar-space">
+
+
+        {% block all %}
+
+            {% include "navbar.html" %}
+
+
+            {% block content %}
+            {% end %}
+
+
+        {% end %}
+
+        <script src="/static/vendor/js/jquery.js"></script>
+        <script src="/static/vendor/js/jquery.easing.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+        {% block scripts %}
+        <script src="/static/js/app.js"></script>
+        {% end %}
+
+    </body>
+
+</html>

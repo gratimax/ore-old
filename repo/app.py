@@ -1,7 +1,9 @@
 from repo.urls import url_patterns
 import tornado.web
-import os.path
-from settings.settings import settings  # lol
+from settings.settings import settings
+
+import db
+
 
 # The root Repo application
 class Repo(tornado.web.Application):

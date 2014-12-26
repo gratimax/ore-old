@@ -8,6 +8,8 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Parse command-line options
 
 define('port', default=3000, help='run on this port', type=int)
+define('db_host', default=None, help='the host for the database', type=str)
+define('db_port', default=None, help='the port for the database', type=int)
 #define('debug', default=False, help='debug mode')
 
 tornado.options.parse_command_line()
@@ -36,7 +38,7 @@ settings['debug'] = False
 ENVIRONMENT = os.environ.get('APP_ENV', 'DEVELOPMENT')
 
 # TODO setup logging
-print 'env: %s' % ENVIRONMENT
+print 'environment: %s' % ENVIRONMENT
 
 if ENVIRONMENT == 'PRODUCTION':
     import settings_production
