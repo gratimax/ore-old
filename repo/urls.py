@@ -1,7 +1,8 @@
 from repo.handlers.accounts import AccountsHandler, AccountsRecoveryHandler, AccountsNewHandler
 from repo.handlers.home import HomeHandler
+from repo.handlers.orgs import OrgsHandler
+from repo.handlers.projects import ProjectsHandler
 from repo.handlers.sessions import LoginHandler, LogoutHandler, SessionsClearHandler
-from repo.handlers.users import UsersHandler
 
 url_patterns = [
     (r'/?$', HomeHandler),
@@ -14,5 +15,6 @@ url_patterns = [
     (r'/accounts/new/?$', AccountsNewHandler),
     (r'/accounts/recover/?$', AccountsRecoveryHandler),
 
-    (r'/\w+/?$', UsersHandler)
+    (r'/(\w+)/?$', OrgsHandler),
+    (r'/(\w+)/(\w+)/?$', ProjectsHandler)
 ]

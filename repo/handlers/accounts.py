@@ -3,27 +3,17 @@ from repo.db import db, map_one
 from repo.handlers.base import BaseHandler
 from repo.lib import secure
 from repo.lib.session import perform_login
+from repo.lib.users import redirect_to_user_page
 from repo.models import models
-from repo.models.orgs import namespace_of
 from repo.models.users import validate_username, validate_email
 from tornado import gen
-
-
-@gen.coroutine
-def redirect_to_user_page(handler, user = None):
-    if user is None:
-        user = yield handler.current_user
-    namespace = yield namespace_of(user)
-    handler.redirect('/' + namespace.name)
 
 
 class AccountsHandler(BaseHandler):
 
     @gen.coroutine
     def get(self):
-        auth = yield self.auth()
-        if auth:
-            return
+        yield self.auth()
         yield redirect_to_user_page(self)
 
 

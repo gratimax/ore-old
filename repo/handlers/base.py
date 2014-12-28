@@ -1,3 +1,4 @@
+from repo.lib.session import SID_COOKIE
 from repo.models.sessions import user_for_session
 import tornado.web
 from tornado import gen
@@ -5,9 +6,20 @@ from tornado import gen
 
 class BaseHandler(tornado.web.RequestHandler):
 
-    def unauthenticated(self):
-        self.set_status(405)
-        self.render("error/unauthorized.html")
+    # Errors
+
+    def write_error(self, status_code, **kwargs):
+        if status_code == 405:
+            self.render("error/unauthorized.html")
+        elif status_code == 404:
+            self.render("error/notfound.html")
+        else:
+            self.render("error/server.html", status_code=self._status_code, message=self._reason)
+
+
+    @staticmethod
+    def err(code):
+        raise tornado.web.HTTPError(code)
 
     # User-related things
 
@@ -15,10 +27,7 @@ class BaseHandler(tornado.web.RequestHandler):
     def auth(self):
         authenticated = yield self.authenticated
         if not authenticated:
-            self.unauthenticated()
-            raise gen.Return(True)
-        else:
-            raise gen.Return(False)
+            self.err(405)
 
     @property
     @gen.coroutine
@@ -29,7 +38,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @gen.coroutine
     def get_current_user(self):
-        sid = self.get_secure_cookie('sid', None)
+        sid = self.get_secure_cookie(SID_COOKIE, None)
         if sid is None:
             raise gen.Return(None)
         sess = yield user_for_session(sid)

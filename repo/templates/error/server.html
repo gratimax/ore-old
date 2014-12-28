@@ -1,0 +1,16 @@
+{% extends "../layout.html" %}
+{% block title %}
+Ore | Server Error
+{% end %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>{{ status_code }} {{ message }}</h1>
+        <p>
+            {{ message }}
+        </p>
+    </div>
+</div>
+
+{% end %}

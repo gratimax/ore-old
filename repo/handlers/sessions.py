@@ -1,4 +1,5 @@
 import momoko
+from repo.lib.users import redirect_to_user_page
 from repo.models import models
 from repo.db import map_one, db
 from repo.handlers.base import BaseHandler
@@ -12,8 +13,10 @@ class LoginHandler(BaseHandler):
     @gen.coroutine
     def get(self):
         authenticated = yield self.authenticated
+
         if authenticated:
-            self.render('sessions/session.html', user=self.current_user)
+            current_user = yield self.current_user
+            redirect_to_user_page(self, current_user)
         else:
             self.render('sessions/login.html', errors=[])
 
@@ -41,7 +44,7 @@ class LogoutHandler(BaseHandler):
     def get(self):
         auth = yield self.authenticated
         if auth:
-            yield momoko.Op(db.execute, 'delete from sessions where sid = %s', self.get_secure_cookie('sid'))
+            yield momoko.Op(db.execute, 'delete from sessions where sid = %s', (self.get_secure_cookie('sid'), ))
         self.clear_cookie('sid')
         self.redirect('/')
 
@@ -50,9 +53,7 @@ class SessionsClearHandler(BaseHandler):
 
     @gen.coroutine
     def get(self):
-        auth = yield self.auth()
-        if auth:
-            return
+        yield self.auth()
         current_user = yield self.current_user
         yield momoko.Op(db.execute, 'delete from sessions where user_id = %s', (current_user.id,))
         self.clear_cookie('sid')
