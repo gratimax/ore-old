@@ -2,7 +2,7 @@ FROM debian:jessie
 MAINTAINER Sponge Web Team <web@spongepowered.org>
 
 RUN apt update
-RUN apt install -y python python-pip
+RUN apt install -y python-dev python-pip libpq-dev
 
 ADD . /code
 WORKDIR /code
