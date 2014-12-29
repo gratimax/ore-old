@@ -182,7 +182,7 @@ class ProjectDescribeHandler(ProjectFinder):
                         org=org, proj=proj)
             return
 
-        yield momoko.Op(db.execute, 'update projects set description = %s', (description,))
+        yield momoko.Op(db.execute, 'update projects set description = %s where id = %s', (description,))
 
         self.redirect('/' + org.name + '/' + proj.name + '/manage')
 
