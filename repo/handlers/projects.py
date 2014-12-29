@@ -146,7 +146,7 @@ class ProjectRenameHandler(ProjectFinder):
                         org=org, proj=proj)
             return
 
-        yield momoko.Op(db.execute, 'update projects set name = %s', (name,))
+        yield momoko.Op(db.execute, 'update projects set name = %s where id = %s', (name, proj.id))
 
         self.redirect('/' + org.name + '/' + name + '/manage')
 
