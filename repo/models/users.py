@@ -2,7 +2,7 @@ from repo.models.orgs import namespace_exists
 from tornado import gen
 import re
 
-username_regex = re.compile('[\w-]+')
+username_regex = re.compile('^[\w-]+$')
 # Thanks to http://stackoverflow.com/a/719543/1952271
 email_regex = re.compile('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
 
@@ -22,6 +22,9 @@ def validate_username(username):
     # TODO generate this from URLs
     if username in ['accounts', 'sessions', 'help', 'projects']:
         raise gen.Return('Username is already taken')
+
+    if len(username) > 128:
+        raise gen.Return('Username can have a maximum length of 128 characters')
 
     name_exists = yield namespace_exists(username)
 

@@ -9,28 +9,37 @@
 
                         <ul class="nav navbar-nav">
                             <li><a href="/">Ore</a></li>
-                            <li><a href="/">Explore</a></li>
+                            <li><a href="/projects">Explore</a></li>
                         </ul>
+
 
 
                         <ul class="nav navbar-nav navbar-right">
                             <li><a>
                                 <i class="fa fa-search"></i>
                             </a></li>
+                            {% if current_user %}
                             <li><a ><!--class="notify"-->
                                 <i class="fa fa-bell"></i> 0
                             </a></li>
-                            <li><a>
-                                gratimax
+                            <li><a href="/{{ current_user.name }}">
+                                {{ current_user.name }}
                             </a></li>
                             <li><a class="logout-a"><form action="/sessions/logout" method="POST">
                                 {% module xsrf_form_html() %}
                                 <button type="submit" class="nav-btn logout-btn">
-                                    <i class="fa fa-sign-out"></i>
+                                    <i class="fa fa-sign-out"></i> Logout
                                 </button>
                             </form></a></li>
+                            {% else %}
+                            <li><a href="/accounts/new">
+                                <i class="fa fa-user"></i> Create account
+                            </a></li>
+                            <li><a href="/sessions/login">
+                                <i class="fa fa-sign-in"></i> Login
+                            </a></li>
+                            {% end %}
                         </ul>
-
                     </div>
                 </div>
             </div>

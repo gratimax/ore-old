@@ -1,9 +1,10 @@
 import momoko
-from repo.db import map_one, db
+from repo.db import map_one, db, map_all
 from repo.handlers.base import BaseHandler
 from repo.models import models
 from repo.models.orgs import namespace_of
 from repo.models.projects import validate_project_name, validate_project_description
+from repo.services.users import redirect_to_user_page
 from tornado import gen
 
 
@@ -27,7 +28,7 @@ class ProjectsHandler(ProjectFinder):
 
         (org, proj) = yield self.find(org_name, proj_name)
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         authorized = current_user is not None and current_user.id == org.namespace
 
@@ -38,7 +39,7 @@ class ProjectsNewHandler(BaseHandler):
 
     @gen.coroutine
     def get(self):
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
         yield self.auth()
         self.render('projects/new.html', errors=[])
 
@@ -47,7 +48,7 @@ class ProjectsNewHandler(BaseHandler):
 
         yield self.auth()
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         namespace = yield namespace_of(current_user)
 
@@ -84,7 +85,7 @@ class ProjectManageHandler(ProjectFinder):
 
         (org, proj) = yield self.find(org_name, proj_name)
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         if org.namespace != current_user.id:
             self.err(405)
@@ -101,17 +102,17 @@ class ProjectDeleteHandler(ProjectFinder):
 
         (org, proj) = yield self.find(org_name, proj_name)
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         if org.namespace != current_user.id:
             self.err(405)
 
         yield momoko.Op(db.execute, 'begin')
-        yield momoko.Op(db.execute, 'delete from files where project_id = %s', (proj.id,))
+        yield momoko.Op(db.execute, 'delete from versions where project_id = %s', (proj.id,))
         yield momoko.Op(db.execute, 'delete from projects where id = %s', (proj.id,))
         yield momoko.Op(db.execute, 'commit')
 
-        self.redirect('/')
+        yield redirect_to_user_page(self, current_user)
 
 
 class ProjectRenameHandler(ProjectFinder):
@@ -123,7 +124,7 @@ class ProjectRenameHandler(ProjectFinder):
 
         (org, proj) = yield self.find(org_name, proj_name)
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         if org.namespace != current_user.id:
             self.err(405)
@@ -147,7 +148,7 @@ class ProjectRenameHandler(ProjectFinder):
 
         yield momoko.Op(db.execute, 'update projects set name = %s', (name,))
 
-        self.redirect('/' + org.name + '/' + name)
+        self.redirect('/' + org.name + '/' + name + '/manage')
 
 
 class ProjectDescribeHandler(ProjectFinder):
@@ -159,7 +160,7 @@ class ProjectDescribeHandler(ProjectFinder):
 
         (org, proj) = yield self.find(org_name, proj_name)
 
-        current_user = yield self.current_user
+        current_user = yield self.current_user_secure
 
         if org.namespace != current_user.id:
             self.err(405)
@@ -183,4 +184,19 @@ class ProjectDescribeHandler(ProjectFinder):
 
         yield momoko.Op(db.execute, 'update projects set description = %s', (description,))
 
-        self.redirect('/' + org.name + '/' + proj.name)
+        self.redirect('/' + org.name + '/' + proj.name + '/manage')
+
+
+class ExploreHandler(BaseHandler):
+
+    @gen.coroutine
+    def get(self):
+
+        projs = yield map_all(models.Project, 'select * from projects')
+
+        projects = []
+        for p in projs:
+            org = yield map_one(models.Organization, 'select * from orgs where id = %s', (p.owner_id,))
+            projects.append([p, org])
+
+        self.render('projects/index.html', projects=projects)

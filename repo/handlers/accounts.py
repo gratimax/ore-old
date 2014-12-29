@@ -64,8 +64,8 @@ class AccountsNewHandler(BaseHandler):
         password_hashed = secure.hash_password(password)
 
         yield momoko.Op(db.execute, 'begin')
-        yield momoko.Op(db.execute, 'insert into users (email, password) values (%s, %s)', (email, password_hashed))
-        user = yield map_one(models.User, 'select * from users where email = %s', (email,))
+        yield momoko.Op(db.execute, 'insert into users (name, email, password) values (%s, %s, %s)', (username, email, password_hashed))
+        user = yield map_one(models.User, 'select * from users where name = %s', (username,))
         yield momoko.Op(db.execute, 'insert into orgs (name, is_namespace, namespace) values (%s, %s, %s)', (username, True, user.id))
         yield momoko.Op(db.execute, 'commit')
 

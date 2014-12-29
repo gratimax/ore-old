@@ -2,12 +2,13 @@ from repo.handlers.accounts import AccountsHandler, AccountsRecoveryHandler, Acc
 from repo.handlers.home import HomeHandler
 from repo.handlers.orgs import OrgsHandler
 from repo.handlers.projects import ProjectsHandler, ProjectsNewHandler, ProjectManageHandler, ProjectDeleteHandler, ProjectRenameHandler, \
-    ProjectDescribeHandler
+    ProjectDescribeHandler, ExploreHandler
 from repo.handlers.sessions import LoginHandler, LogoutHandler, SessionsClearHandler
 
 url_patterns = [
     (r'/?$', HomeHandler),
 
+    (r'/projects/?$', ExploreHandler),
     (r'/projects/new/?$', ProjectsNewHandler),
 
     (r'/sessions/login/?$', LoginHandler),

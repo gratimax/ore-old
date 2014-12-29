@@ -3,7 +3,7 @@ from repo.db import map_one
 from repo.models import models
 from tornado import gen
 
-project_name_regex = re.compile('[\w-]+')
+project_name_regex = re.compile('^[\w-]+$')
 
 
 @gen.coroutine

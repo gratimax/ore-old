@@ -7,8 +7,15 @@ from collections import namedtuple
 User = namedtuple(
     'User',
     ['id',
+     'name',
      'email',
      'password'])
+
+
+Session = namedtuple(
+    'Session',
+    ['sid',
+     'user_id'])
 
 Organization = namedtuple(
     'Organization',
@@ -36,15 +43,10 @@ ProjMembership = namedtuple(
      'project_id',
      'role'])
 
-File = namedtuple(
-    'File',
+Version = namedtuple(
+    'Version',
     ['id',
      'project_id',
      'name',
      'description',
-     'hash'])
-
-Session = namedtuple(
-    'Session',
-    ['sid',
-     'user_id'])
+     'file_hash'])

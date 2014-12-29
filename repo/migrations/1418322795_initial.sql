@@ -1,6 +1,7 @@
 create table users (
   id              serial primary key unique,
-  email           varchar(128) unique not null,
+  name            varchar(128) unique not null,
+  email           varchar(128) not null,
   password        varchar(64) not null
 );
 
@@ -20,7 +21,7 @@ create table org_memberships (
 create table projects (
   id              serial primary key unique,
   owner_id        integer references orgs(id),
-  name            varchar(128) unique not null,
+  name            varchar(128) not null,
   description     varchar(512)
 );
 

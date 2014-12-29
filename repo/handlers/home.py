@@ -12,7 +12,7 @@ class HomeHandler(BaseHandler):
         authenticated = yield self.authenticated
 
         if authenticated:
-            current_user = yield self.current_user
+            current_user = yield self.current_user_secure
             namespace = yield namespace_of(current_user)
             avatar = avatar_url(current_user.email, 18)
             self.render("home/user.html", user=current_user, namespace=namespace, avatar=avatar)

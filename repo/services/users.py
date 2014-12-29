@@ -10,6 +10,6 @@ def redirect_to_user_page(handler, user=None):
 @gen.coroutine
 def get_user_page(handler, user=None):
     if user is None:
-        user = yield handler.current_user
+        user = yield handler.current_user_secure
     namespace = yield namespace_of(user)
     raise gen.Return(namespace.name)
