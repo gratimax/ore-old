@@ -1,4 +1,4 @@
-from repo.lib.session import SID_COOKIE
+from repo.services.session import SID_COOKIE
 from repo.models.sessions import user_for_session
 import tornado.web
 from tornado import gen

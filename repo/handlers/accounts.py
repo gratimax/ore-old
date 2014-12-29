@@ -1,9 +1,9 @@
 import momoko
 from repo.db import db, map_one
 from repo.handlers.base import BaseHandler
-from repo.lib import secure
-from repo.lib.session import perform_login
-from repo.lib.users import redirect_to_user_page
+from repo.services import secure
+from repo.services.session import perform_login
+from repo.services.users import redirect_to_user_page
 from repo.models import models
 from repo.models.users import validate_username, validate_email
 from tornado import gen

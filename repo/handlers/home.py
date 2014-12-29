@@ -1,6 +1,6 @@
 from repo.handlers.base import BaseHandler
-from repo.lib.avatar import avatar_url
-from repo.lib.users import get_user_page
+from repo.services.avatar import avatar_url
+from repo.services.users import get_user_page
 from repo.models.orgs import namespace_of
 from tornado import gen
 

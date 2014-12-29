@@ -1,6 +1,6 @@
 from repo.db import map_one, map_all
 from repo.handlers.base import BaseHandler
-from repo.lib.avatar import avatar_url
+from repo.services.avatar import avatar_url
 from repo.models import models
 from tornado import gen
 

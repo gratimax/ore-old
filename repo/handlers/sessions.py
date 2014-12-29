@@ -1,10 +1,10 @@
 import momoko
-from repo.lib.users import redirect_to_user_page
+from repo.services.users import redirect_to_user_page
 from repo.models import models
 from repo.db import map_one, db
 from repo.handlers.base import BaseHandler
-from repo.lib.secure import check_password
-from repo.lib.session import perform_login, SID_COOKIE
+from repo.services.secure import check_password
+from repo.services.session import perform_login, SID_COOKIE
 from tornado import gen
 
 

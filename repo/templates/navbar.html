@@ -23,9 +23,9 @@
                             <li><a>
                                 gratimax
                             </a></li>
-                            <li><a><form action="/sessions/logout" method="POST">
+                            <li><a class="logout-a"><form action="/sessions/logout" method="POST">
                                 {% module xsrf_form_html() %}
-                                <button type="submit" class="nav-btn">
+                                <button type="submit" class="nav-btn logout-btn">
                                     <i class="fa fa-sign-out"></i>
                                 </button>
                             </form></a></li>

@@ -69,7 +69,7 @@ body {
 }
 
 .navbar .navbar-nav>li>a {
-  padding: 18px 15px !important;
+  padding: 18px 15px;
   color: #ddd;
   float: left;
   cursor: pointer;
@@ -96,6 +96,14 @@ body {
   border: none;
   padding: 0;
   outline: none;
+}
+
+.navbar a.logout-a {
+  padding: 0 !important;
+}
+
+.navbar .logout-btn {
+  padding: 18px 15px;
 }
 
 .sp-dropdown-menu {
