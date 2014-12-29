@@ -4,7 +4,7 @@ from repo.models import models
 from repo.db import map_one, db
 from repo.handlers.base import BaseHandler
 from repo.lib.secure import check_password
-from repo.lib.session import perform_login
+from repo.lib.session import perform_login, SID_COOKIE
 from tornado import gen
 
 
@@ -16,7 +16,7 @@ class LoginHandler(BaseHandler):
 
         if authenticated:
             current_user = yield self.current_user
-            redirect_to_user_page(self, current_user)
+            yield redirect_to_user_page(self, current_user)
         else:
             self.render('sessions/login.html', errors=[])
 
@@ -34,18 +34,18 @@ class LoginHandler(BaseHandler):
         elif not check_password(password, user.password):
             self.render('sessions/login.html', errors=['Incorrect password'])
         else:
-            perform_login(self, user)
+            yield perform_login(self, user)
             self.redirect('/')
 
 
 class LogoutHandler(BaseHandler):
 
     @gen.coroutine
-    def get(self):
+    def post(self):
         auth = yield self.authenticated
         if auth:
-            yield momoko.Op(db.execute, 'delete from sessions where sid = %s', (self.get_secure_cookie('sid'), ))
-        self.clear_cookie('sid')
+            yield momoko.Op(db.execute, 'delete from sessions where sid = %s', (self.get_secure_cookie(SID_COOKIE), ))
+        self.clear_cookie(SID_COOKIE)
         self.redirect('/')
 
 
@@ -56,5 +56,5 @@ class SessionsClearHandler(BaseHandler):
         yield self.auth()
         current_user = yield self.current_user
         yield momoko.Op(db.execute, 'delete from sessions where user_id = %s', (current_user.id,))
-        self.clear_cookie('sid')
+        self.clear_cookie(SID_COOKIE)
         self.redirect('/accounts')

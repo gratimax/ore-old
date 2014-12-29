@@ -1,0 +1,46 @@
+{% extends "../layout.html" %}
+{% block title %}
+{{ proj.name }} settings
+{% end %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="project-header">
+                <a href="/{{org.name}}/{{proj.name}}" class="pull-left">
+                    <i class="fa fa-chevron-left fa-sm"></i>
+                    {{proj.name}}
+                </a>
+                &nbsp;
+                settings
+            </h1>
+
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
+                <i class="fa fa-times"></i>
+                Delete
+            </button>
+
+            <div class="modal fade" id="delete-modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                            <h4 class="modal-title">Delete project</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you wish to delete this project?</p>
+                            <p>This removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="/{{org.name}}/{{proj.name}}/delete" method="POST">
+                                {% module xsrf_form_html() %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}

@@ -31,6 +31,11 @@ class AccountsNewHandler(BaseHandler):
     @gen.coroutine
     def post(self):
 
+        authenticated = yield self.authenticated
+
+        if authenticated:
+            self.render('accounts/new.html', errors=['You are already logged in'])
+
         username = self.get_body_argument('username')
         email = self.get_body_argument('email')
         confirm_email = self.get_body_argument('confirm_email')
