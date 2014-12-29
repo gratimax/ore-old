@@ -1,10 +1,8 @@
-FROM ubuntu:14.04
+FROM debian:jessie
 MAINTAINER Sponge Web Team <web@spongepowered.org>
 
-RUN apt-get update
-RUN apt-get install -y python python-dev python-pip libpq-dev
-
-RUN pip install virtualenv
+RUN apt update
+RUN apt install -y python python-pip
 
 ADD . /code
 WORKDIR /code
