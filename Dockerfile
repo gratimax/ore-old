@@ -11,5 +11,5 @@ WORKDIR /code
 
 RUN pip install -r requirements.txt
 
-EXPOSE 3000
+EXPOSE 80
 CMD python run.py
