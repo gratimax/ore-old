@@ -1,0 +1,140 @@
+{% extends "../layout.html" %}
+{% block title %}
+{{ proj.name }} settings
+{% end %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="project-header pull-left">
+                <a href="/{{org.name}}" class="no-underline">{{org.name}}</a> /
+                <strong><a href="/{{org.name}}/{{proj.name}}" class="no-underline">{{proj.name}}</a></strong>
+            </h1>
+            <div class="btn-group pull-right proj-toolbar">
+                <a href="/{{org.name}}/{{proj.name}}/flag" class="btn btn-default">
+                    <i class="fa fa-flag"></i> Flag</a>
+                <a href="/{{org.name}}/{{proj.name}}/manage" class="btn btn-default">
+                    <i class="fa fa-gear"></i> Manage</a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <h3 class="project-subheader">Project management</h3>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Options</h3>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        {% if description_errors %}
+                        <div class="alert alert-danger alert-dismissible fade in">
+                            {% for error in description_errors %}
+                            {{ error }}
+                            {% end %}
+                        </div>
+                        {% end %}
+                        <form action="/{{org.name}}/{{proj.name}}/describe" method="POST" class="form-horizontal">
+                            {% module xsrf_form_html() %}
+                            <h4 class="list-group-item-heading">Change Description</h4>
+                            <br/>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">New Description</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="description" value="{{ proj.description }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-warning">Change Description</button>
+                                </div>
+                            </div>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Team Management</h3>
+                </div>
+                <div class="panel-body">
+                    Coming soon...
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Destructive Actions</h3>
+                </div>
+                <div class="panel-body">
+                    {% if rename_errors %}
+                        <div class="alert alert-danger alert-dismissible fade in">
+                            {% for error in rename_errors %}
+                                {{ error }}
+                            {% end %}
+                        </div>
+                    {% end %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rename-modal">
+                            Rename
+                        </button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
+                            <i class="fa fa-times"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="modal fade" id="delete-modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                            <h4 class="modal-title">Delete project</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you wish to delete this project?</p>
+                            <p>This removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="/{{org.name}}/{{proj.name}}/delete" method="POST">
+                                {% module xsrf_form_html() %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="rename-modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                            <h4 class="modal-title">Rename project</h4>
+                        </div>
+                        <form action="/{{org.name}}/{{proj.name}}/rename" method="POST">
+                            {% module xsrf_form_html() %}
+                            <div class="modal-body">
+                                <p>Are you sure you wish to rename this project?</p>
+                                <p>While this operation is reversible, no redirects of any kind are set up and former links to your project may not work as expected.</p>
+                                <div class="form-group">
+                                    <label>New Name</label>
+                                    <input type="text" class="form-control" name="name">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-warning">Rename</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}

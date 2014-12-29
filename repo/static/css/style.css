@@ -190,6 +190,11 @@ a.no-underline:hover {
   margin-top: 28px;
 }
 
+.project-subheader {
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
 .home-userbox {
   margin-top: 3px;
 }

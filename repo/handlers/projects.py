@@ -7,16 +7,25 @@ from repo.models.projects import validate_project_name, validate_project_descrip
 from tornado import gen
 
 
-class ProjectsHandler(BaseHandler):
+class ProjectFinder(BaseHandler):
 
     @gen.coroutine
-    def get(self, org_name, proj_name):
+    def find(self, org_name, proj_name):
         org = yield map_one(models.Organization, 'select * from orgs where name = %s', (org_name,))
         if org is None:
             self.err(404)
         proj = yield map_one(models.Project, 'select * from projects where owner_id = %s and name = %s', (org.id, proj_name))
         if proj is None:
             self.err(404)
+        raise gen.Return((org, proj))
+
+
+class ProjectsHandler(ProjectFinder):
+
+    @gen.coroutine
+    def get(self, org_name, proj_name):
+
+        (org, proj) = yield self.find(org_name, proj_name)
 
         current_user = yield self.current_user
 
@@ -66,41 +75,31 @@ class ProjectsNewHandler(BaseHandler):
         self.redirect('/' + namespace.name + '/' + name)
 
 
-class ProjectSettingsHandler(BaseHandler):
+class ProjectManageHandler(ProjectFinder):
 
     @gen.coroutine
     def get(self, org_name, proj_name):
 
         yield self.auth()
 
-        org = yield map_one(models.Organization, 'select * from orgs where name = %s', (org_name,))
-        if org is None:
-            self.err(404)
-        proj = yield map_one(models.Project, 'select * from projects where owner_id = %s and name = %s', (org.id, proj_name))
-        if proj is None:
-            self.err(404)
+        (org, proj) = yield self.find(org_name, proj_name)
 
         current_user = yield self.current_user
 
         if org.namespace != current_user.id:
             self.err(405)
 
-        self.render('projects/settings.html', proj=proj, org=org)
+        self.render('projects/manage.html', proj=proj, org=org, rename_errors=[], description_errors=[])
 
 
-class ProjectDeleteHandler(BaseHandler):
+class ProjectDeleteHandler(ProjectFinder):
 
     @gen.coroutine
     def post(self, org_name, proj_name):
 
         yield self.auth()
 
-        org = yield map_one(models.Organization, 'select * from orgs where name = %s', (org_name,))
-        if org is None:
-            self.err(404)
-        proj = yield map_one(models.Project, 'select * from projects where owner_id = %s and name = %s', (org.id, proj_name))
-        if proj is None:
-            self.err(404)
+        (org, proj) = yield self.find(org_name, proj_name)
 
         current_user = yield self.current_user
 
@@ -113,3 +112,75 @@ class ProjectDeleteHandler(BaseHandler):
         yield momoko.Op(db.execute, 'commit')
 
         self.redirect('/')
+
+
+class ProjectRenameHandler(ProjectFinder):
+
+    @gen.coroutine
+    def post(self, org_name, proj_name):
+
+        yield self.auth()
+
+        (org, proj) = yield self.find(org_name, proj_name)
+
+        current_user = yield self.current_user
+
+        if org.namespace != current_user.id:
+            self.err(405)
+
+        name = self.get_body_argument('name')
+
+        name_valid = yield validate_project_name(name, org)
+
+        if name == '':
+            self.render('projects/manage.html',
+                        rename_errors=['Project name cannot be empty'],
+                        description_errors=[], org=org, proj=proj)
+            return
+
+        if name_valid != '':
+            self.render('projects/manage.html',
+                        rename_errors=[name_valid],
+                        description_errors=[],
+                        org=org, proj=proj)
+            return
+
+        yield momoko.Op(db.execute, 'update projects set name = %s', (name,))
+
+        self.redirect('/' + org.name + '/' + name)
+
+
+class ProjectDescribeHandler(ProjectFinder):
+
+    @gen.coroutine
+    def post(self, org_name, proj_name):
+
+        yield self.auth()
+
+        (org, proj) = yield self.find(org_name, proj_name)
+
+        current_user = yield self.current_user
+
+        if org.namespace != current_user.id:
+            self.err(405)
+
+        description = self.get_body_argument('description')
+
+        description_valid = validate_project_description(description)
+
+        if description == '':
+            self.render('projects/manage.html',
+                        rename_errors=[],
+                        description_errors=['Description cannot be empty'], org=org, proj=proj)
+            return
+
+        if description_valid != '':
+            self.render('projects/manage.html',
+                        rename_errors=[],
+                        description_errors=[description_valid],
+                        org=org, proj=proj)
+            return
+
+        yield momoko.Op(db.execute, 'update projects set description = %s', (description,))
+
+        self.redirect('/' + org.name + '/' + proj.name)

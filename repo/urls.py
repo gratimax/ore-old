@@ -1,7 +1,8 @@
 from repo.handlers.accounts import AccountsHandler, AccountsRecoveryHandler, AccountsNewHandler
 from repo.handlers.home import HomeHandler
 from repo.handlers.orgs import OrgsHandler
-from repo.handlers.projects import ProjectsHandler, ProjectsNewHandler, ProjectSettingsHandler, ProjectDeleteHandler
+from repo.handlers.projects import ProjectsHandler, ProjectsNewHandler, ProjectManageHandler, ProjectDeleteHandler, ProjectRenameHandler, \
+    ProjectDescribeHandler
 from repo.handlers.sessions import LoginHandler, LogoutHandler, SessionsClearHandler
 
 url_patterns = [
@@ -20,6 +21,8 @@ url_patterns = [
     (r'/([\w+-]+)/?$', OrgsHandler),
     (r'/([\w+-]+)/([\w+-]+)/?$', ProjectsHandler),
 
-    (r'/([\w+-]+)/([\w+-]+)/settings/?$', ProjectSettingsHandler),
+    (r'/([\w+-]+)/([\w+-]+)/manage/?$', ProjectManageHandler),
+    (r'/([\w+-]+)/([\w+-]+)/rename/?$', ProjectRenameHandler),
+    (r'/([\w+-]+)/([\w+-]+)/describe/?$', ProjectDescribeHandler),
     (r'/([\w+-]+)/([\w+-]+)/delete/?$', ProjectDeleteHandler),
 ]
