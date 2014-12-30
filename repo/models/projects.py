@@ -9,7 +9,7 @@ project_name_regex = re.compile('^[\w-]+$')
 @gen.coroutine
 def validate_project_name(name, namespace):
 
-    existing = yield map_one(models.Organization, 'select * from projects where name = %s and owner_id = %s', (name, namespace.id))
+    existing = yield map_one(models.Organization, 'select * from projects where lower(name) = lower(%s) and owner_id = %s', (name, namespace.id))
 
     if existing is not None:
         raise gen.Return('Project already exists')

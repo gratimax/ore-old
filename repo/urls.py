@@ -26,4 +26,10 @@ url_patterns = [
     (r'/([\w+-]+)/([\w+-]+)/rename/?$', ProjectRenameHandler),
     (r'/([\w+-]+)/([\w+-]+)/describe/?$', ProjectDescribeHandler),
     (r'/([\w+-]+)/([\w+-]+)/delete/?$', ProjectDeleteHandler),
+
+    # (r'/([\w+-]+)/([\w+-]+)/versions/?$', ),
+    # (r'/([\w+-]+)/([\w+-]+)/versions/([\w+- ]+)/?$', ),
+    # (r'/([\w+-]+)/([\w+-]+)/versions/([\w+- ]+)/edit/?$', ),
+    # (r'/([\w+-]+)/([\w+-]+)/versions/([\w+- ]+)/delete/?$', ),
+
 ]

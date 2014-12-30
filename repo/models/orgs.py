@@ -17,7 +17,7 @@ def namespace_of(user):
 def namespace_exists(name):
     org = yield map_one(
         models.Organization,
-        'select * from orgs where name = %s',
+        'select * from orgs where lower(name) = lower(%s)',
         (name,)
     )
     raise gen.Return(org is not None)
