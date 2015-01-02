@@ -101,3 +101,9 @@ Icon
 .AppleDesktop
 Network Trash Folder
 Temporary Items
+
+# Sqlite database
+*.sqlite3
+
+# Holding on to the old source
+old/

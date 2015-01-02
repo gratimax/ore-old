@@ -1,7 +1,7 @@
-{% extends "../layout.html" %}
+{% extends "layout.html" %}
 {% block title %}
   Ore
-{% end %}
+{% endblock %}
 
 {% block all %}
     <header class="hero">
@@ -14,11 +14,11 @@
         </div>
     </header>
 
-    {% include "../navbar.html" %}
-    {% block navbarfixed %}{% end %}
+    {% include "navbar.html" %}
+    {% block navbarfixed %}{% endblock %}
 
-{% end %}
+{% endblock %}
 {% block scripts %}
 <script src="/static/js/app.js"></script>
 <script src="/static/js/home.js"></script>
-{% end %}
+{% endblock %}

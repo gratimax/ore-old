@@ -1,10 +1,1 @@
-Momoko==1.1.5
-backports.ssl-match-hostname==3.4.0.2
-bleach==1.4.1
-certifi==14.05.14
-html5lib==0.999
-mistune==0.5
-psycopg2==2.5.4
-six==1.8.0
-tornado==4.0.2
-wsgiref==0.1.2
+Django==1.7.1

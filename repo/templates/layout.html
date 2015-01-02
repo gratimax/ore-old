@@ -4,7 +4,7 @@
     <head>
 
 
-        <title>{% block title %}Sponge ~ Ore{% end %}</title>
+        <title>{% block title %}Sponge ~ Ore{% endblock %}</title>
 
         <meta charset="UTF-8">
 
@@ -27,10 +27,10 @@
 
             <div class="wrapper-960">
                 {% block content %}
-                {% end %}
+                {% endblock %}
             </div>
 
-        {% end %}
+        {% endblock %}
 
         <script src="/static/vendor/js/jquery.js"></script>
         <script src="/static/vendor/js/jquery.easing.js"></script>
@@ -38,7 +38,7 @@
 
         {% block scripts %}
         <script src="/static/js/app.js"></script>
-        {% end %}
+        {% endblock %}
 
     </body>
 

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+{{ org.name }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row pad-top">
+        <div class="col-md-3 user-box">
+            <div class="well">
+                <h1>{{org.name}}</h1>
+                <img src="{{avatar}}">
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1 class="user-projects-header">Projects</h1>
+            <ul class="list-group">
+                {% for proj in projects %}
+                     <li class="list-group-item">
+                        <a href="/{{org.name}}/{{proj.name}}" class="project-listing">{{proj.name}}</a>
+                     </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

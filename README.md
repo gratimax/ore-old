@@ -10,7 +10,7 @@ The sponge package repository.
 
 ## Development
 
-Written with python, tornado, postgresql, momoko, and other stuff too.
+Written with python and django.
 You should probably use virtualenv.
 
 Note the environment variables required to start the application:
