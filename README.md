@@ -13,12 +13,12 @@ The Sponge package repository.
 Written with python and django.
 You should probably use virtualenv.
 
-1) Create a new virtualenv - my suggestion is to use `virtualenv venv` in the root of the project.
-2) Enter the virtualenv - if you followed my instruction about, use `source venv/bin/activate`.
-3) Install the requirements - `pip install -r requirements/development.txt`
-4) Set up the database - our base development settings expect a database with name `repo`, user `admin` and password `password`.
-5) Perform a migration - `python manage.py migrate`
-6) Start the web server - `python manage.py runserver`
+1.  Create a new virtualenv - my suggestion is to use `virtualenv venv` in the root of the project.
+2.  Enter the virtualenv - if you followed my instruction about, use `source venv/bin/activate`.
+3.  Install the requirements - `pip install -r requirements/development.txt`
+4.  Set up the database - our base development settings expect a database with name `repo`, user `admin` and password `password`.
+5.  Perform a migration - `python manage.py migrate`
+6.  Start the web server - `python manage.py runserver`
 
 Note that we use Postgres, both in production and development. We can and probably will choose to use Postgres-only features, so beware!
 
