@@ -41,6 +41,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'crispy_forms',
+
+    'accounts',
     'repo',
 )
 
@@ -93,3 +97,7 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     'templates/',
 )
+
+
+### Crispy Forms
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

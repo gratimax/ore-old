@@ -3,9 +3,6 @@ from django.core import validators
 from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import ugettext_lazy as _t
-
-
-# Create your models here.
 from django.utils import timezone
 
 
