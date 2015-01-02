@@ -1,5 +1,8 @@
 # try to work out which environment we're in
 
+#### NOTE: it's a MUCH better idea to set DJANGO_SETTINGS_MODULE
+#### than it is to use this.
+
 import os
 
 def importstar(module_name):
