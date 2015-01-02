@@ -107,3 +107,5 @@ Temporary Items
 
 # Holding on to the old source
 old/
+
+/ore/settings/local.py
