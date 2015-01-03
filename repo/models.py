@@ -96,7 +96,7 @@ reversion.register(RepoUser, follow=['namespace_ptr'])
 def organization_avatar_upload(instance, filename):
     import posixpath
     import uuid
-    _, fileexrt = posixpath.splitext(filename)
+    _, fileext = posixpath.splitext(filename)
     final_filename = uuid.uuid4().hex + fileext
     return posixpath.join('avatars', 'organization', instance.name, final_filename)
 
