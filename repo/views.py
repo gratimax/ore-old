@@ -5,8 +5,18 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView, View, CreateView, DetailView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
-from repo import forms
+from repo import forms, decorators
 from repo.models import Organization, Project, Namespace
+
+
+class RequiresPermissionMixin(object):
+    permissions = []
+
+    def get_permissions(self):
+        return self.permissions
+
+    def dispatch(self, request, *args, **kwargs):
+        return decorators.permission_required(self.get_permissions())(super(RequiresPermissionMixin, self).dispatch)(request, *args, **kwargs)
 
 
 class HomeView(View, TemplateResponseMixin, ContextMixin):
@@ -65,13 +75,15 @@ class ProjectsNewView(FormView):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
 
 
-class ProjectsDetailView(DetailView):
+class ProjectsDetailView(RequiresPermissionMixin, DetailView):
 
     model = Project
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
     template_name = 'repo/projects/detail.html'
+
+    permissions = ['project.foo', 'project.bar', 'project.baz', 'project.bar']
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):

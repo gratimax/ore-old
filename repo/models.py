@@ -8,7 +8,6 @@ from django.db.models.signals import post_save
 
 from model_utils.managers import InheritanceManager
 
-
 # Regex that includes a few other characters other than word characters
 EXTENDED_CHAR_REGEX = r'[\w.@+-]+'
 
@@ -84,8 +83,22 @@ class Organization(Namespace):
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
             return False
-        if self.teams.filter(users=user).filter(Q(is_all_projects=True) | Q(projects=project)).filter(Q(is_owner_team=True) | Q(permissions__slug=perm_slug)).count():
+
+        ownerships = user.__dict__.setdefault('_organization_ownerships', dict())
+        permissions = user.__dict__.setdefault('_organization_permissions', dict())
+        if ownerships.get(self.id) is None:
+            qs = self.teams.filter(users=user)
+            qs = qs.filter(Q(is_all_projects=True) | Q(projects=project))
+            if qs.filter(is_owner_team=True).count():
+                ownerships[self.id] = True
+            else:
+                permissions[self.id] = qs.values_list('permissions__slug', flat=True)
+
+        if self.id in ownerships:
             return True
+        if perm_slug in permissions.get(self.id, []):
+            return True
+
         return False
 
     def __repr__(self):
@@ -104,8 +117,21 @@ class Project(models.Model):
     def user_has_permission(self, user, perm_slug):
         if isinstance(user, AnonymousUser):
             return False
-        if self.teams.filter(users=user).filter(Q(is_owner_team=True) | Q(permissions__slug=perm_slug)).count():
+
+        ownerships = user.__dict__.setdefault('_project_ownerships', dict())
+        permissions = user.__dict__.setdefault('_project_permissions', dict())
+        if ownerships.get(self.id) is None:
+            qs = self.teams.filter(users=user)
+            if qs.filter(is_owner_team=True).count():
+                ownerships[self.id] = True
+            else:
+                permissions[self.id] = qs.values_list('permissions__slug', flat=True)
+
+        if self.id in ownerships:
             return True
+        if perm_slug in permissions.get(self.id, []):
+            return True
+
         return Namespace.objects.get_subclass(id=self.namespace_id).user_has_permission(user, perm_slug, project=self)
 
     def __repr__(self):
