@@ -19,13 +19,15 @@ var setupFormset = function($obj, formPrefix, $addButton) {
                 if (value !== undefined) {
                     var value = $el.attr(attrName);
                     if (value.indexOf(from) !== -1) {
-                        console.log(value);
                         value = value.replace(from, to);
-                        console.log(value);
                         $el.attr(attrName, value);
                     }
                 }
             });
+
+            if ($el.attr('value') !== undefined) {
+                $el.attr('value', '');
+            }
         });
         return $myEl;
     };
