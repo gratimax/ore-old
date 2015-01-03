@@ -191,11 +191,10 @@ class Permission(models.Model):
         return '<Permission %s [%s]>' % (self.slug, ' '.join(props))
 
 
-@reversion.register
 class Team(models.Model):
     name = models.CharField('name', max_length=80, null=False, blank=False)
-    users = models.ManyToManyField(RepoUser, related_name='%(class)ss')
-    permissions = models.ManyToManyField(Permission, related_name='+')
+    users = models.ManyToManyField(RepoUser, related_name='%(class)ss', blank=True)
+    permissions = models.ManyToManyField(Permission, related_name='+', blank=True)
     is_owner_team = models.BooleanField(default=False)
 
     def check_consistent(self):
@@ -211,7 +210,7 @@ class Team(models.Model):
 @reversion.register
 class OrganizationTeam(Team):
     organization = models.ForeignKey(Organization, related_name='teams')
-    projects = models.ManyToManyField(Project, related_name='organizationteams')
+    projects = models.ManyToManyField(Project, related_name='organizationteams', blank=True)
     is_all_projects = models.BooleanField(default=False)
 
     def make_consistent(self):

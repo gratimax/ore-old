@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView, View, CreateView, DetailView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from repo import forms, decorators
-from repo.models import Organization, Project, Namespace
+from repo.models import Organization, Project, Namespace, RepoUser
 
 
 class RequiresPermissionMixin(object):
@@ -36,6 +36,28 @@ class HomeView(View, TemplateResponseMixin, ContextMixin):
             context=context,
             **response_kwargs
         )
+
+
+class NamespaceDetailView(DetailView):
+
+    model = Namespace
+    slug_field = 'name'
+    slug_url_kwarg = 'namespace'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(NamespaceDetailView, self).get_queryset(*args, **kwargs)
+        qs = qs.select_subclasses()
+        qs = qs.prefetch_related('projects')
+        return qs
+
+    def get_template_names(self):
+        obj = self.object
+        if isinstance(obj, RepoUser):
+            return ['repo/users/view.html']
+        elif isinstance(obj, Organization):
+            return ['repo/orgs/view.html']
+
+        return super(NamespaceDetailView, self).get_template_names()
 
 
 class ProjectsNewView(FormView):
@@ -75,19 +97,18 @@ class ProjectsNewView(FormView):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
 
 
-class ProjectsDetailView(RequiresPermissionMixin, DetailView):
+class ProjectsDetailView(DetailView):
 
     model = Project
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
     template_name = 'repo/projects/detail.html'
-
-    permissions = ['project.foo', 'project.bar', 'project.baz', 'project.bar']
+    context_object_name = 'proj'
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace, name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -97,6 +118,5 @@ class ProjectsDetailView(RequiresPermissionMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectsDetailView, self).get_context_data(**kwargs)
-        context['proj'] = context['object']
         context['namespace'] = self.get_namespace()
         return context

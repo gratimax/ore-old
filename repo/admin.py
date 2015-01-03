@@ -26,3 +26,13 @@ admin.site.register(models.Version, VersionAdmin)
 class FileAdmin(reversion.VersionAdmin):
     pass
 admin.site.register(models.File, FileAdmin)
+
+
+class OrganizationTeamAdmin(reversion.VersionAdmin):
+    pass
+admin.site.register(models.OrganizationTeam, OrganizationTeamAdmin)
+
+
+class ProjectTeamAdmin(reversion.VersionAdmin):
+    pass
+admin.site.register(models.ProjectTeam, ProjectTeamAdmin)
