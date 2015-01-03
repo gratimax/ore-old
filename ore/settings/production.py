@@ -12,5 +12,6 @@ DATABASES = {
         'PASSWORD': from_env('DB_PASSWORD'),
         'PORT': int(from_env('DB_PORT_5432_TCP_PORT')),
         'HOST': from_env('DB_PORT_5432_TCP_ADDR'),
+        'ATOMIC_REQUESTS': True,
     }
 }

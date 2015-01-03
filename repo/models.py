@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.core import validators
 from django.core.mail import send_mail
 from django.db import models
@@ -18,6 +18,17 @@ class Namespace(models.Model):
                                 validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a namespace organization name.', 'invalid')
                             ])
 
+class RepoUserManager(UserManager):
+    def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
+        now = timezone.now()
+        if not username:
+            raise ValueError("The given username must be set")
+        email = self.normalize_email(email)
+        user = self.model(name=username, email=email, is_staff=is_staff, is_active=True, is_superuser=True, date_joined=now, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
 
 class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
 
@@ -30,7 +41,9 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
     is_active = models.BooleanField('active', default=True,
                                     help_text='Designates whether this user should be treated as '
                                               'active. Unselect this instead of deleting accounts.')
-    date_created = models.DateTimeField(_t('creation date'), default=timezone.now)
+    date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
+
+    objects = RepoUserManager()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']

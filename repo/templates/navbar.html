@@ -9,7 +9,7 @@
 
                         <ul class="nav navbar-nav">
                             <li><a href="/">Ore</a></li>
-                            <li><a href="/projects">Explore</a></li>
+                            <li><a href="/projects/">Explore</a></li>
                         </ul>
 
 
@@ -17,15 +17,15 @@
                             <li><a>
                                 <i class="fa fa-search"></i>
                             </a></li>
-                            {% if user %}
+                            {% if user.is_authenticated %}
                                 <li><a><!--class="notify"-->
                                     <i class="fa fa-bell"></i> 0
                                 </a></li>
-                                <li><a href="/{{ user.name }}">
+                                <li><a href="/{{ user.name }}/">
                                     {{ user.name }}
                                 </a></li>
                                 <li><a class="logout-a">
-                                    <form action="/sessions/logout" method="POST">
+                                    <form action="/accounts/logout/" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="nav-btn logout-btn">
                                             <i class="fa fa-sign-out"></i> Logout
@@ -33,10 +33,10 @@
                                     </form>
                                 </a></li>
                             {% else %}
-                                <li><a href="/accounts/new">
+                                <li><a href="/accounts/new/">
                                     <i class="fa fa-user"></i> Create account
                                 </a></li>
-                                <li><a href="/sessions/login">
+                                <li><a href="/accounts/login/">
                                     <i class="fa fa-sign-in"></i> Login
                                 </a></li>
                             {% endif %}

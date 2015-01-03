@@ -1,7 +1,7 @@
-from django.shortcuts import render, render_to_response
-
-# Create your views here.
+from django.shortcuts import render
+from django.contrib import messages
 
 
 def index(request):
-    return render_to_response('home/index.html')
+    messages.success(request, "WAT")
+    return render(request, 'home/index.html')
