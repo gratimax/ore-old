@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
 def from_env(env_name, default):
     value = os.environ.get(env_name, default)
     if value is None:
