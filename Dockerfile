@@ -7,7 +7,7 @@ RUN apt install -y python-dev python-pip libpq-dev
 ADD . /code
 WORKDIR /code
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements/production.txt
 
 EXPOSE 80
 CMD python run.py
