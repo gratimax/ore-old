@@ -3,8 +3,9 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView
+from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView, RedirectView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from repo import forms, decorators
 from repo.forms import ProjectDescriptionForm, ProjectRenameForm
@@ -272,3 +273,15 @@ class VersionsDetailView(DetailView):
         context['project'] = context['version'].project
         context['project'].namespace = context['namespace']
         return context
+
+class FileDownloadView(RedirectView, SingleObjectMixin):
+    
+    model = File
+    slug_field = 'name'
+    slug_url_kwarg = 'file'
+    
+    def get_queryset(self):
+        return File.objects.filter(version__project__namespace__name=self.kwargs['namespace'], version__project__name=self.kwargs['project'], version__name=self.kwargs['version'])
+
+    def get_redirect_url(self, **kwargs):
+        return self.get_object().file.url

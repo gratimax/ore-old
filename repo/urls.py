@@ -26,7 +26,7 @@ urlpatterns = patterns('',
             url(r'^flag/$', views.VersionsDetailView.as_view(), name='repo-versions-flag'),
             url(r'^delete/$', views.VersionsDetailView.as_view(), name='repo-versions-delete'),
 
-            url(r'^(?P<file>[\w.@+-]+)(?P<file_extension>\.[a-zA-Z0-9-]+)', views.VersionsDetailView.as_view(), name='repo-files-download'),
+            url(r'^(?P<file>[\w.@+-]+)(?P<file_extension>\.[a-zA-Z0-9-]+)', views.FileDownloadView.as_view(), name='repo-files-download'),
         ))),
     ))),
 
