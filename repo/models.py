@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 
 from model_utils.managers import InheritanceManager
+import reversion
 
 # Regex that includes a few other characters other than word characters
 EXTENDED_CHAR_REGEX = r'[\w.@+-]+'
@@ -20,6 +21,7 @@ TRIM_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'([\w.@+ -]*' + EXTENDED_CHAR_RE
 Q = models.Q
 
 
+@reversion.register
 class Namespace(models.Model):
 
     name = models.CharField('name', max_length=32, unique=True,
@@ -65,6 +67,12 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
 
+    def get_short_name(self):
+        return self.name
+
+    def get_full_name(self):
+        return self.name
+
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
@@ -76,6 +84,8 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
     def __repr__(self):
         props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
         return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
+
+reversion.register(RepoUser, follow=['namespace_ptr'])
 
 
 class Organization(Namespace):
@@ -104,7 +114,10 @@ class Organization(Namespace):
     def __repr__(self):
         return '<Organization %s>' % self.name
 
+reversion.register(Organization, follow=['namespace_ptr'])
 
+
+@reversion.register
 class Project(models.Model):
 
     name = models.CharField('name', max_length=32,
@@ -138,6 +151,7 @@ class Project(models.Model):
         return '<Project %s by %s>' % (self.name, self.namespace.name)
 
 
+@reversion.register
 class Version(models.Model):
 
     name = models.CharField('name', max_length=32,
@@ -151,6 +165,7 @@ class Version(models.Model):
         return '<Version %s of %s>' % (self.name, self.project.name)
 
 
+@reversion.register
 class File(models.Model):
 
     name = models.CharField('name', max_length=32,
@@ -164,6 +179,7 @@ class File(models.Model):
         return '<File %s in %s of %s>' % (self.name, self.version.name, self.version.project.name)
 
 
+@reversion.register
 class Permission(models.Model):
     slug = models.SlugField(max_length=64, unique=True)
     name = models.CharField(max_length=64, null=False, blank=False)
@@ -175,6 +191,7 @@ class Permission(models.Model):
         return '<Permission %s [%s]>' % (self.slug, ' '.join(props))
 
 
+@reversion.register
 class Team(models.Model):
     name = models.CharField('name', max_length=80, null=False, blank=False)
     users = models.ManyToManyField(RepoUser, related_name='%(class)ss')
@@ -191,6 +208,7 @@ class Team(models.Model):
         abstract = True
 
 
+@reversion.register
 class OrganizationTeam(Team):
     organization = models.ForeignKey(Organization, related_name='teams')
     projects = models.ManyToManyField(Project, related_name='organizationteams')
@@ -208,6 +226,7 @@ class OrganizationTeam(Team):
         return '<OrganizationTeam %s in %s [%s]>' % (self.name, self.organization.name, ' '.join(props))
 
 
+@reversion.register
 class ProjectTeam(Team):
     project = models.ForeignKey(Project, related_name='teams')
 
