@@ -4,7 +4,7 @@
     <head>
 
 
-	    <title>{% block title_full %}{% block title %}{% endblock %} | Ore{% endblock %}</title>
+        <title>{% block title_full %}{% block title %}{% endblock %} | Ore{% endblock %}</title>
 
         <meta charset="UTF-8">
 
@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
         <link rel="stylesheet" href="/static/css/style.css" type="text/css">
-        
+
     </head>
 
     <body class="navbar-space">
@@ -22,22 +22,22 @@
 
         {% block all %}
 
-            {% include "navbar.html" %}
+        {% include "navbar.html" %}
 
 
-            <div class="wrapper-960">
-		{% block messages %}
-			{% for message in messages %}
-				<div role="alert" class="alert alert-dismissable{% if message.tags %} alert-{{ message.tags }}{% endif %}">
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					{{ message }}
-				</div>
-			{% endfor %}
-		{% endblock %}
-
-                {% block content %}
-                {% endblock %}
+        <div class="wrapper-960">
+            {% block messages %}
+            {% for message in messages %}
+            <div role="alert" class="alert alert-dismissable{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ message }}
             </div>
+            {% endfor %}
+            {% endblock %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
 
         {% endblock %}
 

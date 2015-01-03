@@ -8,9 +8,9 @@ Explore
         <div class="col-md-12">
             <h1>All Projects</h1>
             <ul class="list-group">
-                {% for project_pair in projects %}
-                <a class="list-group-item" href="/{{project_pair[1].name}}/{{project_pair[0].name}}">
-                    {{project_pair[1].name}} / {{project_pair[0].name}}
+                {% for namespace, name in projects %}
+                <a class="list-group-item" href="{% url 'repo-project' namespace=namespace name=name %}">
+                    {{ namespace }} / {{ name }}
                 </a>
                 {% endfor %}
             </ul>

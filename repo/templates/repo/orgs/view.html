@@ -16,7 +16,7 @@
             <ul class="list-group">
                 {% for proj in projects %}
                      <li class="list-group-item">
-                        <a href="/{{org.name}}/{{proj.name}}" class="project-listing">{{proj.name}}</a>
+                         <a href="{% url 'repo-project' namespace=org.name name=proj.name %}" class="project-listing">{{proj.name}}</a>
                      </li>
                 {% endfor %}
             </ul>
