@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!doctype html>
 <html lang="en">
 
@@ -13,7 +14,7 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
-        <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+        <link rel="stylesheet" href="{% static "css/style.css" %}" type="text/css">
 
     </head>
 
@@ -41,12 +42,12 @@
 
         {% endblock %}
 
-        <script src="/static/vendor/js/jquery.js"></script>
-        <script src="/static/vendor/js/jquery.easing.js"></script>
+        <script src="{% static "vendor/js/jquery.js" %}"></script>
+        <script src="{% static "vendor/js/jquery.easing.js" %}"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
         {% block scripts %}
-        <script src="/static/js/app.js"></script>
+        <script src="{% static "js/app.js" %}"></script>
         {% endblock %}
 
     </body>

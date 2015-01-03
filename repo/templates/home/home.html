@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
+{% load staticfiles %}
 {% block title %}
   Ore
 {% endblock %}
 
 {% block all %}
     <header class="hero">
-        <img src="/static/img/sponge-logo.png" alt="Sponge logo" class="logo">
+        <img src="{% static "img/sponge-logo.png" %}" alt="Sponge logo" class="logo">
         <div class="logo-text">
             Sponge <strong>Powered</strong>
             <div class="smaller">
@@ -19,6 +20,6 @@
 
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/app.js"></script>
-<script src="/static/js/home.js"></script>
+<script src="{% static "js/app.js" %}"></script>
+<script src="{% static "js/home.js" %}"></script>
 {% endblock %}

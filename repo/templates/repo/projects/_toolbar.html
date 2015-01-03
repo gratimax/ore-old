@@ -1,11 +1,11 @@
 {% load permissions %}
 <div class="btn-group pull-right proj-toolbar">
-    <a href="/{{namespace.name}}/{{proj.name}}/flag" class="btn btn-default">
-        <i class="fa fa-flag"></i> Flag
+    <a href="{% url "repo-projects-flag" namespace=namespace.name project=proj.name %}" class="btn btn-default">
+        <i class="fa fa-flag"></i>
     </a>
     {% ifpermitted user "project.edit" proj %}
-        <a href="/{{namespace.name}}/{{proj.name}}/manage" class="btn btn-default">
-            <i class="fa fa-gear"></i> Manage
+        <a href="{% url "repo-projects-manage" namespace=namespace.name project=proj.name %}" class="btn btn-default">
+            <i class="fa fa-wrench"></i>
         </a>
     {% endifpermitted %}
 </div>

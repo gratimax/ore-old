@@ -23,7 +23,7 @@ Manage | {{ proj.name }}
                             {% endfor %}
                         </div>
                         {% endif %}
-                        <form action="/{{org.name}}/{{proj.name}}/describe" method="POST" class="form-horizontal">
+                        <form action="{% url 'repo-projects-describe' namespace=proj.namespace.name project=proj.name %}" method="POST" class="form-horizontal">
                             {% csrf_token %}
                             <h4 class="list-group-item-heading">Change Description</h4>
                             <br/>
@@ -83,7 +83,7 @@ Manage | {{ proj.name }}
                             <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
                             <h4 class="modal-title">Rename project</h4>
                         </div>
-                        <form action="/{{org.name}}/{{proj.name}}/rename" method="POST">
+                        <form action="{% url 'repo-projects-rename' namespace=proj.namespace.name project=proj.name %}" method="POST">
                             {% csrf_token %}
                             <div class="modal-body">
                                 <p>Are you sure you wish to rename this project?</p>
@@ -113,7 +113,7 @@ Manage | {{ proj.name }}
                             <p>This removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
                         </div>
                         <div class="modal-footer">
-                            <form action="/{{org.name}}/{{proj.name}}/delete" method="POST">
+                            <form action="{% url 'repo-projects-delete' namespace=proj.namespace.name project=proj.name %}" method="POST">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger">Delete</button>
                             </form>

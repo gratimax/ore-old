@@ -1,4 +1,5 @@
 from django import template
+from django.template import TemplateSyntaxError
 
 register = template.Library()
 

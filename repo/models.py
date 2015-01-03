@@ -70,7 +70,7 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
 
     @property
     def avatar(self):
-        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.strip().lower()).hexdigest() + "?d=mm"
+        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.encode('UTF-8').strip().lower()).hexdigest() + "?d=mm"
 
     def get_short_name(self):
         return self.name

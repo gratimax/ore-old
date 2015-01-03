@@ -53,9 +53,9 @@ class NamespaceDetailView(DetailView):
     def get_template_names(self):
         obj = self.object
         if isinstance(obj, RepoUser):
-            return ['repo/users/view.html']
+            return ['repo/users/detail.html']
         elif isinstance(obj, Organization):
-            return ['repo/orgs/view.html']
+            return ['repo/orgs/detail.html']
 
         return super(NamespaceDetailView, self).get_template_names()
 
