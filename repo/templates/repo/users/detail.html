@@ -8,18 +8,12 @@
         <div class="col-md-3 user-box">
             <div class="well">
                 <h1>{{ user.name }}</h1>
-                <img src="{{ user.avatar }}">
+                <img src="{{ user.avatar }}" class="avatar user-avatar">
             </div>
         </div>
         <div class="col-md-9">
             <h1 class="user-projects-header">Projects</h1>
-            <ul class="list-group">
-                {% for proj in user.projects.all %}
-                     <li class="list-group-item">
-                         <a href="{% url 'repo-projects-detail' namespace=user.name project=proj.name %}" class="project-listing">{{ proj.name }}</a>
-                     </li>
-                {% endfor %}
-            </ul>
+            {% include "repo/_projects_list.html" with namespace=user projects=user.projects.all only %}
         </div>
     </div>
 </div>

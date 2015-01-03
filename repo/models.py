@@ -148,6 +148,9 @@ class Project(models.Model):
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
+    def full_name(self):
+        return "{}/{}".format(self.namespace.name, self.name)
+
     def user_has_permission(self, user, perm_slug):
         if isinstance(user, AnonymousUser):
             return False

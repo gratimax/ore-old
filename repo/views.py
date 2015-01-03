@@ -119,4 +119,5 @@ class ProjectsDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProjectsDetailView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
+        context['proj'].namespace = context['namespace']
         return context

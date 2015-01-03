@@ -204,3 +204,26 @@ a.no-underline:hover {
 .fa-sm {
   font-size: 70%;
 }
+
+.avatar {
+  width: 100%;
+  height: auto;
+}
+
+.project-list-group-item {
+  padding: 0;
+}
+.project-listing {
+  display: block;
+  padding: 10px 15px;
+}
+.project-listing-name {
+  font-weight: bold;
+}
+.project-listing:hover {
+  text-decoration: none;
+}
+.project-listing-tagline {
+  display: block;
+  color: #555;
+}

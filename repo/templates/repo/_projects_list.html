@@ -1,0 +1,10 @@
+<ul class="list-group project-list-group">
+    {% for proj in projects %}
+         <li class="list-group-item project-list-group-item">
+             <a href="{% url 'repo-projects-detail' namespace=namespace.name project=proj.name %}" class="project-listing">
+                 <span class="project-listing-name">{{proj.name}}</span>
+                 <span class="project-listing-tagline">{{proj.description}}</span>
+             </a>
+         </li>
+    {% endfor %}
+</ul>
