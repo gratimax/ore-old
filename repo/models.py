@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 
 from model_utils.managers import InheritanceManager
 import reversion
+import hashlib
 
 # Regex that includes a few other characters other than word characters
 EXTENDED_CHAR_REGEX = r'[\w.@+-]+'
@@ -66,6 +67,10 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
+
+    @property
+    def avatar(self):
+        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.strip().lower()).hexdigest()
 
     def get_short_name(self):
         return self.name
