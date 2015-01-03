@@ -70,7 +70,7 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
 
     @property
     def avatar(self):
-        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.strip().lower()).hexdigest()
+        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.strip().lower()).hexdigest() + "?d=mm"
 
     def get_short_name(self):
         return self.name
@@ -93,7 +93,23 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
 reversion.register(RepoUser, follow=['namespace_ptr'])
 
 
+def organization_avatar_upload(instance, filename):
+    import posixpath
+    import uuid
+    _, fileexrt = posixpath.splitext(filename)
+    final_filename = uuid.uuid4().hex + fileext
+    return posixpath.join('avatars', 'organization', instance.name, final_filename)
+
+
 class Organization(Namespace):
+
+    avatar_image = models.ImageField(upload_to=organization_avatar_upload, blank=True, null=True, default=None)
+
+    @property
+    def avatar(self):
+        if self.avatar_image:
+            return self.avatar_image.url
+        return "//www.gravatar.com/avatar/mysteryman?f=y&d=mm"
 
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
