@@ -16,7 +16,7 @@
             <ul class="list-group version-list-group">
                 {% for version in proj.versions.all %}
                 <li class="list-group-item version-list-group-item">
-                    <a href="{% url 'repo-versions-detail' namespace=namespace.name project=proj.name version=version.name %}" class="version-listing">
+                    <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}" class="version-listing">
                         <span class="version-listing-name">{{version.name}}</span>
                         <span class="version-listing-tagline">{{version.description}}</span>
                     </a>

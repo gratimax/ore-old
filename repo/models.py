@@ -10,14 +10,7 @@ from model_utils.managers import InheritanceManager
 import reversion
 import hashlib
 
-# Regex that includes a few other characters other than word characters
-EXTENDED_CHAR_REGEX = r'[\w.@+-]+'
-
-# A regex that validates only a name that contains the extended characters
-EXTENDED_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'$'
-
-# A regex that permits spaces along with the extended characters, but not at the ends
-TRIM_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'([\w.@+ -]*' + EXTENDED_CHAR_REGEX + r')?$'
+from .regexs import *
 
 Q = models.Q
 
@@ -174,6 +167,9 @@ class Project(models.Model):
     def __repr__(self):
         return '<Project %s by %s>' % (self.name, self.namespace.name)
 
+    class Meta:
+        unique_together = ('namespace', 'name')
+
 
 @reversion.register
 class Version(models.Model):
@@ -197,6 +193,7 @@ class Version(models.Model):
 
     class Meta:
         ordering = ['-pk']
+        unique_together = ('project', 'name')
 
 def file_upload(instance, filename):
     import posixpath
@@ -226,6 +223,7 @@ class File(models.Model):
 
     class Meta:
         ordering = ['-pk']
+        unique_together = ('version', 'name')
 
 
 @reversion.register
@@ -273,6 +271,9 @@ class OrganizationTeam(Team):
         props = (['all_projects'] if self.is_all_projects else []) + (['owner'] if self.is_owner_team else [])
         return '<OrganizationTeam %s in %s [%s]>' % (self.name, self.organization.name, ' '.join(props))
 
+    class Meta:
+        unique_together = ('organization', 'name')
+
 
 @reversion.register
 class ProjectTeam(Team):
@@ -283,6 +284,9 @@ class ProjectTeam(Team):
         return '<ProjectTeam %s in %s [%s]>' % (self.name, self.project.name, ' '.join(props))
 
     # TODO: we need to check here that if we're a user's project and we're the owner team, that that user is in us!
+
+    class Meta:
+        unique_together = ('project', 'name')
 
 def create_project_owner_team(sender, instance, created, **kwargs):
     if instance and created:

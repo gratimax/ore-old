@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block title %}
 Upload New Version
 {% endblock %}
@@ -11,12 +12,28 @@ Upload New Version
 
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% crispy form %}
-                {% crispy multi_form %}
+
+                <div>
+                    {% crispy form %}
+
+                    <button class="btn btn-success" id="file-form-addBtn">+</button>
+
+                    {% crispy multi_form %}
+                </div>
 
                 <input type="submit" class="btn btn-primary" value="Create">
             </form>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/multiform.js' %}"></script>
+<script>
+$(function() {
+    setupFormset($('#div_id_file-0-name').parent('fieldset'), 'file', $('#file-form-addBtn'));
+});
+</script>
 {% endblock %}

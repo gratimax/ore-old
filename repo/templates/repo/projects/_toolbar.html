@@ -9,7 +9,7 @@
         </a>
     {% endifpermitted %}
     {% ifpermitted user "version.create" proj %}
-        <a href="{% url "repo-versions-new" namespace=namespace.name project=proj.name %}" class="btn btn-default">
+        <a href="{% url "repo-versions-new" namespace=proj.namespace.name project=proj.name %}" class="btn btn-default">
             <i class="fa fa-upload"></i>
         </a>
     {% endifpermitted %}
