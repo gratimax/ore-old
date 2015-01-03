@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.http import HttpResponse
 from repo import forms, decorators
 from repo.models import Organization, Project, Namespace, RepoUser
 
@@ -130,3 +131,12 @@ class ProjectsDetailView(DetailView):
         context['namespace'] = self.get_namespace()
         context['proj'].namespace = context['namespace']
         return context
+
+
+class FormTestView(FormView):
+    form_class = forms.TeamPermissionsForm
+    template_name = 'form_test.html'
+
+    def form_valid(self, form):
+        from pprint import pformat
+        return HttpResponse(pformat(form.get_selected_permissions()), content_type='text/plain')
