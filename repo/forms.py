@@ -56,6 +56,7 @@ class TeamPermissionsForm(forms.Form):
                 [
                     'project.create',
                     'project.edit',
+                    'project.rename',
                     'project.transfer',
                     'project.delete',
                 ]
