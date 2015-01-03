@@ -2,7 +2,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout
 from django import forms
 from django.db.models import Q
-from repo.models import Project, Namespace, Organization, RepoUser, Permission
+from django.forms.formsets import formset_factory
+from django.forms.models import modelformset_factory
+from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File
 
 
 class ProjectForm(forms.ModelForm):
@@ -156,3 +158,35 @@ class ProjectTeamPermissionsForm(TeamPermissionsForm):
 class OrganizationTeamPermissionsForm(TeamPermissionsForm):
     pass
 
+
+class NewVersionForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NewVersionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset('Version', 'name', 'description')
+        )
+
+    class Meta:
+        model = Version
+        fields = ('name', 'description')
+
+class NewFileForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ('name', 'description', 'file')
+
+BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
+class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
+
+    def __init__(self, *args, **kwargs):
+        super(NewVersionInnerFileFormset, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Fieldset('File', 'name', 'description', 'file')
+        )

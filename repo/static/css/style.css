@@ -227,3 +227,42 @@ a.no-underline:hover {
   display: block;
   color: #555;
 }
+
+.version-list-group-item {
+  padding: 0;
+}
+.version-listing {
+  display: block;
+  padding: 10px 15px;
+}
+.version-listing-name {
+  font-weight: bold;
+}
+.version-listing:hover {
+  text-decoration: none;
+}
+.version-listing-tagline {
+  display: block;
+  color: #555;
+}
+
+.file-list-group-item {
+  padding: 0;
+}
+.file-listing {
+  display: block;
+  padding: 10px 15px;
+}
+.file-listing-name {
+  font-weight: bold;
+}
+.file-listing:hover {
+  text-decoration: none;
+}
+.file-listing-tagline, .file-listing-size {
+  display: block;
+  color: #555;
+}
+.file-listing-size {
+  float: right;
+}

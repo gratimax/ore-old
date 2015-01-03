@@ -188,6 +188,21 @@ class Version(models.Model):
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
 
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('repo-versions-detail', kwargs={'namespace': self.project.namespace.name, 'project': self.project.name, 'version': self.name})
+
+    def full_name(self):
+        return "{}/{}".format(self.project.full_name(), self.name)
+
+    class Meta:
+        ordering = ['-pk']
+
+def file_upload(instance, filename):
+    import posixpath
+    import uuid
+    uuid_bit = uuid.uuid4().hex
+    return posixpath.join('files', instance.version.project.namespace.name, instance.version.project.name, instance.version.name, instance.name, uuid_bit, filename)
 
 @reversion.register
 class File(models.Model):
@@ -199,8 +214,18 @@ class File(models.Model):
     description = models.TextField('description')
     version = models.ForeignKey(Version, related_name='files')
 
+    file = models.FileField(upload_to=file_upload, blank=False, null=False)
+    file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
+    file_size = models.PositiveIntegerField(null=True, blank=False)
+
+    def full_name(self):
+        return "{}/{}".format(self.version.full_name(), self.name)
+
     def __repr__(self):
         return '<File %s in %s of %s>' % (self.name, self.version.name, self.version.project.name)
+
+    class Meta:
+        ordering = ['-pk']
 
 
 @reversion.register

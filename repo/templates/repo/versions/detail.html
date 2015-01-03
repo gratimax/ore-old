@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}
+{{ version.full_name }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            {% include "repo/versions/_head_unit.html" %}
+
+            <p class="pull-left">{{version.description}}</p>
+
+            <div class="clearfix"></div>
+
+            <h2>Files</h2>
+            <ul class="list-group file-list-group">
+                {% for file in version.files.all %}
+                <li class="list-group-item file-list-group-item">
+                    <a href="{% url 'repo-files-download' namespace=namespace.name project=project.name version=version.name file=file.name file_extension=file.file_extension %}" class="file-listing">
+                        <span class="file-listing-size">{{file.file_size|filesizeformat}}</span>
+                        <span class="file-listing-name">{{file.name}}</span>
+                        <span class="file-listing-tagline">{{file.description}}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

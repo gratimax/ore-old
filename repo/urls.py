@@ -17,6 +17,17 @@ urlpatterns = patterns('',
         url(r'^describe/$', views.ProjectsDetailView.as_view(), name='repo-projects-describe'),
         url(r'^rename/$', views.ProjectsDetailView.as_view(), name='repo-projects-rename'),
         url(r'^delete/$', views.ProjectsDetailView.as_view(), name='repo-projects-delete'),
+
+        url(r'^upload/$', views.VersionsNewView.as_view(), name='repo-versions-new'),
+
+        url(r'^(?P<version>[\w.@+-]+)/', include(patterns('',
+            url(r'^$', views.VersionsDetailView.as_view(), name='repo-versions-detail'),
+            url(r'^manage/$', views.VersionsDetailView.as_view(), name='repo-versions-manage'),
+            url(r'^flag/$', views.VersionsDetailView.as_view(), name='repo-versions-flag'),
+            url(r'^delete/$', views.VersionsDetailView.as_view(), name='repo-versions-delete'),
+
+            url(r'^(?P<file>[\w.@+-]+)(?P<file_extension>\.[a-zA-Z0-9-]+)', views.VersionsDetailView.as_view(), name='repo-files-download'),
+        ))),
     ))),
 
 )
