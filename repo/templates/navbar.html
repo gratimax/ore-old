@@ -26,8 +26,13 @@
                                 <li><a href="{% url 'repo-namespace' namespace=user.name %}">
                                     {{ user.name }}
                                 </a></li>
-                                <li><a href="{% url 'accounts-logout' %}">
-                                    <i class="fa fa-sign-out"></i>
+                                <li><a class="logout-a">
+                                        <form action="{% url 'accounts-logout' %}" method="POST">
+                                            {% csrf_token %}
+                                            <button type="submit" class="nav-btn logout-btn">
+                                                <i class="fa fa-sign-out"></i> Logout
+                                            </button>
+                                        </form>
                                 </a></li>
                             {% else %}
                                 <li><a href="{% url 'accounts-register' %}">
