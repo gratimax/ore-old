@@ -7,6 +7,7 @@ from django.views.generic import TemplateView, FormView, View, CreateView, Detai
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.http import HttpResponse
 from repo import forms, decorators
+from repo.forms import ProjectDescriptionForm, ProjectRenameForm
 from repo.models import Organization, Project, Namespace, RepoUser
 
 
@@ -116,6 +117,19 @@ class ProjectsDetailView(DetailView):
     template_name = 'repo/projects/detail.html'
     context_object_name = 'proj'
 
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+
+
+class ProjectsManageView(DetailView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'repo/projects/manage.html'
+    context_object_name = 'proj'
+
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
             self._namespace = get_object_or_404(Namespace.objects.select_subclasses(), name=self.kwargs['namespace'])
@@ -127,9 +141,10 @@ class ProjectsDetailView(DetailView):
         return Project.objects.filter(namespace=self.get_namespace())
 
     def get_context_data(self, **kwargs):
-        context = super(ProjectsDetailView, self).get_context_data(**kwargs)
+        context = super(ProjectsManageView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
-        context['proj'].namespace = context['namespace']
+        context['description_form'] = ProjectDescriptionForm()
+        context['rename_form'] = ProjectRenameForm()
         return context
 
 

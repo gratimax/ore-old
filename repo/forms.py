@@ -28,6 +28,38 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['name', 'namespace', 'description']
 
+class ProjectDescriptionForm(forms.ModelForm):
+
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': '3'}))
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectDescriptionForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Change description', css_class='btn-default col-md-offset-2'))
+        self.helper.label_class = 'col-md-2'
+        self.helper.field_class = 'col-md-10'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_action = 'repo-projects-describe'
+
+    class Meta:
+        model = Project
+        fields = ['description']
+
+
+class ProjectRenameForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProjectRenameForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Rename', css_class='btn-warning'))
+
+    class Meta:
+        model = Project
+        fields = ['name']
+
+
 
 class TeamPermissionsForm(forms.Form):
     def _get_permission_queryset(self):
@@ -123,3 +155,4 @@ class ProjectTeamPermissionsForm(TeamPermissionsForm):
 
 class OrganizationTeamPermissionsForm(TeamPermissionsForm):
     pass
+

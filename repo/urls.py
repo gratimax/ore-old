@@ -12,7 +12,7 @@ urlpatterns = patterns('',
 
     url(r'^(?P<namespace>[\w.@+-]+)/(?P<project>[\w.@+-]+)/', include(patterns('',
         url(r'^$', views.ProjectsDetailView.as_view(), name='repo-projects-detail'),
-        url(r'^manage/$', views.ProjectsDetailView.as_view(), name='repo-projects-manage'),
+        url(r'^manage/$', views.ProjectsManageView.as_view(), name='repo-projects-manage'),
         url(r'^flag/$', views.ProjectsDetailView.as_view(), name='repo-projects-flag'),
         url(r'^describe/$', views.ProjectsDetailView.as_view(), name='repo-projects-describe'),
         url(r'^rename/$', views.ProjectsDetailView.as_view(), name='repo-projects-rename'),

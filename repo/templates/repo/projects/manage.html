@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% load crispy_forms_tags %}
+{% load permissions %}
 {% block title %}
 Manage | {{ proj.name }}
 {% endblock %}
@@ -16,16 +18,11 @@ Manage | {{ proj.name }}
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        {% if description_errors %}
-                        <div class="alert alert-danger alert-dismissible fade in">
-                            {% for error in description_errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        <form action="{% url 'repo-projects-describe' namespace=proj.namespace.name project=proj.name %}" method="POST" class="form-horizontal">
-                            {% csrf_token %}
-                            <h4 class="list-group-item-heading">Change Description</h4>
+                        <h4 class="list-group-item-heading">Change Description</h4>
+                        {% ifpermitted user "project.edit" proj %}
+                            {% crispy description_form %}
+                        {% endifpermitted %}
+                        <!--<form action="{% url 'repo-projects-describe' namespace=proj.namespace.name project=proj.name %}" method="POST" class="form-horizontal">
                             <br/>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">New Description</label>
@@ -38,7 +35,7 @@ Manage | {{ proj.name }}
                                     <button type="submit" class="btn btn-default">Change Description</button>
                                 </div>
                             </div>
-                        </form>
+                        </form>-->
                     </li>
                 </ul>
             </div>
@@ -57,21 +54,19 @@ Manage | {{ proj.name }}
                     <h3 class="panel-title">Destructive Actions</h3>
                 </div>
                 <div class="panel-body">
-                    {% if rename_errors %}
-                        <div class="alert alert-danger alert-dismissible fade in">
-                            {% for error in rename_errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                     <div class="btn-group">
-                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rename-modal">
-                            Rename
-                        </button>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
-                            <i class="fa fa-times"></i>
-                            Delete
-                        </button>
+                        {% ifpermitted user "project.rename" proj %}
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rename-modal">
+                                Rename
+                            </button>
+                        {% endifpermitted %}
+
+                        {% ifpermitted user "project.delete" proj %}
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
+                                <i class="fa fa-times"></i>
+                                Delete
+                            </button>
+                        {% endifpermitted %}
                     </div>
                 </div>
             </div>
@@ -83,6 +78,7 @@ Manage | {{ proj.name }}
                             <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
                             <h4 class="modal-title">Rename project</h4>
                         </div>
+                        {% crispy rename_form %}
                         <form action="{% url 'repo-projects-rename' namespace=proj.namespace.name project=proj.name %}" method="POST">
                             {% csrf_token %}
                             <div class="modal-body">
@@ -93,9 +89,10 @@ Manage | {{ proj.name }}
                                     <input type="text" class="form-control" name="name" value="{{ proj.name}}" autocomplete="off">
                                 </div>
                             </div>
-                            <div class="modal-footer">
+
+                            <!--<div class="modal-footer">
                                 <button type="submit" class="btn btn-warning">Rename</button>
-                            </div>
+                            </div>-->
                         </form>
                     </div>
                 </div>

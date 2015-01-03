@@ -1,4 +1,10 @@
 <h1 class="project-header pull-left">
-    <a href="{% url 'repo-namespace' namespace=namespace.name %}" class="no-underline">{{namespace.name}}</a> /
-    <strong><a href="{% url 'repo-projects-detail' namespace=namespace.name project=proj.name %}" class="no-underline">{{proj.name}}</a></strong>
+    <a href="{% url 'repo-namespace' namespace=proj.namespace.name %}" class="no-underline">{{proj.namespace.name}}</a>
+    /
+    <strong>
+        <a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}"
+           class="no-underline">
+            {{proj.name}}
+        </a>
+    </strong>
 </h1>
