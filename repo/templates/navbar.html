@@ -21,18 +21,13 @@
                             </a></li>
                             {% if user.is_authenticated %}
                                 <li><a><!--class="notify"-->
-                                    <i class="fa fa-bell"></i> 0
+                                    <i class="fa fa-bell"></i>
                                 </a></li>
                                 <li><a href="{% url 'repo-namespace' namespace=user.name %}">
                                     {{ user.name }}
                                 </a></li>
-                                <li><a class="logout-a">
-                                    <form action="{% url 'accounts-logout' %}" method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="nav-btn logout-btn">
-                                            <i class="fa fa-sign-out"></i> Logout
-                                        </button>
-                                    </form>
+                                <li><a href="{% url 'accounts-logout' %}">
+                                    <i class="fa fa-sign-out"></i>
                                 </a></li>
                             {% else %}
                                 <li><a href="{% url 'accounts-register' %}">

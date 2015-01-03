@@ -100,9 +100,6 @@ h1 {
   outline: none;
 }
 
-.navbar a.logout-a {
-  padding: 0 !important;
-}
 
 .navbar .logout-btn {
   padding: 18px 15px;

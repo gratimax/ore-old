@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}
 Manage | {{ proj.name }}
-{% end %}
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
@@ -20,9 +20,9 @@ Manage | {{ proj.name }}
                         <div class="alert alert-danger alert-dismissible fade in">
                             {% for error in description_errors %}
                             {{ error }}
-                            {% end %}
+                            {% endfor %}
                         </div>
-                        {% end %}
+                        {% endif %}
                         <form action="/{{org.name}}/{{proj.name}}/describe" method="POST" class="form-horizontal">
                             {% csrf_token %}
                             <h4 class="list-group-item-heading">Change Description</h4>
@@ -61,9 +61,9 @@ Manage | {{ proj.name }}
                         <div class="alert alert-danger alert-dismissible fade in">
                             {% for error in rename_errors %}
                                 {{ error }}
-                            {% end %}
+                            {% endfor %}
                         </div>
-                    {% end %}
+                    {% endif %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rename-modal">
                             Rename
@@ -125,4 +125,4 @@ Manage | {{ proj.name }}
         </div>
     </div>
 </div>
-{% end %}
+{% endblock %}

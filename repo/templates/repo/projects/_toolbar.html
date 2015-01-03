@@ -1,8 +1,12 @@
+{% load permissions %}
+{% permitted user "project.edit" proj as authorized %}
 <div class="btn-group pull-right proj-toolbar">
-    <a href="/{{org.name}}/{{proj.name}}/flag" class="btn btn-default">
-        <i class="fa fa-flag"></i> Flag</a>
+    <a href="/{{namespace.name}}/{{proj.name}}/flag" class="btn btn-default">
+        <i class="fa fa-flag"></i> Flag
+    </a>
     {% if authorized %}
-    <a href="/{{org.name}}/{{proj.name}}/manage" class="btn btn-default">
-        <i class="fa fa-gear"></i> Manage</a>
+        <a href="/{{namespace.name}}/{{proj.name}}/manage" class="btn btn-default">
+            <i class="fa fa-gear"></i> Manage
+        </a>
     {% endif %}
 </div>

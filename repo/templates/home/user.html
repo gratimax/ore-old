@@ -8,15 +8,15 @@ Ore
     <div class="row pad-top">
         <div class="col-md-12">
             <div class="btn-group pull-right">
-                <a href="{% url 'repo-namespace' namespace=namespace.name %}" class="btn btn-default">
-                    <i class="fa fa-user"></i> Go to userpage
+                <a href="{% url 'repo-namespace' namespace=user.name %}" class="btn btn-default">
+                    <i class="fa fa-user"></i> Go to user page
                 </a>
-                <a href="{% url 'repo-new-project' %}" class="btn btn-default">
+                <a href="{% url 'repo-projects-new' %}" class="btn btn-default">
                     <i class="fa fa-plus"></i> Create project
                 </a>
             </div>
             <div class="home-userbox">
-                {{ namespace.name }}
+                {{ user.name }}
                 <img src="{{ avatar }}">
             </div>
         </div>

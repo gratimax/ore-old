@@ -40,7 +40,7 @@ Yes.
 
 ## Development
 
-Written with python and django.
+Written with python 3 and django 1.7.
 You should probably use virtualenv.
 
 1.  Create a new virtualenv - my suggestion is to use `virtualenv venv` in the root of the project.

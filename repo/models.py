@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, AnonymousUser
 from django.core import validators
 from django.core.mail import send_mail
 from django.db import models
@@ -9,8 +9,13 @@ from django.db.models.signals import post_save
 from model_utils.managers import InheritanceManager
 
 
+# Regex that includes a few other characters other than word characters
 EXTENDED_CHAR_REGEX = r'[\w.@+-]+'
+
+# A regex that validates only a name that contains the extended characters
 EXTENDED_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'$'
+
+# A regex that permits spaces along with the extended characters, but not at the ends
 TRIM_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'([\w.@+ -]*' + EXTENDED_CHAR_REGEX + r')?$'
 
 Q = models.Q
@@ -25,6 +30,11 @@ class Namespace(models.Model):
 
     objects = InheritanceManager()
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<Namespace %s>' % self.name
 
 class RepoUserManager(UserManager):
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
@@ -60,15 +70,26 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def user_has_permission(self, user, perm_slug, project=None):
+        if isinstance(user, AnonymousUser):
+            return False
         return user == self
+
+    def __repr__(self):
+        props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
+        return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
 
 
 class Organization(Namespace):
 
     def user_has_permission(self, user, perm_slug, project=None):
+        if isinstance(user, AnonymousUser):
+            return False
         if self.teams.filter(users=user).filter(Q(is_all_projects=True) | Q(projects=project)).filter(Q(is_owner_team=True) | Q(permissions__slug=perm_slug)).count():
             return True
         return False
+
+    def __repr__(self):
+        return '<Organization %s>' % self.name
 
 
 class Project(models.Model):
@@ -81,9 +102,14 @@ class Project(models.Model):
     description = models.TextField('description')
 
     def user_has_permission(self, user, perm_slug):
+        if isinstance(user, AnonymousUser):
+            return False
         if self.teams.filter(users=user).filter(Q(is_owner_team=True) | Q(permissions__slug=perm_slug)).count():
             return True
         return Namespace.objects.get_subclass(id=self.namespace_id).user_has_permission(user, perm_slug, project=self)
+
+    def __repr__(self):
+        return '<Project %s by %s>' % (self.name, self.namespace.name)
 
 
 class Version(models.Model):
@@ -95,6 +121,9 @@ class Version(models.Model):
     description = models.TextField('description')
     project = models.ForeignKey(Project, related_name='versions')
 
+    def __repr__(self):
+        return '<Version %s of %s>' % (self.name, self.project.name)
+
 
 class File(models.Model):
 
@@ -105,12 +134,19 @@ class File(models.Model):
     description = models.TextField('description')
     version = models.ForeignKey(Version, related_name='files')
 
+    def __repr__(self):
+        return '<File %s in %s of %s>' % (self.name, self.version.name, self.version.project.name)
+
 
 class Permission(models.Model):
-    slug = models.SlugField(max_length=64)
+    slug = models.SlugField(max_length=64, unique=True)
     name = models.CharField(max_length=64, null=False, blank=False)
     description = models.TextField(null=False, blank=False)
     applies_to_project = models.BooleanField(default=True)
+
+    def __repr__(self):
+        props = ['applies_to_project'] if self.applies_to_project else []
+        return '<Permission %s [%s]>' % (self.slug, ' '.join(props))
 
 
 class Team(models.Model):
@@ -141,9 +177,17 @@ class OrganizationTeam(Team):
     def check_consistent(self):
         return self.projects.exclude(namespace=self.organization).count() == 0
 
+    def __repr__(self):
+        props = (['all_projects'] if self.is_all_projects else []) + (['owner'] if self.is_owner_team else [])
+        return '<OrganizationTeam %s in %s [%s]>' % (self.name, self.organization.name, ' '.join(props))
+
 
 class ProjectTeam(Team):
     project = models.ForeignKey(Project, related_name='teams')
+
+    def __repr__(self):
+        props = ['owner'] if self.is_owner_team else []
+        return '<ProjectTeam %s in %s [%s]>' % (self.name, self.project.name, ' '.join(props))
 
     # TODO: we need to check here that if we're a user's project and we're the owner team, that that user is in us!
 

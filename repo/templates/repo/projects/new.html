@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load crispy_forms_tags %}
 {% block title %}
 Create Project
 {% endblock %}
@@ -7,28 +8,8 @@ Create Project
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
             <h1>Create new project</h1>
-            {% if errors %}
-            <div class="alert alert-danger alert-dismissible fade in">
-                {% for error in errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
-            {% endif %}
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>Project name</label>
-                    <input type="name" name="name" class="form-control" autocomplete="off">
 
-                </div>
-
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="description" name="description" class="form-control" autocomplete="off">
-                </div>
-
-                <button class="btn btn-default" type="submit">Create</button>
-            </form>
+            {% crispy form %}
         </div>
     </div>
 </div>
