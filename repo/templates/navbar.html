@@ -26,6 +26,11 @@
                                 <li><a href="{% url 'repo-namespace' namespace=user.name %}">
                                     {{ user.name }}
                                 </a></li>
+                                {% if user.is_staff %}
+                                    <li><a href="{% url 'admin:index' %}">
+                                        Admin
+                                    </a></li>
+                                {% endif %}
                                 <li><a class="logout-a">
                                         <form action="{% url 'accounts-logout' %}" method="POST">
                                             {% csrf_token %}
