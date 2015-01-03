@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView, View, CreateView, DetailView
+from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from repo import forms, decorators
 from repo.models import Organization, Project, Namespace, RepoUser
@@ -36,6 +36,15 @@ class HomeView(View, TemplateResponseMixin, ContextMixin):
             context=context,
             **response_kwargs
         )
+
+
+class ExploreView(ListView):
+
+    def get_queryset(self):
+        return Project.objects.all().select_related('namespace')
+
+    template_name = 'repo/projects/index.html'
+    context_object_name = 'projects'
 
 
 class NamespaceDetailView(DetailView):
