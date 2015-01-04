@@ -1,11 +1,13 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout, HTML, Div
 from django import forms
+from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File
+from repo.regexs import EXTENDED_NAME_REGEX
 
 
 class ProjectForm(forms.ModelForm):
@@ -67,6 +69,11 @@ class ProjectDescriptionForm(forms.ModelForm):
 
 
 class ProjectRenameForm(forms.ModelForm):
+
+    name = forms.CharField(max_length=32,
+                           validators=[
+                               validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.', 'invalid')
+                           ])
 
     def __init__(self, *args, **kwargs):
         namespace = kwargs.pop('namespace')
