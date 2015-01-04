@@ -283,3 +283,11 @@ a.no-underline:hover {
 .project-navbar li > a:hover {
   border-bottom: 2px solid #ccc;
 }
+
+.project-description-form {
+  margin: 20px 0;
+}
+
+.spacey-heading {
+  margin-top: 10px;
+}

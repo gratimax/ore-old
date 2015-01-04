@@ -18,9 +18,9 @@ urlpatterns = patterns('',
         url(r'^$', views.ProjectsDetailView.as_view(), name='repo-projects-detail'),
         url(r'^manage/$', views.ProjectsManageView.as_view(), name='repo-projects-manage'),
         url(r'^flag/$', views.ProjectsDetailView.as_view(), name='repo-projects-flag'),
-        url(r'^describe/$', views.ProjectsDetailView.as_view(), name='repo-projects-describe'),
-        url(r'^rename/$', views.ProjectsDetailView.as_view(), name='repo-projects-rename'),
-        url(r'^delete/$', views.ProjectsDetailView.as_view(), name='repo-projects-delete'),
+        url(r'^describe/$', views.ProjectsDescribeView.as_view(), name='repo-projects-describe'),
+        url(r'^rename/$', views.ProjectsRenameView.as_view(), name='repo-projects-rename'),
+        url(r'^delete/$', views.ProjectsDeleteView.as_view(), name='repo-projects-delete'),
 
         url(r'^upload/$', views.VersionsNewView.as_view(), name='repo-versions-new'),
 

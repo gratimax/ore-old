@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout, HTML, Div
 from django import forms
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -35,14 +36,30 @@ class ProjectDescriptionForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': '3'}))
 
     def __init__(self, *args, **kwargs):
+        namespace = kwargs.pop('namespace')
+        project = kwargs.pop('project')
         super(ProjectDescriptionForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Change description', css_class='btn-default col-md-offset-2'))
         self.helper.label_class = 'col-md-2'
         self.helper.field_class = 'col-md-10'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.form_action = 'repo-projects-describe'
+        self.helper.form_class = 'form-horizontal project-description-form'
+        self.helper._form_action = reverse('repo-projects-describe',
+                                           kwargs=dict(namespace=namespace, project=project))
+
+        self.helper.layout = Layout(
+            'description',
+            Div(
+                ButtonHolder(
+                    Submit('submit', 'Change description', css_class='btn-default'),
+                    css_class='col-md-offset-2 col-md-10'
+                ),
+                css_class='form-group',
+            ),
+            Div(
+                css_class='clearfix'
+            )
+        )
 
     class Meta:
         model = Project
@@ -52,10 +69,14 @@ class ProjectDescriptionForm(forms.ModelForm):
 class ProjectRenameForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-
+        namespace = kwargs.pop('namespace')
+        project = kwargs.pop('project')
         super(ProjectRenameForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
+
+        self.helper._form_action = reverse('repo-projects-rename',
+                                           kwargs=dict(namespace=namespace, project=project))
 
         self.helper.layout = Layout(
             Div(

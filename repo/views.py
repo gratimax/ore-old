@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView, RedirectView
+from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView, RedirectView, UpdateView, DeleteView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
@@ -122,7 +122,7 @@ class ProjectsDetailView(DetailView):
         return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
 
-class ProjectsManageView(DetailView):
+class ProjectsManageView(RequiresPermissionMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -130,6 +130,8 @@ class ProjectsManageView(DetailView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+
+    permissions = ['project.edit']
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
@@ -144,9 +146,144 @@ class ProjectsManageView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProjectsManageView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
-        context['description_form'] = ProjectDescriptionForm()
-        context['rename_form'] = ProjectRenameForm()
+        context['description_form'] = ProjectDescriptionForm(
+            project=self.object.name, namespace=self.get_namespace().name,
+            initial=dict(description=self.object.description))
+        context['rename_form'] = ProjectRenameForm(
+            project=self.object.name, namespace=self.get_namespace().name,
+            initial=dict(name=self.object.name))
         return context
+
+
+class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'repo/projects/manage.html'
+    context_object_name = 'proj'
+
+    permissions = ['project.edit']
+
+    form_class = ProjectDescriptionForm
+
+    fields = ['description']
+
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+
+    def get_namespace(self):
+        if not hasattr(self, "_namespace"):
+            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            return self._namespace
+        else:
+            return self._namespace
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectsDescribeView, self).get_context_data(**kwargs)
+        context['namespace'] = self.get_namespace()
+        context['rename_form'] = ProjectRenameForm(
+            project=self.object.name, namespace=self.get_namespace().name,
+            initial=dict(name=self.object.name))
+        context['description_form'] = kwargs['form']
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ProjectsDescribeView, self).get_form_kwargs()
+        kwargs['project'] = self.object.name
+        kwargs['namespace'] = self.get_namespace().name
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.success(self.request, "The project's description has been changed.")
+        return redirect(reverse('repo-projects-manage',
+                                kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'post':
+            return super(ProjectsDescribeView, self).dispatch(request, *args, **kwargs)
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+
+class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'repo/projects/manage.html'
+    context_object_name = 'proj'
+
+    permissions = ['project.rename']
+
+    form_class = ProjectRenameForm
+
+    fields = ['name']
+
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+
+    def get_namespace(self):
+        if not hasattr(self, "_namespace"):
+            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            return self._namespace
+        else:
+            return self._namespace
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectsRenameView, self).get_context_data(**kwargs)
+        context['namespace'] = self.get_namespace()
+        context['rename_form'] = kwargs['form']
+        context['show_modal'] = 'rename-modal'
+        context['description_form'] = ProjectDescriptionForm(
+            project=self.object.name, namespace=self.get_namespace().name,
+            initial=dict(description=self.object.description))
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(ProjectsRenameView, self).get_form_kwargs()
+        kwargs['project'] = self.object.name
+        kwargs['namespace'] = self.get_namespace().name
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.success(self.request, "The project's name has been changed.")
+        return redirect(reverse('repo-projects-manage',
+                                kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'post':
+            return super(ProjectsRenameView, self).dispatch(request, *args, **kwargs)
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+
+class ProjectsDeleteView(RequiresPermissionMixin, DeleteView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'repo/projects/manage.html'
+    context_object_name = 'proj'
+
+    permissions = ['project.delete']
+
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+
+    def get_success_url(self):
+        return reverse('repo-namespace', kwargs=dict(namespace=self.object.namespace.name))
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'post':
+            return super(ProjectsDeleteView, self).dispatch(request, *args, **kwargs)
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
 
 
 class ProjectsVersionsListView(DetailView):

@@ -28,12 +28,7 @@
 
         <div class="wrapper-960">
             {% block messages %}
-                {% for message in messages %}
-                <div role="alert" class="alert alert-dismissable{% if message.tags %} alert-{{ message.tags }}{% endif %}">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    {{ message }}
-                </div>
-                {% endfor %}
+                {% include "_messages.html" %}
             {% endblock %}
         </div>
 
