@@ -5,8 +5,12 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _t
 from django.utils import timezone
 from django.db.models.signals import post_save
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 from model_utils.managers import InheritanceManager
+from model_utils.fields import StatusField
+from model_utils import Choices
 import reversion
 import hashlib
 
@@ -17,6 +21,9 @@ Q = models.Q
 
 @reversion.register
 class Namespace(models.Model):
+
+    STATUS = Choices('active', 'deleted')
+    status = StatusField()
 
     name = models.CharField('name', max_length=32, unique=True,
                             validators=[
@@ -134,6 +141,9 @@ reversion.register(Organization, follow=['namespace_ptr'])
 @reversion.register
 class Project(models.Model):
 
+    STATUS = Choices('active', 'deleted')
+    status = StatusField()
+
     name = models.CharField('name', max_length=32,
                             validators=[
                                 validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.', 'invalid')
@@ -174,6 +184,9 @@ class Project(models.Model):
 @reversion.register
 class Version(models.Model):
 
+    STATUS = Choices('active', 'deleted')
+    status = StatusField()
+
     name = models.CharField('name', max_length=32,
                             validators=[
                                 validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid version name.', 'invalid')
@@ -204,6 +217,9 @@ def file_upload(instance, filename):
 
 @reversion.register
 class File(models.Model):
+
+    STATUS = Choices('active', 'deleted')
+    status = StatusField()
 
     name = models.CharField('name', max_length=32,
                             validators=[
@@ -288,6 +304,62 @@ class ProjectTeam(Team):
 
     class Meta:
         unique_together = ('project', 'name')
+
+
+@reversion.register
+class Flag(models.Model):
+    STATUS = Choices('new', 'quashed', 'retracted', 'content_removed_moderator', 'content_removed_creator')
+    status = StatusField()
+
+    flagger = models.ForeignKey(RepoUser, null=False, blank=False, related_name='flagger_flags')
+    resolver = models.ForeignKey(RepoUser, null=False, blank=False, related_name='resolver_flags')
+    date_flagged = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    date_resolved = models.DateTimeField(null=True, blank=True, default=None)
+
+    FLAG_TYPE = Choices('inappropriate', 'spam')
+    flag_type = StatusField(choices_name='FLAG_TYPE')
+
+    extra_comments = models.TextField(blank=True, null=False)
+
+    content_type = models.ForeignKey(ContentType, null=False, blank=False)
+    object_id = models.PositiveIntegerField(null=False, blank=False)
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        unique_together = ('flagger', 'flag_type', 'content_type', 'object_id')
+
+    @classmethod
+    def create_flag(cls, flag_content, flag_type, flagger):
+        return Flag.objects.get_or_create(content_object=flag_content, flag_type=flag_type, flagger=flagger)
+
+    def remove_content(self, user):
+        if self.status != self.STATUS.new:
+            raise ValueError("Incorrect state")
+
+        self.status = self.STATUS.content_removed_creator if not user.is_staff else self.STATUS.content_removed_moderator
+        self.content_object.status = self.content_object.STATUS.deleted
+        self.date_resolved = timezone.now()
+        self.resolver = user
+        self.save()
+
+    def quash(self, user):
+        if self.status != self.STATUS.new:
+            raise ValueError("Incorrect state")
+
+        self.status = self.STATUS.quashed
+        self.date_resolved = timezone.now()
+        self.resolver = user
+        self.save()
+
+    def retract(self, user):
+        if self.status != self.STATUS.new:
+            raise ValueError("Incorrect state")
+
+        self.status = self.STATUS.retracted
+        self.date_resolved = timezone.now()
+        self.resolver = user
+        self.save()
+
 
 def create_project_owner_team(sender, instance, created, **kwargs):
     if instance and created:
