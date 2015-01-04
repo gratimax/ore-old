@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-9">
             <h1 class="user-projects-header">Projects</h1>
-            {% include "repo/_projects_list.html" with namespace=organization projects=organization.projects.all only %}
+            {% include "repo/_projects_list.html" with namespace=organization projects=organization.projects.all|as_user:user only %}
         </div>
     </div>
 </div>

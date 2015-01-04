@@ -1,4 +1,5 @@
 {% extends "repo/projects/_page.html" %}
+{% load permissions %}
 {% block title %}
 {{ proj.name }} | Versions
 {% endblock %}
@@ -10,7 +11,7 @@
     </a>
     <div class="clearfix"></div>
     <ul class="list-group version-list-group">
-        {% for version in proj.versions.all %}
+        {% for version in proj.versions.all|as_user:user %}
             <li class="list-group-item version-list-group-item">
                 <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
                    class="version-listing">

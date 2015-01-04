@@ -5,6 +5,10 @@ register = template.Library()
 
 Node, NodeList = template.Node, template.NodeList
 
+@register.filter
+def as_user(value, arg):
+    return value.as_user(arg)
+
 @register.assignment_tag
 def permitted(user, permslug, obj):
     return obj.user_has_permission(user, permslug)

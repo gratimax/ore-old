@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-from model_utils.managers import InheritanceManager
+from model_utils.managers import InheritanceManagerMixin, InheritanceQuerySetMixin
 from model_utils.fields import StatusField
 from model_utils import Choices
 import reversion
@@ -17,6 +17,28 @@ import hashlib
 from .regexs import *
 
 Q = models.Q
+F = models.F
+
+
+def prefix_q(prefix, **kwargs):
+    return Q(**{
+        prefix + k: v for k, v in kwargs.items()
+    })
+
+
+class UserFilteringQuerySet(models.QuerySet):
+    def as_user(self, user):
+        return self.filter(self.model.is_visible_q('', user))
+
+
+class UserFilteringInheritanceQuerySet(InheritanceQuerySetMixin, UserFilteringQuerySet):
+    pass
+
+
+UserFilteringManager = models.Manager.from_queryset(UserFilteringQuerySet)
+class UserFilteringInheritanceManager(InheritanceManagerMixin, UserFilteringManager):
+    def get_queryset(self):
+        return UserFilteringInheritanceQuerySet(self.model, using=self._db)
 
 
 @reversion.register
@@ -30,7 +52,14 @@ class Namespace(models.Model):
                                 validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a namespace organization name.', 'invalid')
                             ])
 
-    objects = InheritanceManager()
+    objects = UserFilteringInheritanceManager() 
+
+    @staticmethod
+    def is_visible_q(prefix, user):
+        if not user.is_authenticated():
+            return prefix_q(prefix, status='active')
+
+        return prefix_q(prefix, status='active') | prefix_q(prefix, repouser=user) | prefix_q(prefix, organization__teams__users=user)
 
     def __str__(self):
         return self.name
@@ -151,6 +180,26 @@ class Project(models.Model):
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
+    objects = UserFilteringQuerySet.as_manager()
+
+    @classmethod
+    def is_visible_q(cls, prefix, user):
+        return Namespace.is_visible_q(prefix + 'namespace__', user) & (
+            (prefix_q(prefix, status='active')) |
+            (cls.is_visible_despite(prefix, user))
+        )
+
+    @staticmethod
+    def is_visible_despite(prefix, user):
+        if not user.is_authenticated():
+            return Q()
+        return (
+            (prefix_q(prefix, teams__users=user)) |
+            (prefix_q(prefix, namespace__repouser=user)) |
+            ((prefix_q(prefix, namespace__organization__teams__is_all_projects=True) | prefix_q(prefix, namespace__organization__teams__projects__id=F('id'))) & prefix_q(prefix, namespace__organization__teams__users=user))
+        )
+
+
     def full_name(self):
         return "{}/{}".format(self.namespace.name, self.name)
 
@@ -194,6 +243,19 @@ class Version(models.Model):
     description = models.TextField('description')
     project = models.ForeignKey(Project, related_name='versions')
 
+    objects = UserFilteringQuerySet.as_manager()
+
+    @classmethod
+    def is_visible_q(cls, prefix, user):
+        return Project.is_visible_q(prefix + 'project__', user) & (
+            (prefix_q(prefix, status='active')) |
+            (cls.is_visible_despite(prefix, user))
+        )
+
+    @staticmethod
+    def is_visible_despite(prefix, user):
+        return Project.is_visible_despite(prefix + 'project__', user)
+
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
 
@@ -231,6 +293,19 @@ class File(models.Model):
     file = models.FileField(upload_to=file_upload, blank=False, null=False)
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
+
+    objects = UserFilteringQuerySet.as_manager()
+
+    @classmethod
+    def is_visible_q(cls, prefix, user):
+        return Version.is_visible_q(prefix + 'version__', user) & (
+            (prefix_q(prefix, status='active')) |
+            (cls.is_visible_despite(prefix, user))
+        )
+
+    @staticmethod
+    def is_visible_despite(prefix, user):
+        return Version.is_visible_despite(prefix + 'version__', user)
 
     def full_name(self):
         return "{}/{}".format(self.version.full_name(), self.name)

@@ -44,7 +44,7 @@ class HomeView(View, TemplateResponseMixin, ContextMixin):
 class ExploreView(ListView):
 
     def get_queryset(self):
-        return Project.objects.all().select_related('namespace')
+        return Project.objects.as_user(self.request.user).select_related('namespace')
 
     template_name = 'repo/projects/index.html'
     context_object_name = 'projects'
@@ -119,7 +119,7 @@ class ProjectsDetailView(DetailView):
     context_object_name = 'proj'
 
     def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
 
 class ProjectsManageView(DetailView):
@@ -133,13 +133,13 @@ class ProjectsManageView(DetailView):
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
 
     def get_queryset(self):
-        return Project.objects.filter(namespace=self.get_namespace())
+        return Project.objects.as_user(self.request.user).filter(namespace=self.get_namespace())
 
     def get_context_data(self, **kwargs):
         context = super(ProjectsManageView, self).get_context_data(**kwargs)
@@ -272,11 +272,11 @@ class VersionsDetailView(DetailView):
     template_name = 'repo/versions/detail.html'
 
     def get_queryset(self):
-        return Version.objects.filter(project__namespace__name=self.kwargs['namespace'], project__name=self.kwargs['project']).select_related('project')
+        return Version.objects.as_user(self.request.user).filter(project__namespace__name=self.kwargs['namespace'], project__name=self.kwargs['project']).select_related('project')
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -295,7 +295,7 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     slug_url_kwarg = 'file'
     
     def get_queryset(self):
-        return File.objects.filter(version__project__namespace__name=self.kwargs['namespace'], version__project__name=self.kwargs['project'], version__name=self.kwargs['version'])
+        return File.objects.as_user(self.request.user).filter(version__project__namespace__name=self.kwargs['namespace'], version__project__name=self.kwargs['project'], version__name=self.kwargs['version'])
 
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
