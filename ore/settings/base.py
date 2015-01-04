@@ -13,7 +13,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-def from_env(env_name, default):
+def from_env(env_name, default=None):
     value = os.environ.get(env_name, default)
     if value is None:
         raise ValueError("Environment variable '{}' must be set or have a default".format(env_name))
