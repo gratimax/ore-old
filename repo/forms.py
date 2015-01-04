@@ -18,11 +18,11 @@ class ProjectForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Create project'))
 
-        # TODO this doesn't exactly work, we're looking for orgs where user has permission project.create
         namespace = self.fields['namespace']
         namespace.queryset = Namespace.objects.select_subclasses(Organization, RepoUser).filter(
             Q(repouser=user) |
-            Q(organization__teams__users=user))
+            (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(organization__teams__permissions__slug='project.create')))
+        )
 
         namespace.initial = user.id
 
