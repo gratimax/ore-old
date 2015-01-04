@@ -1,29 +1,8 @@
-{% extends "layout.html" %}
+{% extends "repo/projects/_page.html" %}
 {% block title %}
 {{ proj.namespace.name }}
 {% endblock %}
-{% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            {% include "repo/projects/_head_unit.html" %}
+{% block page %}
 
-            <p class="pull-left">{{proj.description}}</p>
-
-            <div class="clearfix"></div>
-
-            <h2>Versions</h2>
-            <ul class="list-group version-list-group">
-                {% for version in proj.versions.all %}
-                <li class="list-group-item version-list-group-item">
-                    <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}" class="version-listing">
-                        <span class="version-listing-name">{{version.name}}</span>
-                        <span class="version-listing-tagline">{{version.description}}</span>
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-</div>
+<div class="clearfix"></div>
 {% endblock %}

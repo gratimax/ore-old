@@ -1,0 +1,23 @@
+{% extends "repo/projects/_page.html" %}
+{% block title %}
+{{ proj.name }} | Versions
+{% endblock %}
+{% block page %}
+    <h2>Versions</h2>
+    <a href="{% url 'repo-versions-new' namespace=proj.namespace.name project=proj.name%}"
+            class="btn btn-primary pull-right attach-bottom">
+        <i class="fa fa-plus"></i>
+    </a>
+    <div class="clearfix"></div>
+    <ul class="list-group version-list-group">
+        {% for version in proj.versions.all %}
+            <li class="list-group-item version-list-group-item">
+                <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
+                   class="version-listing">
+                    <span class="version-listing-name">{{version.name}}</span>
+                    <span class="version-listing-tagline">{{version.description}}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

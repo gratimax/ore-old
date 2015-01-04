@@ -195,11 +195,12 @@ class Version(models.Model):
         ordering = ['-pk']
         unique_together = ('project', 'name')
 
+
 def file_upload(instance, filename):
     import posixpath
     import uuid
     uuid_bit = uuid.uuid4().hex
-    return posixpath.join('files', instance.version.project.namespace.name, instance.version.project.name, instance.version.name, instance.name, uuid_bit, filename)
+    return posixpath.join('files', uuid_bit, filename)
 
 @reversion.register
 class File(models.Model):

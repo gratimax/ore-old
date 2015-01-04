@@ -149,6 +149,19 @@ class ProjectsManageView(DetailView):
         return context
 
 
+class ProjectsVersionsListView(DetailView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'repo/versions/list.html'
+    context_object_name = 'proj'
+
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+
+
 class FormTestView(FormView):
     form_class = forms.TeamPermissionsForm
     template_name = 'form_test.html'
@@ -209,7 +222,7 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
+        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form, proj=self.get_project()))
 
     def post(self, request, *args, **kwargs):
         self.object = None
@@ -226,7 +239,7 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
             return self.form_invalid(form, multi_form)
 
     def form_invalid(self, form, multi_form):
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
+        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form, proj=self.get_project()))
 
     def form_valid(self, form, multi_form):
         self.object = form.save()
@@ -250,6 +263,7 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
             })
         return kwargs
 
+
 class VersionsDetailView(DetailView):
 
     model = Version
@@ -270,9 +284,9 @@ class VersionsDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(VersionsDetailView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
-        context['project'] = context['version'].project
-        context['project'].namespace = context['namespace']
+        context['proj'] = context['version'].project
         return context
+
 
 class FileDownloadView(RedirectView, SingleObjectMixin):
     

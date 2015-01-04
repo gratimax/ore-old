@@ -1,0 +1,29 @@
+{% load permissions %}
+<div class="navbar navbar-default project-navbar">
+    <div class="navbar-inner">
+        <div class="container-fluid wrapper-960">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="{% url "repo-projects-detail" namespace=proj.namespace.name project=proj.name %}">
+                        <i class="fa fa-book"></i>
+                        Docs
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url "repo-versions-list" namespace=proj.namespace.name project=proj.name %}">
+                        <i class="fa fa-download"></i> Versions
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+                {% ifpermitted user "project.edit" proj %}
+                    <li>
+                        <a href="{% url "repo-projects-manage" proj.namespace.name proj.name %}">
+                            <i class="fa fa-wrench"></i> Manage
+                        </a>
+                    </li>
+                {% endifpermitted %}
+            </ul>
+        </div>
+    </div>
+</div>

@@ -8,3 +8,16 @@
         </a>
     </strong>
 </h1>
+
+<div class="project-toolbar pull-right">
+    <a href="{% url 'repo-projects-flag' namespace=proj.namespace.name project=proj.name %}"
+            class="btn btn-default">
+        <i class="fa fa-flag"></i>
+    </a>
+</div>
+
+<div class="clearfix"></div>
+
+<p>{{proj.description}}</p>
+
+

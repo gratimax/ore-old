@@ -1,8 +1,12 @@
 body {
   font-family: 'Open Sans', sans-serif;
   margin: 0;
-  background-color: #fff;
+  background-color: #eee;
   height: auto;
+}
+
+.white-background {
+  background-color: #fff;
 }
 
 .hero {
@@ -56,7 +60,7 @@ h1 {
   color: #f9ab00;
 }
 
-.navbar {
+.navbar.top-navbar {
   background-color: #304054;
   border-bottom: none;
   -moz-user-select: none;
@@ -65,68 +69,47 @@ h1 {
   user-select: none;
 }
 
-.navbar .col-md-12 {
+.navbar.top-navbar .col-md-12 {
   white-space-collapse: discard;
   height: 56px;
 }
 
-.navbar .navbar-nav>li>a {
+.navbar.top-navbar .navbar-nav>li>a {
   padding: 18px 15px;
   color: #ddd;
   float: left;
   cursor: pointer;
 }
 
-.navbar a:hover {
+.navbar.top-navbar a:hover {
   background-color: #344c67 !important;
 }
 
-.navbar li.active a {
+.navbar.top-navbar li.active a {
   background-color: #2c3d4b !important;
 }
 
-.navbar li.active a:hover {
+.navbar.top-navbar li.active a:hover {
   background-color: #344c67 !important;
 }
 
-.navbar a:visited {
+.navbar.top-navbar a:visited {
   color: #ddd;
 }
 
-.navbar .nav-btn {
+.navbar.top-navbar .nav-btn {
   background: none;
   border: none;
   padding: 0;
   outline: none;
 }
 
-.navbar a.logout-a {
+.navbar.top-navbar a.logout-a {
   padding: 0 !important;
 }
 
-.navbar .logout-btn {
+.navbar.top-navbar .logout-btn {
   padding: 18px 15px;
-}
-
-.sp-dropdown-menu {
-  position: relative;
-}
-
-.sp-dropdown-menu.dropped {
-  background-color: #344c67 !important;
-}
-
-.sp-dropdown {
-  background: #fff;
-  color: #333;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  padding: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  border: 1px solid #aaa;
-  border-top: none;
-  display: none;
 }
 
 .mini-logo {
@@ -139,7 +122,7 @@ h1 {
   margin-left: 15px;
 }
 
-.navbar .notify {
+.navbar.top-navbar .notify {
   color: #fbc400 !important;
 }
 
@@ -188,7 +171,7 @@ a.no-underline:hover {
   font-size: 1.2em;
 }
 
-.proj-toolbar {
+.project-toolbar {
   margin-top: 28px;
 }
 
@@ -265,4 +248,38 @@ a.no-underline:hover {
 }
 .file-listing-size {
   float: right;
+}
+
+.project-content {
+  margin-top: 30px;
+}
+
+.attach-bottom {
+  border-radius: 4px 4px 0 0;
+}
+
+.light-background {
+  background: #eee;
+  padding-top: 20px;
+}
+
+.project-navbar {
+  border: none;
+  border-radius: 0;
+  background: none;
+  margin: 0;
+  border-bottom: 2px solid #ddd;
+}
+
+.project-navbar li {
+  position: relative;
+  bottom: -2px;
+}
+
+.project-navbar li > a {
+  border-bottom: 2px solid transparent;
+}
+
+.project-navbar li > a:hover {
+  border-bottom: 2px solid #ccc;
 }

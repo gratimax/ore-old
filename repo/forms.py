@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout
+from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout, HTML, Div
 from django import forms
 from django.db.models import Q
 from django.forms.formsets import formset_factory
@@ -52,10 +52,28 @@ class ProjectDescriptionForm(forms.ModelForm):
 class ProjectRenameForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+
         super(ProjectRenameForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Rename', css_class='btn-warning'))
+
+        self.helper.layout = Layout(
+            Div(
+                Fieldset('',
+                    HTML('''
+                    <p>Are you sure you wish to rename this project?</p>
+                     <p>While this operation is reversible, no redirects of any kind are set up and former links to your project may not work as expected.</p>
+                '''),
+                    'name',
+                ),
+                css_class='modal-body'
+            ),
+            ButtonHolder(
+                Submit('submit', 'Rename', css_class='btn-warning'),
+                css_class='modal-footer'
+            )
+        )
+
 
     class Meta:
         model = Project

@@ -1,30 +1,33 @@
-{% extends "layout.html" %}
+{% extends "repo/projects/_page.html" %}
 {% block title %}
 {{ version.full_name }}
 {% endblock %}
-{% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            {% include "repo/versions/_head_unit.html" %}
+{% block page %}
 
-            <p class="pull-left">{{version.description}}</p>
+    <h2>
+        <strong>
+            {{version.name}}
+        </strong>
+    </h2>
 
-            <div class="clearfix"></div>
 
-            <h2>Files</h2>
-            <ul class="list-group file-list-group">
-                {% for file in version.files.all %}
+    <p class="pull-left">{{version.description}}</p>
+
+    <div class="clearfix"></div>
+
+    {% if version.files.all %}
+        <h2>Files</h2>
+        <ul class="list-group file-list-group">
+            {% for file in version.files.all %}
                 <li class="list-group-item file-list-group-item">
-                    <a href="{% url 'repo-files-download' namespace=namespace.name project=project.name version=version.name file=file.name file_extension=file.file_extension %}" class="file-listing">
+                    <a href="{% url 'repo-files-download' namespace=namespace.name project=proj.name version=version.name file=file.name file_extension=file.file_extension %}" class="file-listing">
                         <span class="file-listing-size">{{file.file_size|filesizeformat}}</span>
                         <span class="file-listing-name">{{file.name}}</span>
                         <span class="file-listing-tagline">{{file.description}}</span>
                     </a>
                 </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-</div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
 {% endblock %}
