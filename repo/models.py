@@ -187,7 +187,7 @@ class Project(models.Model):
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
-    default_filetype = models.OneToOneField('FileType', related_name='+')
+    default_filetype = models.OneToOneField('FileType', related_name='+', null=True)
 
     objects = UserFilteringQuerySet.as_manager()
 
