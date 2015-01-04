@@ -115,6 +115,9 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
             return False
         return user == self
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
         return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
@@ -163,6 +166,9 @@ class Organization(Namespace):
 
     def __repr__(self):
         return '<Organization %s>' % self.name
+
+    def __str__(self):
+        return self.name
 
 reversion.register(Organization, follow=['namespace_ptr'])
 
@@ -226,6 +232,9 @@ class Project(models.Model):
     def __repr__(self):
         return '<Project %s by %s>' % (self.name, self.namespace.name)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         unique_together = ('namespace', 'name')
 
@@ -258,6 +267,9 @@ class Version(models.Model):
 
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
+
+    def __str__(self):
+        return self.name
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
@@ -313,6 +325,9 @@ class File(models.Model):
     def __repr__(self):
         return '<File %s in %s of %s>' % (self.name, self.version.name, self.version.project.name)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         ordering = ['-pk']
         unique_together = ('version', 'name')
@@ -329,12 +344,22 @@ class Permission(models.Model):
         props = ['applies_to_project'] if self.applies_to_project else []
         return '<Permission %s [%s]>' % (self.slug, ' '.join(props))
 
+    def __str__(self):
+        return self.slug
+
 
 class Team(models.Model):
     name = models.CharField('name', max_length=80, null=False, blank=False)
     users = models.ManyToManyField(RepoUser, related_name='%(class)ss', blank=True)
     permissions = models.ManyToManyField(Permission, related_name='+', blank=True)
     is_owner_team = models.BooleanField(default=False)
+
+    def __repr__(self):
+        props = ['owner'] if self.is_owner_team else []
+        return '<Team %s [%s]>' % (self.name, ' '.join(props))
+
+    def __str__(self):
+        return self.name
 
     def check_consistent(self):
         return True
@@ -359,6 +384,9 @@ class OrganizationTeam(Team):
     def check_consistent(self):
         return self.projects.exclude(namespace=self.organization).count() == 0
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):
         props = (['all_projects'] if self.is_all_projects else []) + (['owner'] if self.is_owner_team else [])
         return '<OrganizationTeam %s in %s [%s]>' % (self.name, self.organization.name, ' '.join(props))
@@ -370,6 +398,9 @@ class OrganizationTeam(Team):
 @reversion.register
 class ProjectTeam(Team):
     project = models.ForeignKey(Project, related_name='teams')
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         props = ['owner'] if self.is_owner_team else []
