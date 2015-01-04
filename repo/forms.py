@@ -216,7 +216,7 @@ class NewVersionForm(forms.ModelForm):
 class NewFileForm(forms.ModelForm):
     class Meta:
         model = File
-        fields = ('name', 'description', 'file')
+        fields = ('file',)
 
 BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):

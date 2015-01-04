@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from django.core import validators
 from django.core.mail import send_mail
 from django.db import models
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _t
 from django.utils import timezone
 from django.db.models.signals import post_save
@@ -186,6 +187,8 @@ class Project(models.Model):
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
+    default_filetype = models.OneToOneField('FileType', related_name='+')
+
     objects = UserFilteringQuerySet.as_manager()
 
     @classmethod
@@ -295,12 +298,8 @@ class File(models.Model):
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
-    name = models.CharField('name', max_length=32,
-                            validators=[
-                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid file name.', 'invalid')
-                            ])
-    description = models.TextField('description')
     version = models.ForeignKey(Version, related_name='files')
+    filetype = models.ForeignKey('FileType', related_name='files')
 
     file = models.FileField(upload_to=file_upload, blank=False, null=False, max_length=512)
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
@@ -320,17 +319,27 @@ class File(models.Model):
         return Version.is_visible_despite(prefix + 'version__', user)
 
     def full_name(self):
-        return "{}/{}".format(self.version.full_name(), self.name)
+        return "{}/{}".format(self.version.full_name(), str(self.file))
 
     def __repr__(self):
-        return '<File %s in %s of %s>' % (self.name, self.version.name, self.version.project.name)
+        return '<File %s in %s of %s>' % (str(self.file), self.version.name, self.version.project.name)
 
     def __str__(self):
-        return self.name
+        return str(self.file)
 
     class Meta:
         ordering = ['-pk']
-        unique_together = ('version', 'name')
+        unique_together = ('version', 'filetype')
+
+@reversion.register
+class FileType(models.Model):
+
+    name = models.CharField('name', max_length=32,
+                            validators=[
+                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid file type name.', 'invalid')
+                            ])
+    description = models.TextField('description')
+    project = models.ForeignKey(Project, related_name='filetypes')
 
 
 @reversion.register
@@ -466,7 +475,18 @@ class Flag(models.Model):
         self.resolver = user
         self.save()
 
+@receiver(post_save, sender=Project)
+def create_project_jar_filetype(sender, instance, created, **kwargs):
+    if instance and created:
+        ft = FileType.objects.create(
+            project=instance,
+            name='Jar file',
+            description='A loadable, but not necessarily executable, JAR file'
+        )
+        instance.default_filetype = ft
+        instance.save()
 
+@receiver(post_save, sender=Project)
 def create_project_owner_team(sender, instance, created, **kwargs):
     if instance and created:
         owning_namespace = Namespace.objects.get_subclass(id=instance.namespace_id)
@@ -478,8 +498,8 @@ def create_project_owner_team(sender, instance, created, **kwargs):
             )
             team.users = [owning_namespace]
             team.save()
-post_save.connect(create_project_owner_team, sender=Project)
 
+@receiver(post_save, sender=Organization)
 def create_organization_owner_team(sender, instance, created, **kwargs):
     if instance and created:
         OrganizationTeam.objects.create(
@@ -488,4 +508,3 @@ def create_organization_owner_team(sender, instance, created, **kwargs):
                 is_all_projects=True,
                 is_owner_team=True,
         )
-post_save.connect(create_organization_owner_team, sender=Organization)
