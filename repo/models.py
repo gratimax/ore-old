@@ -302,7 +302,7 @@ class File(models.Model):
     description = models.TextField('description')
     version = models.ForeignKey(Version, related_name='files')
 
-    file = models.FileField(upload_to=file_upload, blank=False, null=False)
+    file = models.FileField(upload_to=file_upload, blank=False, null=False, max_length=512)
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
 
