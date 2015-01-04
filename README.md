@@ -55,7 +55,31 @@ Note that we use Postgres, both in production and development. We can and probab
 ## How to run
 
 Builds are automatically published to [the central Docker registry](https://registry.hub.docker.com/u/gratimax/ore/).
+__Note__: that location will probably change
+
+The application environment is determined by which [setting configuration](https://github.com/SpongePowered/Ore/tree/master/ore/settings) is passed
+into the `DJANGO_SETTINGS_MODULE` environment variable.
+
+Other environment variables to note:
+
+- `SECRET_KEY`: the secret key of the application, used for cookies and other secret things
+- `DB_USER`: the database user
+- `DB_PASSWORD`: the database password
+- `DB_NAME`: which database to connect to
+- `WEBDB_PORT_5432_TCP_PORT`: the port of the database to connect to, provided by docker if the container is run with `--link <postgres>:webdb`
+- `WEBDB_PORT_5432_TCP_ADDR`: the host of the database to connect to, provided by docker if the container is run with `--link <postgres>:webdb`
 
 ```bash
-$ docker run -d --link db:db -e APP_ENV=STAGING -e DB_USER=repo -e DB_PASSWORD=mysecret -e SECRET_KEY=much_secret -p 80:80 gratimax/ore
+$ docker run -dP --name webdb \
+    -e POSTGRES_USER=repo -e POSTGRES_PASSWORD=much_secret postgres
+$ docker run -dP --link webdb:webdb -e DJANGO_SETTINGS_MODULE=ore.settings.staging \
+    -e DB_USER=repo -e DB_PASSWORD=much_secret -e SECRET_KEY=much_secret gratimax/ore
+```
+
+If you need to migrate a production database:
+
+```
+$ docker run -dP --link webdb:webdb \
+    -e DB_USER=repo -e DB_PASSWORD=much_secret -e SECRET_KEY=much_secret \
+    gratimax/ore python3 manage.py migrate
 ```
