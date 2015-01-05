@@ -439,12 +439,12 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
 
-class ProjectsFlagView(FormView):
+class FlagView(FormView):
     template_name = 'repo/flag.html'
     form_class = forms.FlagForm
 
     def get_form_kwargs(self):
-        kwargs = super(ProjectsFlagView, self).get_form_kwargs()
+        kwargs = super(FlagView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -452,13 +452,24 @@ class ProjectsFlagView(FormView):
         flag_type = form.cleaned_data['flag_type']
         extra_comments = form.cleaned_data['extra_comments']
         flagger = self.request.user
-        project = Project.objects.get(name=self.kwargs['project'])
+        content = self._get_model().objects.get(name=self.kwargs[self._get_string()])
 
-        Flag.create_flag(project, flag_type, flagger, extra_comments)
-        messages.success(self.request, "You have successfully flagged that project.")
+        Flag.create_flag(content, flag_type, flagger, extra_comments)
+        messages.success(self.request, "You have successfully flagged the content.")
 
         return redirect(reverse('index'))
 
+    def _get_model(self):
+        return Flag
+    def _get_string(self):
+        return 'flag'
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(ProjectsFlagView, self).dispatch(request, *args, **kwargs)
+        return super(FlagView, self).dispatch(request, *args, **kwargs)
+
+class ProjectsFlagView(FlagView):
+    def _get_model(self):
+        return Project
+    def _get_string(self):
+        return 'project'
