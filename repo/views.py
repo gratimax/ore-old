@@ -72,30 +72,6 @@ class NamespaceDetailView(DetailView):
 
         return super(NamespaceDetailView, self).get_template_names()
 
-class ProjectsFlagView(FormView):
-    template_name = 'repo/flag.html'
-    form_class = forms.FlagForm
-
-    def get_form_kwargs(self):
-        kwargs = super(ProjectsFlagView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        flag_type = form.cleaned_data['flag_type']
-        extra_comments = form.cleaned_data['extra_comments']
-        flagger = self.request.user
-        project = Project.objects.get(name=self.kwargs['project'])
-
-        Flag.create_flag(project, flag_type, flagger, extra_comments)
-        messages.success(self.request, "You have successfully flagged that project.")
-
-        return redirect(reverse('index'))
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(ProjectsFlagView, self).dispatch(request, *args, **kwargs)
-
 class ProjectsNewView(FormView):
 
     template_name = 'repo/projects/new.html'
@@ -462,3 +438,27 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
 
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
+
+class ProjectsFlagView(FormView):
+    template_name = 'repo/flag.html'
+    form_class = forms.FlagForm
+
+    def get_form_kwargs(self):
+        kwargs = super(ProjectsFlagView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        flag_type = form.cleaned_data['flag_type']
+        extra_comments = form.cleaned_data['extra_comments']
+        flagger = self.request.user
+        project = Project.objects.get(name=self.kwargs['project'])
+
+        Flag.create_flag(project, flag_type, flagger, extra_comments)
+        messages.success(self.request, "You have successfully flagged that project.")
+
+        return redirect(reverse('index'))
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectsFlagView, self).dispatch(request, *args, **kwargs)

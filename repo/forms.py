@@ -33,25 +33,6 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['name', 'namespace', 'description']
 
-class FlagForm(forms.ModelForm):
-    REASON_CHOICES = (
-        ('inappropriate', 'Inappropriate'),
-        ('spam', 'Spam')
-    )
-    flag_type = forms.ChoiceField(choices=REASON_CHOICES)
-    extra_comments = forms.CharField(widget=forms.Textarea(attrs={'rows': '6'}))
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
-        super(FlagForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Flag Content'))
-
-    class Meta:
-        model = Flag
-        fields = ['flag_type', 'extra_comments']
-
 class ProjectDescriptionForm(forms.ModelForm):
 
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': '3'}))
@@ -243,6 +224,25 @@ class NewFileForm(forms.ModelForm):
     class Meta:
         model = File
         fields = ('file',)
+
+class FlagForm(forms.ModelForm):
+    REASON_CHOICES = (
+        ('inappropriate', 'Inappropriate'),
+        ('spam', 'Spam')
+    )
+    flag_type = forms.ChoiceField(choices=REASON_CHOICES)
+    extra_comments = forms.CharField(widget=forms.Textarea(attrs={'rows': '6'}))
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(FlagForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Flag Content'))
+
+    class Meta:
+        model = Flag
+        fields = ['flag_type', 'extra_comments']
 
 BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
