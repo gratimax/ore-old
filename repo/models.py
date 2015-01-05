@@ -67,13 +67,20 @@ class Namespace(models.Model):
 
     @staticmethod
     def is_visible_q(prefix, user):
-        if not user.is_authenticated():
+        if user.is_anonymous():
             return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
 
         return (
             prefix_q(prefix, status='active') |
-            prefix_q(prefix, repouser=user) |
-            prefix_q(prefix, organization__teams__users=user)
+            (
+                ~prefix_q(prefix, status='deleted') &
+                (
+                    prefix_q(prefix, repouser=user) |
+                    prefix_q(prefix, organization__teams__users=user)
+                )
+            )
         )
 
     def __str__(self):
@@ -94,7 +101,7 @@ class RepoUserManager(UserManager):
             email=email,
             is_staff=is_staff,
             status=RepoUser.STATUS.active,
-            is_superuser=True,
+            is_superuser=is_superuser,
             date_joined=now,
             **extra_fields
         )
@@ -112,10 +119,25 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
                                              'site.')
     date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
 
-    objects = RepoUserManager()
+    objects = RepoUserManager.from_queryset(UserFilteringQuerySet)()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
+
+    @staticmethod
+    def is_visible_q(prefix, user):
+        if user.is_anonymous():
+            return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
+        return (
+            prefix_q(prefix, status='active') |
+            (
+                ~prefix_q(prefix, status='deleted') &
+                prefix_q(prefix, id=user.id)
+            )
+        )
 
     @property
     def is_active(self):
@@ -163,6 +185,23 @@ def organization_avatar_upload(instance, filename):
 
 class Organization(Namespace):
     avatar_image = models.ImageField(upload_to=organization_avatar_upload, blank=True, null=True, default=None)
+
+    objects = UserFilteringManager()
+
+    @staticmethod
+    def is_visible_q(prefix, user):
+        if user.is_anonymous():
+            return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
+        return (
+            prefix_q(prefix, status='active') |
+            (
+                ~prefix_q(prefix, status='deleted') &
+                prefix_q(prefix, teams__users=user)
+            )
+        )
 
     @property
     def avatar(self):
@@ -217,21 +256,26 @@ class Project(models.Model):
 
     default_filetype = models.OneToOneField('FileType', related_name='+', null=True)
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_anonymous():
+            return Namespace.is_visible_q(prefix + 'namespace__', user) & prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
         return Namespace.is_visible_q(prefix + 'namespace__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_if_hidden_q(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
     def is_visible_if_hidden_q(prefix, user):
-        if not user.is_authenticated():
+        if user.is_anonymous():
             return Q()
 
-        return (
+        return ~prefix_q(prefix, status='deleted') & (
             (prefix_q(prefix, teams__users=user)) |
             (prefix_q(prefix, namespace__repouser=user)) |
             (
@@ -289,18 +333,24 @@ class Version(models.Model):
     description = models.TextField('description')
     project = models.ForeignKey(Project, related_name='versions')
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_superuser:
+            return Q()
+
         return Project.is_visible_q(prefix + 'project__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_if_hidden_q(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
     def is_visible_if_hidden_q(prefix, user):
-        return Project.is_visible_if_hidden_q(prefix + 'project__', user)
+        if user.is_anonymous():
+            return Q()
+
+        return ~prefix_q(prefix, status='deleted') & Project.is_visible_if_hidden_q(prefix + 'project__', user)
 
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
@@ -343,18 +393,26 @@ class File(models.Model):
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_anonymous():
+            return Version.is_visible_q(prefix + 'version__', user) & prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
         return Version.is_visible_q(prefix + 'version__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_if_hidden_q(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
     def is_visible_if_hidden_q(prefix, user):
-        return Version.is_visible_if_hidden_q(prefix + 'version__', user)
+        if user.is_anonymous():
+            return Q()
+
+        return ~prefix_q(prefix, status='deleted') & Version.is_visible_if_hidden_q(prefix + 'version__', user)
 
     def full_name(self):
         return "{}/{}".format(self.version.full_name(), str(self.file))
