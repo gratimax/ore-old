@@ -8,8 +8,9 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from repo import forms, decorators
-from repo.forms import ProjectDescriptionForm, ProjectRenameForm
-from repo.models import Organization, Project, Namespace, RepoUser, Version, File
+from repo.forms import ProjectDescriptionForm, ProjectRenameForm, FlagForm
+from repo.models import Organization, Project, Namespace, RepoUser, Version, File, Flag
+from django.contrib.contenttypes.models import ContentType
 
 
 class RequiresPermissionMixin(object):
@@ -71,6 +72,29 @@ class NamespaceDetailView(DetailView):
 
         return super(NamespaceDetailView, self).get_template_names()
 
+class ProjectsFlagView(FormView):
+    template_name = 'repo/flag.html'
+    form_class = forms.FlagForm
+
+    def get_form_kwargs(self):
+        kwargs = super(ProjectsFlagView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        flag_type = form.cleaned_data['flag_type']
+        extra_comments = form.cleaned_data['extra_comments']
+        flagger = self.request.user
+        project = Project.objects.get(name=self.kwargs['project'])
+
+        Flag.create_flag(project, flag_type, flagger, extra_comments)
+        messages.success(self.request, "You have successfully flagged that project.")
+
+        return redirect(reverse('index'))
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectsFlagView, self).dispatch(request, *args, **kwargs)
 
 class ProjectsNewView(FormView):
 
@@ -107,6 +131,8 @@ class ProjectsNewView(FormView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
+
+
 
 
 class ProjectsDetailView(DetailView):

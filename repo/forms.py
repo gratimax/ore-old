@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
-from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File
+from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File, Flag
 from repo.regexs import EXTENDED_NAME_REGEX
 
 
@@ -32,6 +32,25 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'namespace', 'description']
+
+class FlagForm(forms.ModelForm):
+    REASON_CHOICES = (
+        ('inappropriate', 'Inappropriate'),
+        ('spam', 'Spam')
+    )
+    flag_type = forms.ChoiceField(choices=REASON_CHOICES)
+    extra_comments = forms.CharField(widget=forms.Textarea(attrs={'rows': '6'}))
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(FlagForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Flag Content'))
+
+    class Meta:
+        model = Flag
+        fields = ['flag_type', 'extra_comments']
 
 class ProjectDescriptionForm(forms.ModelForm):
 
