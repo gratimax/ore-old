@@ -230,8 +230,8 @@ class FlagForm(forms.ModelForm):
         ('inappropriate', 'Inappropriate'),
         ('spam', 'Spam')
     )
-    flag_type = forms.ChoiceField(choices=REASON_CHOICES)
-    extra_comments = forms.CharField(widget=forms.Textarea(attrs={'rows': '6'}))
+    flag_type = forms.ChoiceField(choices=REASON_CHOICES, label='Reason')
+    extra_comments = forms.CharField(label='Comments', widget=forms.Textarea(attrs={'rows': '6'}))
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')

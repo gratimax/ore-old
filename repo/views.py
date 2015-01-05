@@ -473,3 +473,9 @@ class ProjectsFlagView(FlagView):
         return Project
     def _get_string(self):
         return 'project'
+
+class VersionsFlagView(FlagView):
+    def _get_model(self):
+        return Version
+    def _get_string(self):
+        return 'version'

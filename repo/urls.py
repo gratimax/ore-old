@@ -29,7 +29,7 @@ urlpatterns = patterns('',
         url(r'^versions/(?P<version>' + EXTENDED_URL_REGEX + ')/', include(patterns('',
             url(r'^$', views.VersionsDetailView.as_view(), name='repo-versions-detail'),
             url(r'^manage/$', views.VersionsDetailView.as_view(), name='repo-versions-manage'),
-            url(r'^flag/$', views.VersionsDetailView.as_view(), name='repo-versions-flag'),
+            url(r'^flag/$', views.VersionsFlagView.as_view(), name='repo-versions-flag'),
             url(r'^delete/$', views.VersionsDetailView.as_view(), name='repo-versions-delete'),
 
             url(r'^(?P<file>' + TRIM_URL_REGEX + ')(?P<file_extension>\.[a-zA-Z0-9-]+)', views.FileDownloadView.as_view(), name='repo-files-download'),
