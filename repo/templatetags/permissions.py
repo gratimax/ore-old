@@ -1,5 +1,6 @@
 from django import template
 from django.template import TemplateSyntaxError
+from django.utils import six
 
 register = template.Library()
 
@@ -12,6 +13,7 @@ def as_user(value, arg):
 @register.assignment_tag
 def permitted(user, permslug, obj):
     return obj.user_has_permission(user, permslug)
+
 
 class IfPermittedNode(Node):
     child_nodelists = ('nodelist_true', 'nodelist_false')
@@ -27,13 +29,16 @@ class IfPermittedNode(Node):
 
     def render(self, context):
         user = self.user.resolve(context, True)
-        permissions = self.permissions.resolve(context, True).split(',')
+        permissions = self.permissions.resolve(context, True)
+        if isinstance(permissions, six.string_types):
+            permissions = permissions.split(',')
         object = self.object.resolve(context, True)
         check_func = any if self.check_any else all
         result = check_func((object.user_has_permission(user, permission) for permission in permissions))
         if result != self.negate:
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
+
 
 def do_ifpermitted(parser, token, negate, check_any):
     bits = list(token.split_contents())

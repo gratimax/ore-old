@@ -20,10 +20,13 @@
             </ul>
         </div>
         <div class="col-md-3">
-            <a href="{% url 'repo-versions-new' namespace=proj.namespace.name project=proj.name%}"
-               class="btn btn-block btn-primary btn-panel">
-                <i class="fa fa-plus"></i> Create Version
-            </a>
+            {% ifpermitted user "version.create" proj %}
+                <a href="{% url 'repo-versions-new' namespace=proj.namespace.name project=proj.name %}"
+                   class="btn btn-block btn-primary btn-panel">
+                    <i class="fa fa-plus"></i> Create Version
+                </a>
+            {% endifpermitted %}
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Channels</h3>
@@ -35,9 +38,12 @@
                     <li class="list-group-item">
                         <span class="dot" style="background-color: #ce427a;"></span> Snapshot
                     </li>
-                    <li class="list-group-item text-right">
-                        <i class="fa fa-cog"></i> Edit
-                    </li>
+
+                    {% ifanypermitted user "channel.create,channel.edit,channel.delete" proj %}
+                        <li class="list-group-item text-right">
+                            <i class="fa fa-cog"></i> Edit
+                        </li>
+                    {% endifanypermitted %}
                 </ul>
             </div>
             <div class="panel panel-default">
@@ -48,9 +54,12 @@
                     <li class="list-group-item">
                         Build artifact
                     </li>
-                    <li class="list-group-item text-right">
-                        <i class="fa fa-cog"></i> Edit
-                    </li>
+
+                    {% ifanypermitted user "filetype.create,filetype.edit,filetype.delete" proj %}
+                        <li class="list-group-item text-right">
+                            <i class="fa fa-cog"></i> Edit
+                        </li>
+                    {% endifanypermitted %}
                 </ul>
             </div>
         </div>
