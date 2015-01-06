@@ -370,14 +370,7 @@ class MultiFormMixin(object):
 
     def form_valid(self, form, multi_form):
         self.object = form.save()
-
-        self.multi_objects = multi_form.save(commit=False)
-        import posixpath
-        for multi_object in self.multi_objects:
-            multi_object.version = self.object
-            _, multi_object.file_extension = posixpath.splitext(multi_object.file.name)
-            multi_object.file_size = multi_object.file.size
-            multi_object.save()
+        self.multi_objects = multi_form.save()
 
         return super(MultiFormMixin, self).form_valid(form)
 
