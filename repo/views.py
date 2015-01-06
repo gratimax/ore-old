@@ -462,7 +462,7 @@ class FlagView(FormView):
         Flag.create_flag(content, flag_type, flagger, extra_comments)
         messages.success(self.request, "You have successfully flagged the content.")
 
-        return redirect(_get_success_path())
+        return redirect(self._get_success_path())
 
     # Returns the content to be flagged
     def _get_content(self):
