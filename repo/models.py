@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _t
@@ -82,6 +83,9 @@ class Namespace(models.Model):
                 )
             )
         )
+
+    def get_absolute_url(self):
+        return reverse('repo-namespace', kwargs={'namespace': self.name})
 
     def __str__(self):
         return self.name
@@ -258,6 +262,9 @@ class Project(models.Model):
 
     objects = UserFilteringManager()
 
+    def get_absolute_url(self):
+        return reverse('repo-projects-detail', kwargs={'namespace': self.namespace.name, 'project': self.name})
+
     @classmethod
     def is_visible_q(cls, prefix, user):
         if user.is_anonymous():
@@ -359,8 +366,6 @@ class Version(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
-
         return reverse('repo-versions-detail',
                        kwargs={'namespace': self.project.namespace.name, 'project': self.project.name,
                                'version': self.name})
@@ -527,7 +532,7 @@ class Flag(models.Model):
     status = StatusField()
 
     flagger = models.ForeignKey(RepoUser, null=False, blank=False, related_name='flagger_flags')
-    resolver = models.ForeignKey(RepoUser, null=False, blank=False, related_name='resolver_flags')
+    resolver = models.ForeignKey(RepoUser, null=False, blank=True, related_name='resolver_flags')
     date_flagged = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     date_resolved = models.DateTimeField(null=True, blank=True, default=None)
 
@@ -540,12 +545,22 @@ class Flag(models.Model):
     object_id = models.PositiveIntegerField(null=False, blank=False)
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    class Meta:
-        unique_together = ('flagger', 'flag_type', 'content_type', 'object_id')
+    @classmethod
+    def create_flag(cls, flag_content, flag_type, flagger, extra_comments):
+        content_type = ContentType.objects.get_for_model(flag_content)
+        if cls.flagged(flag_content, flagger=flagger):
+            return None
+        return Flag.objects.get_or_create(content_type=content_type, object_id=flag_content.id, flag_type=flag_type, flagger=flagger, extra_comments=extra_comments)
 
     @classmethod
-    def create_flag(cls, flag_content, flag_type, flagger):
-        return Flag.objects.get_or_create(content_object=flag_content, flag_type=flag_type, flagger=flagger)
+    def flagged(cls, flag_content, flagger=None, include_resolved=False):
+        content_type = ContentType.objects.get_for_model(flag_content)
+        qs = Flag.objects.filter(content_type=content_type, object_id=flag_content.id)
+        if flagger is not None:
+            qs = qs.filter(flagger=flagger)
+        if not include_resolved:
+            qs = qs.filter(status=cls.STATUS.new)
+        return qs.count() > 0
 
     def remove_content(self, user):
         if self.status != self.STATUS.new:
