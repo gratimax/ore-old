@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
-from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File
+from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File, Flag
 from repo.regexs import EXTENDED_NAME_REGEX
 
 
@@ -224,6 +224,25 @@ class NewFileForm(forms.ModelForm):
     class Meta:
         model = File
         fields = ('file',)
+
+class FlagForm(forms.ModelForm):
+    REASON_CHOICES = (
+        ('inappropriate', 'Inappropriate'),
+        ('spam', 'Spam')
+    )
+    flag_type = forms.ChoiceField(choices=REASON_CHOICES, label='Reason')
+    extra_comments = forms.CharField(label='Comments', widget=forms.Textarea(attrs={'rows': '6', 'placeholder': 'Anything typed here is visible to the author of the content that you are flagging.'}))
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(FlagForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Flag Content'))
+
+    class Meta:
+        model = Flag
+        fields = ['flag_type', 'extra_comments']
 
 BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):

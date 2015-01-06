@@ -527,7 +527,7 @@ class Flag(models.Model):
     status = StatusField()
 
     flagger = models.ForeignKey(RepoUser, null=False, blank=False, related_name='flagger_flags')
-    resolver = models.ForeignKey(RepoUser, null=False, blank=False, related_name='resolver_flags')
+    resolver = models.ForeignKey(RepoUser, null=False, blank=True, related_name='resolver_flags')
     date_flagged = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     date_resolved = models.DateTimeField(null=True, blank=True, default=None)
 
@@ -540,12 +540,13 @@ class Flag(models.Model):
     object_id = models.PositiveIntegerField(null=False, blank=False)
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    class Meta:
-        unique_together = ('flagger', 'flag_type', 'content_type', 'object_id')
-
     @classmethod
-    def create_flag(cls, flag_content, flag_type, flagger):
-        return Flag.objects.get_or_create(content_object=flag_content, flag_type=flag_type, flagger=flagger)
+    def create_flag(cls, flag_content, flag_type, flagger, extra_comments):
+        content_type = ContentType.objects.get_for_model(flag_content)
+        existing = Flag.objects.filter(content_type=content_type, object_id=flag_content.id, flagger=flagger, status='new').count()
+        if existing > 0:
+            return None
+        return Flag.objects.get_or_create(content_type=content_type, object_id=flag_content.id, flag_type=flag_type, flagger=flagger, extra_comments=extra_comments)
 
     def remove_content(self, user):
         if self.status != self.STATUS.new:

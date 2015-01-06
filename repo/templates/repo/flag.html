@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}
+Flagging 
+{% endblock %}
+{% block content %}
+<div class="container-fluid wrapper-960">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-2">
+            <h1>Flagging Content</h1>
+
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+{% endblock %}

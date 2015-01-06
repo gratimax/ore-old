@@ -8,8 +8,9 @@ from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from repo import forms, decorators
-from repo.forms import ProjectDescriptionForm, ProjectRenameForm
-from repo.models import Organization, Project, Namespace, RepoUser, Version, File
+from repo.forms import ProjectDescriptionForm, ProjectRenameForm, FlagForm
+from repo.models import Organization, Project, Namespace, RepoUser, Version, File, Flag
+from django.contrib.contenttypes.models import ContentType
 
 
 class RequiresPermissionMixin(object):
@@ -71,7 +72,6 @@ class NamespaceDetailView(DetailView):
 
         return super(NamespaceDetailView, self).get_template_names()
 
-
 class ProjectsNewView(FormView):
 
     template_name = 'repo/projects/new.html'
@@ -107,6 +107,8 @@ class ProjectsNewView(FormView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
+
+
 
 
 class ProjectsDetailView(DetailView):
@@ -464,3 +466,56 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
 
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
+
+class FlagView(FormView):
+    template_name = 'repo/flag.html'
+    form_class = forms.FlagForm
+
+    def get_form_kwargs(self):
+        kwargs = super(FlagView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(FlagView, self).get_context_data(**kwargs)
+        context['content'] = self._get_content()
+        return context
+
+    def form_valid(self, form):
+        flag_type = form.cleaned_data['flag_type']
+        extra_comments = form.cleaned_data['extra_comments']
+        flagger = self.request.user
+        content = self._get_content()
+
+        flag = Flag.create_flag(content, flag_type, flagger, extra_comments)
+        if flag:
+            messages.success(self.request, "You have successfully flagged the content.")
+        else:
+            messages.warning(self.request, "You have already flagged this content.")
+
+        return redirect(self._get_redirect_path())
+
+    # Returns the content to be flagged
+    def _get_content(self):
+        pass
+
+    # Where to redirect the user if successful
+    def _get_redirect_path(self):
+        return reverse('index')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(FlagView, self).dispatch(request, *args, **kwargs)
+
+class ProjectsFlagView(FlagView):
+    def _get_content(self):
+        self.namespace = self.kwargs['namespace']
+        self.project = self.kwargs['project']
+        return get_object_or_404(Project.objects.as_user(self.request.user), name=self.project, namespace__name=self.namespace)
+
+    def _get_redirect_path(self):
+        return reverse('repo-projects-detail', args=(self.namespace, self.project))
+
+class VersionsFlagView(FlagView):
+    # todo once versions are complete
+    pass
