@@ -460,7 +460,11 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     slug_url_kwarg = 'file'
     
     def get_queryset(self):
-        return File.objects.as_user(self.request.user).filter(version__project__namespace__name=self.kwargs['namespace'], version__project__name=self.kwargs['project'], version__name=self.kwargs['version'])
+        return File.objects.as_user(self.request.user).filter(
+            version__project__namespace__name=self.kwargs['namespace'],
+            version__project__name=self.kwargs['project'],
+            version__name=self.kwargs['version']
+        )
 
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
@@ -500,7 +504,7 @@ class FlagView(FormView):
 
     # Where to redirect the user if successful
     def _get_redirect_path(self):
-        return reverse('index')
+        return self._get_content()
 
     def get(self, request, *args, **kwargs):
         # Check to see if the user has already flagged this content
@@ -510,7 +514,7 @@ class FlagView(FormView):
         return super(FlagView, self).get(request, *args, **kwargs)
 
     def content_already_flagged(self, request, *args, **kwargs):
-        messages.error(request, "You already have a flag for this content under consideration.")
+        messages.warning(request, "You have already flagged this content.")
         return redirect(self._get_content())
 
     @method_decorator(login_required)
@@ -523,9 +527,6 @@ class ProjectsFlagView(FlagView):
         self.namespace = self.kwargs['namespace']
         self.project = self.kwargs['project']
         return get_object_or_404(Project.objects.as_user(self.request.user), name=self.project, namespace__name=self.namespace)
-
-    def _get_redirect_path(self):
-        return reverse('repo-projects-detail', args=(self.namespace, self.project))
 
 
 class VersionsFlagView(FlagView):
