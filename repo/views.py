@@ -467,6 +467,7 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     def get_redirect_url(self, **kwargs):
         return self.get_object().file.url
 
+
 class FlagView(FormView):
     template_name = 'repo/flag.html'
     form_class = forms.FlagForm
@@ -507,6 +508,7 @@ class FlagView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(FlagView, self).dispatch(request, *args, **kwargs)
 
+
 class ProjectsFlagView(FlagView):
     def _get_content(self):
         self.namespace = self.kwargs['namespace']
@@ -515,6 +517,7 @@ class ProjectsFlagView(FlagView):
 
     def _get_redirect_path(self):
         return reverse('repo-projects-detail', args=(self.namespace, self.project))
+
 
 class VersionsFlagView(FlagView):
     # todo once versions are complete
