@@ -540,12 +540,12 @@ class Flag(models.Model):
     object_id = models.PositiveIntegerField(null=False, blank=False)
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    class Meta:
-        unique_together = ('flagger', 'flag_type', 'content_type', 'object_id')
-
     @classmethod
     def create_flag(cls, flag_content, flag_type, flagger, extra_comments):
         content_type = ContentType.objects.get_for_model(flag_content)
+        existing = Flag.objects.filter(content_type=content_type, object_id=flag_content.id, flagger=flagger, status='new').count()
+        if existing > 0:
+            return None
         return Flag.objects.get_or_create(content_type=content_type, object_id=flag_content.id, flag_type=flag_type, flagger=flagger, extra_comments=extra_comments)
 
     def remove_content(self, user):

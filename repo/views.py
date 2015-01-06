@@ -494,17 +494,20 @@ class FlagView(FormView):
         flagger = self.request.user
         content = self._get_content()
 
-        Flag.create_flag(content, flag_type, flagger, extra_comments)
-        messages.success(self.request, "You have successfully flagged the content.")
+        flag = Flag.create_flag(content, flag_type, flagger, extra_comments)
+        if flag:
+            messages.success(self.request, "You have successfully flagged the content.")
+        else:
+            messages.warning(self.request, "You have already flagged this content.")
 
-        return redirect(self._get_success_path())
+        return redirect(self._get_redirect_path())
 
     # Returns the content to be flagged
     def _get_content(self):
         pass
 
     # Where to redirect the user if successful
-    def _get_success_path(self):
+    def _get_redirect_path(self):
         return reverse('index')
 
     @method_decorator(login_required)
@@ -517,7 +520,7 @@ class ProjectsFlagView(FlagView):
         self.project = self.kwargs['project']
         return get_object_or_404(Project.objects.as_user(self.request.user), name=self.project, namespace__name=self.namespace)
 
-    def _get_success_path(self):
+    def _get_redirect_path(self):
         return reverse('repo-projects-detail', args=(self.namespace, self.project))
 
 class VersionsFlagView(FlagView):
