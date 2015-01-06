@@ -446,7 +446,6 @@ class Flag(models.Model):
     @classmethod
     def create_flag(cls, flag_content, flag_type, flagger, extra_comments):
         content_type = ContentType.objects.get_for_model(flag_content)
-        print(content_type)
         return Flag.objects.get_or_create(content_type=content_type, object_id=flag_content.id, flag_type=flag_type, flagger=flagger, extra_comments=extra_comments)
 
     def remove_content(self, user):
