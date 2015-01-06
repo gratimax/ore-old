@@ -313,3 +313,7 @@ a.no-underline:hover {
 .list-group-item.down {
   background-color: #e5e5e5;
 }
+
+.requiredField .asteriskField {
+  color: red;
+} 
