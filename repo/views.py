@@ -308,24 +308,14 @@ class FormTestView(FormView):
         return HttpResponse(pformat(form.get_selected_permissions()), content_type='text/plain')
 
 
-class VersionsNewView(RequiresPermissionMixin, CreateView):
-
-    model = Version
-    template_name = 'repo/versions/new.html'
-
-    form_class = forms.NewVersionForm
-    prefix = 'version'
-
-    multi_form_class = forms.NewVersionInnerFileFormset
+class MultiFormMixin(object):
+    multi_form_class = None
     multi_prefix = 'file'
     multi_initial = {}
 
-    permissions = ['version.create', 'file.create']
-
-    def get_project(self):
-        return get_object_or_404(Project, name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
-
     def get_multi_form_class(self):
+        if self.multi_form_class is None:
+            raise ValueError("You must define multi_form_class or override get_multi_form_class!")
         return self.multi_form_class
 
     def get_multi_form_kwargs(self):
@@ -359,7 +349,7 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form, proj=self.get_project()))
+        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
 
     def post(self, request, *args, **kwargs):
         self.object = None
@@ -376,7 +366,7 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
             return self.form_invalid(form, multi_form)
 
     def form_invalid(self, form, multi_form):
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form, proj=self.get_project()))
+        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
 
     def form_valid(self, form, multi_form):
         self.object = form.save()
@@ -389,10 +379,55 @@ class VersionsNewView(RequiresPermissionMixin, CreateView):
             multi_object.file_size = multi_object.file.size
             multi_object.save()
 
-        return super(CreateView, self).form_valid(form)
+        return super(MultiFormMixin, self).form_valid(form)
+
+
+class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
+
+    model = Version
+    template_name = 'repo/versions/new.html'
+
+    form_class = forms.NewVersionForm
+    prefix = 'version'
+
+    multi_form_class = forms.NewVersionInnerFileFormset
+    multi_prefix = 'file'
+    multi_initial = {}
+
+    permissions = ['version.create', 'file.create']
+
+    def get_project(self):
+        return get_object_or_404(Project, name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
+
+    def get_multi_form_kwargs(self):
+        kwargs = super(VersionsNewView, self).get_multi_form_kwargs()
+        kwargs.update({
+            'queryset': File.objects.none(),
+        })
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        data = super(VersionsNewView, self).get_context_data(**kwargs)
+        data.update({
+            'proj': self.get_project()
+        })
+        return data
+
+    def form_valid(self, form, multi_form):
+        self.object = form.save()
+
+        self.multi_objects = multi_form.save(commit=False)
+        import posixpath
+        for multi_object in self.multi_objects:
+            multi_object.version = self.object
+            _, multi_object.file_extension = posixpath.splitext(multi_object.file.name)
+            multi_object.file_size = multi_object.file.size
+            multi_object.save()
+
+        return super(VersionsNewView, self).form_valid(form)
 
     def get_form_kwargs(self):
-        kwargs = super(CreateView, self).get_form_kwargs()
+        kwargs = super(VersionsNewView, self).get_form_kwargs()
         if 'instance' not in kwargs or not kwargs['instance']:
             instance = self.model(project=self.get_project())
             kwargs.update({
