@@ -450,37 +450,41 @@ class FlagView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(FlagView, self).get_context_data(**kwargs)
-        context['content'] = get_object_or_404(self._get_model().objects.as_user(self.request.user), name=self.kwargs[self._get_string()])
+        context['content'] = self._get_content()
         return context
 
     def form_valid(self, form):
         flag_type = form.cleaned_data['flag_type']
         extra_comments = form.cleaned_data['extra_comments']
         flagger = self.request.user
-        content = get_object_or_404(self._get_model().objects.as_user(flagger), name=self.kwargs[self._get_string()])
+        content = self._get_content()
 
         Flag.create_flag(content, flag_type, flagger, extra_comments)
         messages.success(self.request, "You have successfully flagged the content.")
 
-        return redirect(reverse('index'))
+        return redirect(_get_success_path())
 
-    def _get_model(self):
-        return Flag
-    def _get_string(self):
-        return 'flag'
+    # Returns the content to be flagged
+    def _get_content(self):
+        pass
+
+    # Where to redirect the user if successful
+    def _get_success_path(self):
+        return reverse('index')
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(FlagView, self).dispatch(request, *args, **kwargs)
 
 class ProjectsFlagView(FlagView):
-    def _get_model(self):
-        return Project
-    def _get_string(self):
-        return 'project'
+    def _get_content(self):
+        self.namespace = self.kwargs['namespace']
+        self.project = self.kwargs['project']
+        return get_object_or_404(Project.objects.as_user(self.request.user), name=self.project, namespace__name=self.namespace)
+
+    def _get_success_path(self):
+        return reverse('repo-projects-detail', args=(self.namespace, self.project))
 
 class VersionsFlagView(FlagView):
-    def _get_model(self):
-        return Version
-    def _get_string(self):
-        return 'version'
+    # todo once versions are complete
+    pass

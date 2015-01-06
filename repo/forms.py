@@ -231,7 +231,7 @@ class FlagForm(forms.ModelForm):
         ('spam', 'Spam')
     )
     flag_type = forms.ChoiceField(choices=REASON_CHOICES, label='Reason')
-    extra_comments = forms.CharField(label='Comments', widget=forms.Textarea(attrs={'rows': '6'}))
+    extra_comments = forms.CharField(label='Comments', widget=forms.Textarea(attrs={'rows': '6', 'placeholder': 'Anything typed here is visible to the author of the content that you are flagging.'}))
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
