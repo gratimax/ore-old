@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, call
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.test import TestCase
@@ -103,11 +103,15 @@ class PermissionRequiredTestCase(TestCase):
         mock_get_object_or_404.assert_called_once_with(Project, namespace__name='namespace', name='project')
 
     @patch('repo.decorators.get_object_or_404')
-    def test_looks_up_namespace(self, mock_get_object_or_404):
+    @patch('repo.decorators.models.Namespace')
+    def test_looks_up_namespace(self, mock_namespace, mock_get_object_or_404):
         f, user, request = self.make_request()
 
+        mock_select_subclasses_qs = Mock()
+        mock_namespace.objects.select_subclasses.return_value = mock_select_subclasses_qs
+
         decorators.permission_required('foo.bar')(f)(request, namespace='namespace')
-        mock_get_object_or_404.assert_called_once_with(Namespace, name='namespace')
+        mock_get_object_or_404.assert_called_once_with(mock_select_subclasses_qs, name='namespace')
 
     @patch('repo.decorators.get_object_or_404')
     def test_checks_multiple_permissions_if_specified(self, mock_get_object_or_404):
@@ -119,8 +123,7 @@ class PermissionRequiredTestCase(TestCase):
 
         decorators.permission_required(('foo.bar', 'baz.fern'))(f)(request, namespace='namespace')
 
-        project.user_has_permission.assert_called_once_with(user, 'foo.bar')
-        project.user_has_permission.assert_called_once_with(user, 'baz.fern')
+        project.user_has_permission.assert_has_calls([call(user, 'foo.bar'), call(user, 'baz.fern')])
 
     @patch('repo.decorators.get_object_or_404')
     def test_fails_if_any_permission_missing(self, mock_get_object_or_404):
@@ -133,5 +136,4 @@ class PermissionRequiredTestCase(TestCase):
         with self.assertRaises(PermissionDenied):
             decorators.permission_required(('foo.bar', 'baz.fern'))(f)(request, namespace='namespace')
 
-        project.user_has_permission.assert_called_once_with(user, 'foo.bar')
-        project.user_has_permission.assert_called_once_with(user, 'baz.fern')
+        project.user_has_permission.assert_has_calls([call(user, 'foo.bar'), call(user, 'baz.fern')])

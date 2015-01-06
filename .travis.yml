@@ -7,3 +7,4 @@ env:
   - DJANGO_SETTINGS_MODULE="ore.settings.tests_travis"
 install: "pip install -r requirements/development.txt --use-mirrors"
 script: "python manage.py test"
+sudo: false
