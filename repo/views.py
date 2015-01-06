@@ -502,6 +502,17 @@ class FlagView(FormView):
     def _get_redirect_path(self):
         return reverse('index')
 
+    def get(self, request, *args, **kwargs):
+        # Check to see if the user has already flagged this content
+        if Flag.flagged(self._get_content(), flagger=request.user):
+            return self.content_already_flagged(request, *args, **kwargs)
+
+        return super(FlagView, self).get(request, *args, **kwargs)
+
+    def content_already_flagged(self, request, *args, **kwargs):
+        messages.error(request, "You already have a flag for this content under consideration.")
+        return redirect(self._get_content())
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(FlagView, self).dispatch(request, *args, **kwargs)

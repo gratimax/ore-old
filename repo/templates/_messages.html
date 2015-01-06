@@ -1,5 +1,11 @@
 {% for message in messages %}
-    <div role="alert" class="alert alert-dismissable{% if message.tags %} alert-{{ message.tags }}{% endif %} fade in">
+    <div role="alert" class="alert alert-dismissable{% if message.tags %}{% comment %}
+        {% endcomment %}{% if message.tags == 'error' %}{% comment %}
+            {% endcomment %} alert-danger{% comment %}
+        {% endcomment %}{% else %}{% comment %}
+            {% endcomment %} alert-{{ message.tags }}{% comment %}
+        {% endcomment %}{% endif %}{% comment %}
+    {% endcomment %}{% endif %} fade in">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         {{ message }}
     </div>
