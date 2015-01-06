@@ -96,11 +96,27 @@ STATIC_URL = '/static/'
 
 
 # Templates
-TEMPLATE_DIRS = (
-    'templates/',
-)
+TEMPLATE_DIRS = ()
 
 LOGIN_REDIRECT_URL = '/'
 
 ### Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+### Prohibited names (for namespaces, and projects, and versions)
+PROHIBITED_NAMES = (
+    'manage',
+    'new',
+    'delete',
+    'flag',
+    'explore',
+    'describe',
+    'rename',
+    'upload',
+    'versions',
+    'version',
+    'projects',
+    'project',
+    'admin',
+    'administrator',
+)

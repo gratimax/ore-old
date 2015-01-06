@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager, AnonymousUser
 from django.core import validators
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import models
 from django.dispatch import receiver
@@ -21,6 +23,11 @@ Q = models.Q
 F = models.F
 
 
+def validate_not_prohibited(value):
+    if value.lower() in settings.PROHIBITED_NAMES:
+        raise ValidationError('%s is not allowed.' % value)
+
+
 def prefix_q(prefix, **kwargs):
     return Q(**{
         prefix + k: v for k, v in kwargs.items()
@@ -37,6 +44,8 @@ class UserFilteringInheritanceQuerySet(InheritanceQuerySetMixin, UserFilteringQu
 
 
 UserFilteringManager = models.Manager.from_queryset(UserFilteringQuerySet)
+
+
 class UserFilteringInheritanceManager(InheritanceManagerMixin, UserFilteringManager):
     def get_queryset(self):
         return UserFilteringInheritanceQuerySet(self.model, using=self._db)
@@ -44,23 +53,35 @@ class UserFilteringInheritanceManager(InheritanceManagerMixin, UserFilteringMana
 
 @reversion.register
 class Namespace(models.Model):
-
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
     name = models.CharField('name', max_length=32, unique=True,
                             validators=[
-                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a namespace organization name.', 'invalid')
+                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a namespace organization name.',
+                                                          'invalid'),
+                                validate_not_prohibited,
                             ])
 
-    objects = UserFilteringInheritanceManager() 
+    objects = UserFilteringInheritanceManager()
 
     @staticmethod
     def is_visible_q(prefix, user):
-        if not user.is_authenticated():
+        if user.is_anonymous():
             return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
 
-        return prefix_q(prefix, status='active') | prefix_q(prefix, repouser=user) | prefix_q(prefix, organization__teams__users=user)
+        return (
+            prefix_q(prefix, status='active') |
+            (
+                ~prefix_q(prefix, status='deleted') &
+                (
+                    prefix_q(prefix, repouser=user) |
+                    prefix_q(prefix, organization__teams__users=user)
+                )
+            )
+        )
 
     def __str__(self):
         return self.name
@@ -68,39 +89,65 @@ class Namespace(models.Model):
     def __repr__(self):
         return '<Namespace %s>' % self.name
 
+
 class RepoUserManager(UserManager):
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
         if not username:
             raise ValueError("The given username must be set")
         email = self.normalize_email(email)
-        user = self.model(name=username, email=email, is_staff=is_staff, is_active=True, is_superuser=True, date_joined=now, **extra_fields)
+        user = self.model(
+            name=username,
+            email=email,
+            is_staff=is_staff,
+            status=RepoUser.STATUS.active,
+            is_superuser=is_superuser,
+            date_joined=now,
+            **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
 
 class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
-
     # All taken from AbstractUser
     # name from Namespace
     email = models.EmailField('email', blank=True)
     is_staff = models.BooleanField('staff status', default=False,
                                    help_text='Designates whether the user can log into this admin '
                                              'site.')
-    is_active = models.BooleanField('active', default=True,
-                                    help_text='Designates whether this user should be treated as '
-                                              'active. Unselect this instead of deleting accounts.')
     date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
 
-    objects = RepoUserManager()
+    objects = RepoUserManager.from_queryset(UserFilteringQuerySet)()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
 
+    @staticmethod
+    def is_visible_q(prefix, user):
+        if user.is_anonymous():
+            return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
+        return (
+            prefix_q(prefix, status='active') |
+            (
+                ~prefix_q(prefix, status='deleted') &
+                prefix_q(prefix, id=user.id)
+            )
+        )
+
+    @property
+    def is_active(self):
+        return self.status == RepoUser.STATUS.active
+
     @property
     def avatar(self):
-        return "//www.gravatar.com/avatar/" + hashlib.md5(self.email.encode('UTF-8').strip().lower()).hexdigest() + "?d=mm"
+        return "//www.gravatar.com/avatar/%s?d=mm" % hashlib.md5(
+            self.email.encode('UTF-8').strip().lower()
+        ).hexdigest()
 
     def get_short_name(self):
         return self.name
@@ -123,20 +170,38 @@ class RepoUser(AbstractBaseUser, PermissionsMixin, Namespace):
         props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
         return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
 
+
 reversion.register(RepoUser, follow=['namespace_ptr'])
 
 
 def organization_avatar_upload(instance, filename):
     import posixpath
     import uuid
-    _, fileext = posixpath.splitext(filename)
-    final_filename = uuid.uuid4().hex + fileext
+
+    _, file_ext = posixpath.splitext(filename)
+    final_filename = uuid.uuid4().hex + file_ext
     return posixpath.join('avatars', 'organization', instance.name, final_filename)
 
 
 class Organization(Namespace):
-
     avatar_image = models.ImageField(upload_to=organization_avatar_upload, blank=True, null=True, default=None)
+
+    objects = UserFilteringManager()
+
+    @staticmethod
+    def is_visible_q(prefix, user):
+        if user.is_anonymous():
+            return prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
+        return (
+            prefix_q(prefix, status='active') |
+            (
+                ~prefix_q(prefix, status='deleted') &
+                prefix_q(prefix, teams__users=user)
+            )
+        )
 
     @property
     def avatar(self):
@@ -171,43 +236,56 @@ class Organization(Namespace):
     def __str__(self):
         return self.name
 
+
 reversion.register(Organization, follow=['namespace_ptr'])
 
 
 @reversion.register
 class Project(models.Model):
-
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
     name = models.CharField('name', max_length=32,
                             validators=[
-                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.', 'invalid')
+                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.',
+                                                          'invalid'),
+                                validate_not_prohibited,
                             ])
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
     default_filetype = models.OneToOneField('FileType', related_name='+', null=True)
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_anonymous():
+            return Namespace.is_visible_q(prefix + 'namespace__', user) & prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
         return Namespace.is_visible_q(prefix + 'namespace__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_despite(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
-    def is_visible_despite(prefix, user):
-        if not user.is_authenticated():
+    def is_visible_if_hidden_q(prefix, user):
+        if user.is_anonymous():
             return Q()
-        return (
+
+        return ~prefix_q(prefix, status='deleted') & (
             (prefix_q(prefix, teams__users=user)) |
             (prefix_q(prefix, namespace__repouser=user)) |
-            ((prefix_q(prefix, namespace__organization__teams__is_all_projects=True) | prefix_q(prefix, namespace__organization__teams__projects__id=F('id'))) & prefix_q(prefix, namespace__organization__teams__users=user))
+            (
+                (
+                    prefix_q(prefix, namespace__organization__teams__is_all_projects=True) |
+                    prefix_q(prefix, namespace__organization__teams__projects__id=F('id'))
+                ) &
+                prefix_q(prefix, namespace__organization__teams__users=user)
+            )
         )
-
 
     def full_name(self):
         return "{}/{}".format(self.namespace.name, self.name)
@@ -244,29 +322,35 @@ class Project(models.Model):
 
 @reversion.register
 class Version(models.Model):
-
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
     name = models.CharField('name', max_length=32,
                             validators=[
-                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid version name.', 'invalid')
+                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid version name.', 'invalid'),
+                                validate_not_prohibited,
                             ])
     description = models.TextField('description')
     project = models.ForeignKey(Project, related_name='versions')
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_superuser:
+            return Q()
+
         return Project.is_visible_q(prefix + 'project__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_despite(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
-    def is_visible_despite(prefix, user):
-        return Project.is_visible_despite(prefix + 'project__', user)
+    def is_visible_if_hidden_q(prefix, user):
+        if user.is_anonymous():
+            return Q()
+
+        return ~prefix_q(prefix, status='deleted') & Project.is_visible_if_hidden_q(prefix + 'project__', user)
 
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
@@ -276,7 +360,10 @@ class Version(models.Model):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('repo-versions-detail', kwargs={'namespace': self.project.namespace.name, 'project': self.project.name, 'version': self.name})
+
+        return reverse('repo-versions-detail',
+                       kwargs={'namespace': self.project.namespace.name, 'project': self.project.name,
+                               'version': self.name})
 
     def full_name(self):
         return "{}/{}".format(self.project.full_name(), self.name)
@@ -289,12 +376,13 @@ class Version(models.Model):
 def file_upload(instance, filename):
     import posixpath
     import uuid
+
     uuid_bit = uuid.uuid4().hex
     return posixpath.join('files', uuid_bit, filename)
 
+
 @reversion.register
 class File(models.Model):
-
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
@@ -305,18 +393,26 @@ class File(models.Model):
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
 
-    objects = UserFilteringQuerySet.as_manager()
+    objects = UserFilteringManager()
 
     @classmethod
     def is_visible_q(cls, prefix, user):
+        if user.is_anonymous():
+            return Version.is_visible_q(prefix + 'version__', user) & prefix_q(prefix, status='active')
+        elif user.is_superuser:
+            return Q()
+
         return Version.is_visible_q(prefix + 'version__', user) & (
-            (prefix_q(prefix, status='active')) |
-            (cls.is_visible_despite(prefix, user))
+            prefix_q(prefix, status='active') |
+            cls.is_visible_if_hidden_q(prefix, user)
         )
 
     @staticmethod
-    def is_visible_despite(prefix, user):
-        return Version.is_visible_despite(prefix + 'version__', user)
+    def is_visible_if_hidden_q(prefix, user):
+        if user.is_anonymous():
+            return Q()
+
+        return ~prefix_q(prefix, status='deleted') & Version.is_visible_if_hidden_q(prefix + 'version__', user)
 
     def full_name(self):
         return "{}/{}".format(self.version.full_name(), str(self.file))
@@ -331,9 +427,9 @@ class File(models.Model):
         ordering = ['-pk']
         unique_together = ('version', 'filetype')
 
+
 @reversion.register
 class FileType(models.Model):
-
     name = models.CharField('name', max_length=32,
                             validators=[
                                 validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid file type name.', 'invalid')
@@ -358,7 +454,11 @@ class Permission(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField('name', max_length=80, null=False, blank=False)
+    name = models.CharField('name', max_length=80, null=False, blank=False,
+                            validators=[
+                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid team name.', 'invalid'),
+                                validate_not_prohibited,
+                            ])
     users = models.ManyToManyField(RepoUser, related_name='%(class)ss', blank=True)
     permissions = models.ManyToManyField(Permission, related_name='+', blank=True)
     is_owner_team = models.BooleanField(default=False)
@@ -476,6 +576,7 @@ class Flag(models.Model):
         self.resolver = user
         self.save()
 
+
 @receiver(post_save, sender=Project)
 def create_project_jar_filetype(sender, instance, created, **kwargs):
     if instance and created:
@@ -487,25 +588,27 @@ def create_project_jar_filetype(sender, instance, created, **kwargs):
         instance.default_filetype = ft
         instance.save()
 
+
 @receiver(post_save, sender=Project)
 def create_project_owner_team(sender, instance, created, **kwargs):
     if instance and created:
         owning_namespace = Namespace.objects.get_subclass(id=instance.namespace_id)
         if isinstance(owning_namespace, RepoUser):
             team = ProjectTeam.objects.create(
-                    project=instance,
-                    is_owner_team=True,
-                    name='Owners',
+                project=instance,
+                is_owner_team=True,
+                name='Owners',
             )
             team.users = [owning_namespace]
             team.save()
+
 
 @receiver(post_save, sender=Organization)
 def create_organization_owner_team(sender, instance, created, **kwargs):
     if instance and created:
         OrganizationTeam.objects.create(
-                name='Owners',
-                organization=instance,
-                is_all_projects=True,
-                is_owner_team=True,
+            name='Owners',
+            organization=instance,
+            is_all_projects=True,
+            is_owner_team=True,
         )
