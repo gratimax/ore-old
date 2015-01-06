@@ -1,16 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView, View, CreateView, DetailView, ListView, RedirectView, UpdateView, DeleteView
+from django.views.generic import FormView, View, CreateView, DetailView, ListView, RedirectView, UpdateView, DeleteView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from repo import forms, decorators
-from repo.forms import ProjectDescriptionForm, ProjectRenameForm, FlagForm
 from repo.models import Organization, Project, Namespace, RepoUser, Version, File, Flag
-from django.contrib.contenttypes.models import ContentType
 
 
 class RequiresPermissionMixin(object):
@@ -148,10 +146,10 @@ class ProjectsManageView(RequiresPermissionMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProjectsManageView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
-        context['description_form'] = ProjectDescriptionForm(
+        context['description_form'] = forms.ProjectDescriptionForm(
             project=self.object.name, namespace=self.get_namespace().name,
             initial=dict(description=self.object.description))
-        context['rename_form'] = ProjectRenameForm(
+        context['rename_form'] = forms.ProjectRenameForm(
             project=self.object.name, namespace=self.get_namespace().name,
             initial=dict(name=self.object.name))
         return context
@@ -168,7 +166,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
 
     permissions = ['project.edit']
 
-    form_class = ProjectDescriptionForm
+    form_class = forms.ProjectDescriptionForm
 
     fields = ['description']
 
@@ -185,7 +183,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProjectsDescribeView, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
-        context['rename_form'] = ProjectRenameForm(
+        context['rename_form'] = forms.ProjectRenameForm(
             project=self.object.name, namespace=self.get_namespace().name,
             initial=dict(name=self.object.name))
         context['description_form'] = kwargs['form']
@@ -221,7 +219,7 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
 
     permissions = ['project.rename']
 
-    form_class = ProjectRenameForm
+    form_class = forms.ProjectRenameForm
 
     fields = ['name']
 
@@ -240,7 +238,7 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
         context['namespace'] = self.get_namespace()
         context['rename_form'] = kwargs['form']
         context['show_modal'] = 'rename-modal'
-        context['description_form'] = ProjectDescriptionForm(
+        context['description_form'] = forms.ProjectDescriptionForm(
             project=self.object.name, namespace=self.get_namespace().name,
             initial=dict(description=self.object.description))
         return context
