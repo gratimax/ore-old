@@ -16,24 +16,26 @@ def permitted(user, permslug, obj):
 class IfPermittedNode(Node):
     child_nodelists = ('nodelist_true', 'nodelist_false')
 
-    def __init__(self, user, permission, object, nodelist_true, nodelist_false, negate):
-        self.user, self.permission, self.object = user, permission, object
+    def __init__(self, user, permissions, object, nodelist_true, nodelist_false, negate, check_any):
+        self.user, self.permissions, self.object = user, permissions, object
         self.nodelist_true, self.nodelist_false = nodelist_true, nodelist_false
         self.negate = negate
+        self.check_any = check_any
 
     def __repr__(self):
         return "<IfPermittedNode>"
 
     def render(self, context):
         user = self.user.resolve(context, True)
-        permission = self.permission.resolve(context, True)
+        permissions = self.permissions.resolve(context, True).split(',')
         object = self.object.resolve(context, True)
-        result = object.user_has_permission(user, permission)
+        check_func = any if self.check_any else all
+        result = check_func((object.user_has_permission(user, permission) for permission in permissions))
         if result != self.negate:
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
 
-def do_ifpermitted(parser, token, negate):
+def do_ifpermitted(parser, token, negate, check_any):
     bits = list(token.split_contents())
     if len(bits) != 4:
         raise TemplateSyntaxError("%r takes three arguments - the user, the permission and the object" % bits[0])
@@ -48,12 +50,20 @@ def do_ifpermitted(parser, token, negate):
     user = parser.compile_filter(bits[1])
     permission = parser.compile_filter(bits[2])
     object = parser.compile_filter(bits[3])
-    return IfPermittedNode(user, permission, object, nodelist_true, nodelist_false, negate)
+    return IfPermittedNode(user, permission, object, nodelist_true, nodelist_false, negate, check_any)
 
 @register.tag
 def ifpermitted(parser, token):
-    return do_ifpermitted(parser, token, False)
+    return do_ifpermitted(parser, token, False, False)
 
 @register.tag
 def ifnotpermitted(parser, token):
-    return do_ifpermitted(parser, token, True)
+    return do_ifpermitted(parser, token, True, False)
+
+@register.tag
+def ifanypermitted(parser, token):
+    return do_ifpermitted(parser, token, False, True)
+
+@register.tag
+def ifnotanypermitted(parser, token):
+    return do_ifpermitted(parser, token, True, True)
