@@ -448,11 +448,16 @@ class FlagView(FormView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super(FlagView, self).get_context_data(**kwargs)
+        context['content'] = get_object_or_404(self._get_model().objects.as_user(self.request.user), name=self.kwargs[self._get_string()])
+        return context
+
     def form_valid(self, form):
         flag_type = form.cleaned_data['flag_type']
         extra_comments = form.cleaned_data['extra_comments']
         flagger = self.request.user
-        content = self._get_model().objects.get(name=self.kwargs[self._get_string()])
+        content = get_object_or_404(self._get_model().objects.as_user(flagger), name=self.kwargs[self._get_string()])
 
         Flag.create_flag(content, flag_type, flagger, extra_comments)
         messages.success(self.request, "You have successfully flagged the content.")
