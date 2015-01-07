@@ -7,6 +7,7 @@ from crispy_forms.layout import Layout, Submit
 from . import models
 
 class AuthenticationForm(auth_forms.AuthenticationForm):
+    username = forms.CharField(label="Username", max_length=32)
     def __init__(self, *args, **kwargs):
         super(AuthenticationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -14,10 +15,10 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
 
 
 class RegistrationForm(forms.Form):
-    name = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    email = forms.CharField(widget=forms.EmailInput)
-    email_verify = forms.CharField(widget=forms.EmailInput)
+    name = forms.CharField(label='Username', max_length=32)
+    password = forms.CharField(widget=forms.PasswordInput, max_length=128)
+    email = forms.CharField(widget=forms.EmailInput, max_length=75)
+    email_verify = forms.CharField(widget=forms.EmailInput, label='Confirm email', max_length=75)
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
