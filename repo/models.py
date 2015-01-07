@@ -532,7 +532,7 @@ class Flag(models.Model):
     status = StatusField()
 
     flagger = models.ForeignKey(RepoUser, null=False, blank=False, related_name='flagger_flags')
-    resolver = models.ForeignKey(RepoUser, null=False, blank=True, related_name='resolver_flags')
+    resolver = models.ForeignKey(RepoUser, null=True, blank=True, related_name='resolver_flags')
     date_flagged = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     date_resolved = models.DateTimeField(null=True, blank=True, default=None)
 
