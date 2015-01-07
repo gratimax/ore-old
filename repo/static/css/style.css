@@ -315,5 +315,5 @@ a.no-underline:hover {
 }
 
 .requiredField .asteriskField {
-  color: red;
+  display: none;
 } 
