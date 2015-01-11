@@ -1,3 +1,4 @@
 -r production.txt
 
 whitenoise==1.0.6
+newrelic==2.40.0.34
