@@ -20,8 +20,8 @@ else:
             'NAME': from_env('DB_NAME', 'repo'),
             'USER': from_env('DB_USER'),
             'PASSWORD': from_env('DB_PASSWORD'),
-            'PORT': int(from_env('WEBDB_PORT_5432_TCP_PORT'), from_env('DB_PORT', 5432)),
-            'HOST': from_env('WEBDB_PORT_5432_TCP_ADDR', from_env('DB_HOST')),
+            'PORT': int(from_env('WEBDB_PORT_5432_TCP_PORT', from_env('DB_PORT', 5432))),
+            'HOST': from_env('WEBDB_PORT_5432_TCP_ADDR', os.environ.get('DB_HOST')),
             'ATOMIC_REQUESTS': True,
         }
     }

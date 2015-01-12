@@ -94,9 +94,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Default location for static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Static file serving with whitenoise
 USE_WHITENOISE = False
-
 
 # Templates
 TEMPLATE_DIRS = ()
