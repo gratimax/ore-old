@@ -11,7 +11,11 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ore.settings.production")
 
 from django.core.wsgi import get_wsgi_application
-from whitenoise.django import DjangoWhiteNoise
+from django.conf import settings
 
 application = get_wsgi_application()
-application = DjangoWhiteNoise(application)
+
+# Only use whitenoise as a static files server if configured to
+if settings.USE_WHITENOISE:
+    from whitenoise.django import DjangoWhiteNoise
+    application = DjangoWhiteNoise(application)

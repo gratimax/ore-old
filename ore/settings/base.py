@@ -94,6 +94,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Static file serving with whitenoise
+USE_WHITENOISE = False
+
 
 # Templates
 TEMPLATE_DIRS = ()
