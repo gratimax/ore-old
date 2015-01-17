@@ -3,7 +3,7 @@
 __Travelers, BEWARE!!__ This is essentially _gamma_-stage software.
 While bugfixes and PRs and such are welcome, they will most likely get overwritten as I develop this app further.
 
-There is an instance staged to http://ore.dev.gratimax.net with heroku.
+There is an instance staged to https://ore.gratimax.net with heroku.
 Don't get too attached to whatever you put there, because it's most likely going to be reset.
 
 The Sponge package repository.
