@@ -2,3 +2,4 @@
 
 dj-database-url==0.3.0
 gunicorn==19.1.1
+django-sslify==0.2.5

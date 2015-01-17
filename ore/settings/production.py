@@ -25,3 +25,7 @@ else:
             'ATOMIC_REQUESTS': True,
         }
     }
+
+MIDDLEWARE_CLASSES += (
+    'sslify.middleware.SSLifyMiddleware',
+)
