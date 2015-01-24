@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout, HTML, Div
 from django import forms
 from django.core import validators
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.formsets import formset_factory
@@ -220,7 +221,24 @@ class NewVersionForm(forms.ModelForm):
         model = Version
         fields = ('name', 'description')
 
+    # def validate_unique(self):
+    #     exclude = self._get_validation_exclusions()
+    #     exclude.remove('version')
+    #
+    #     try:
+    #         self.instance.validate_unique(exclude=exclude)
+    #     except ValidationError as e:
+    #         self._update_errors(e.message_dict)
+
 class NewFileForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NewFileForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+           'file'
+        )
+
     class Meta:
         model = File
         fields = ('file',)
@@ -253,5 +271,5 @@ class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
-            Fieldset('File', 'name', 'description', 'file')
+            Fieldset('File', 'name', 'file')
         )

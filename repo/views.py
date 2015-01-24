@@ -410,14 +410,12 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
         self.object = form.save()
 
         self.multi_objects = multi_form.save(commit=False)
-        import posixpath
         for multi_object in self.multi_objects:
             multi_object.version = self.object
-            _, multi_object.file_extension = posixpath.splitext(multi_object.file.name)
-            multi_object.file_size = multi_object.file.size
+            multi_object.project = self.get_project()
             multi_object.save()
 
-        return super(VersionsNewView, self).form_valid(form)
+        return super(VersionsNewView, self).form_valid(form, multi_form)
 
     def get_form_kwargs(self):
         kwargs = super(VersionsNewView, self).get_form_kwargs()
@@ -456,7 +454,7 @@ class VersionsDetailView(DetailView):
 class FileDownloadView(RedirectView, SingleObjectMixin):
     
     model = File
-    slug_field = 'name'
+    slug_field = 'file_name'
     slug_url_kwarg = 'file'
     
     def get_queryset(self):

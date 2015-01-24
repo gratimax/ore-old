@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url, include
 from repo import views
 
 from . import regexs
+import versions.urls
 
 EXTENDED_URL_REGEX = regexs.EXTENDED_NAME_REGEX[1:-1]
 TRIM_URL_REGEX = regexs.TRIM_NAME_REGEX[1:-1]
@@ -34,6 +35,9 @@ urlpatterns = patterns('',
 
             url(r'^(?P<file>' + TRIM_URL_REGEX + ')(?P<file_extension>\.[a-zA-Z0-9-]+)', views.FileDownloadView.as_view(), name='repo-files-download'),
         ))),
+
+        url(r'^versionsapi/(?P<version>' + EXTENDED_URL_REGEX + ')/', include(versions.urls)),
+
     ))),
 
 )

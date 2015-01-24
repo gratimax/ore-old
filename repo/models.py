@@ -258,8 +258,6 @@ class Project(models.Model):
     namespace = models.ForeignKey(Namespace, related_name='projects')
     description = models.TextField('description')
 
-    default_filetype = models.OneToOneField('FileType', related_name='+', null=True)
-
     objects = UserFilteringManager()
 
     def get_absolute_url(self):
@@ -391,10 +389,11 @@ class File(models.Model):
     STATUS = Choices('active', 'deleted')
     status = StatusField()
 
-    version = models.ForeignKey(Version, related_name='files')
-    filetype = models.ForeignKey('FileType', related_name='files')
+    project = models.ForeignKey(Project, related_name='files')
+    version = models.ForeignKey(Version, related_name='files', blank=True, null=True)
 
     file = models.FileField(upload_to=file_upload, blank=False, null=False, max_length=512)
+    file_name = models.CharField(blank=False, null=False, max_length=512)
     file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
 
@@ -428,19 +427,14 @@ class File(models.Model):
     def __str__(self):
         return str(self.file)
 
+    def save(self, *args, **kwargs):
+        import posixpath
+        self.file_name, self.file_extension = posixpath.splitext(posixpath.basename(self.file.name))
+        self.file_size = self.file.size
+        super(File, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ['-pk']
-        unique_together = ('version', 'filetype')
-
-
-@reversion.register
-class FileType(models.Model):
-    name = models.CharField('name', max_length=32,
-                            validators=[
-                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid file type name.', 'invalid')
-                            ])
-    description = models.TextField('description')
-    project = models.ForeignKey(Project, related_name='filetypes')
 
 
 @reversion.register
@@ -589,18 +583,6 @@ class Flag(models.Model):
         self.date_resolved = timezone.now()
         self.resolver = user
         self.save()
-
-
-@receiver(post_save, sender=Project)
-def create_project_jar_filetype(sender, instance, created, **kwargs):
-    if instance and created:
-        ft = FileType.objects.create(
-            project=instance,
-            name='Jar file',
-            description='A loadable, but not necessarily executable, JAR file'
-        )
-        instance.default_filetype = ft
-        instance.save()
 
 
 @receiver(post_save, sender=Project)

@@ -13,21 +13,14 @@ Upload New Version
     <div>
         {% crispy form %}
 
-        <button class="btn btn-success" id="file-form-addBtn">+</button>
-
         {% crispy multi_form %}
     </div>
 
-    <input type="submit" class="btn btn-primary" value="Create">
+    <input type="submit" id="final-submit" class="btn btn-primary" value="Create">
 </form>
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
-<script src="{% static 'js/multiform.js' %}"></script>
-<script>
-$(function() {
-    setupFormset($('#div_id_file0-name').parent('fieldset'), 'file', $('#file-form-addBtn'));
-});
-</script>
+<script src="{% static 'js/file_upload.js' %}"></script>
 {% endblock %}

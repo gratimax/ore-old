@@ -22,10 +22,9 @@
             <ul class="list-group file-list-group">
                 {% for file in files_qs %}
                     <li class="list-group-item file-list-group-item">
-                        <a href="{% url 'repo-files-download' namespace=namespace.name project=proj.name version=version.name file=file.name file_extension=file.file_extension %}" class="file-listing">
+                        <a href="{% url 'repo-files-download' namespace=namespace.name project=proj.name version=version.name file=file.file_name file_extension=file.file_extension %}" class="file-listing">
                             <span class="file-listing-size">{{file.file_size|filesizeformat}}</span>
-                            <span class="file-listing-name">{{file.name}}</span>
-                            <span class="file-listing-tagline">{{file.description}}</span>
+                            <span class="file-listing-name">{{file.file_name}}</span>
                         </a>
                     </li>
                 {% endfor %}

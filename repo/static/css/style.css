@@ -250,6 +250,10 @@ a.no-underline:hover {
   float: right;
 }
 
+#file-uploader {
+  opacity: 0.0000001;
+}
+
 .project-content {
   margin-top: 30px;
 }

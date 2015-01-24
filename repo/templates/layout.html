@@ -41,6 +41,28 @@
         <script src="{% static "vendor/js/jquery.easing.js" %}"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
+        <script>
+            (function () {
+                // taken from https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+
+                var csrfSafeMethod = function (method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                };
+
+                var csrftoken = "{{ csrf_token }}";
+
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
+
+            })();
+        </script>
+
         {% block scripts %}
         <script src="{% static "js/app.js" %}"></script>
         {% endblock %}
