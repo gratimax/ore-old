@@ -2,13 +2,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, ButtonHolder, Fieldset, Layout, HTML, Div
 from django import forms
 from django.core import validators
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
-from repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File, Flag
-from repo.regexs import EXTENDED_NAME_REGEX
+from ore.repo.models import Project, Namespace, Organization, RepoUser, Permission, Version, File, Flag
+from ore.repo.regexs import EXTENDED_NAME_REGEX
 
 
 class ProjectForm(forms.ModelForm):

@@ -1,9 +1,10 @@
 from unittest.mock import Mock, patch, call
+
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.test import TestCase
-from .. import decorators
-from repo.models import Project, Namespace
+from ore.repo import decorators
+from ore.repo.models import Project
 
 
 class PermissionRequiredTestCase(TestCase):

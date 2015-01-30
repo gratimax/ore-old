@@ -1,6 +1,8 @@
 from unittest import TestCase as UnitTestTestCase
+
 import re
-from .. import regexs
+from ore.repo import regexs
+
 
 class RegexTestCase(object):
     REGEX = None

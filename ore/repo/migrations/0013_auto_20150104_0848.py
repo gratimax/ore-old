@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
                 ('name', models.CharField(validators=[django.core.validators.RegexValidator('^[\\w.@+-]+([\\w.@+ -]*[\\w.@+-]+)?$', 'Enter a valid file type name.', 'invalid')], max_length=32, verbose_name='name')),
                 ('description', models.TextField(verbose_name='description')),
-                ('project', models.ForeignKey(related_name='filetypes', to='repo.Project')),
+                ('project', models.ForeignKey(related_name='filetypes', to='ore.repo.Project')),
             ],
             options={
             },
@@ -27,13 +27,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='filetype',
-            field=models.ForeignKey(default=None, related_name='files', to='repo.FileType'),
+            field=models.ForeignKey(default=None, related_name='files', to='ore.repo.FileType'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='project',
             name='default_filetype',
-            field=models.OneToOneField(default=None, related_name='+', to='repo.FileType'),
+            field=models.OneToOneField(default=None, related_name='+', to='ore.repo.FileType'),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(

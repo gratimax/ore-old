@@ -3,7 +3,8 @@ from django.contrib.auth.views import redirect_to_login
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
-from . import models
+from ore.repo import models
+
 
 def permission_required(permission_slug, raise_exception=False):
     if isinstance(permission_slug, (list, tuple)):

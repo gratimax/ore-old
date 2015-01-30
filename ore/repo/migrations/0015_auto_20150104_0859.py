@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='default_filetype',
-            field=models.OneToOneField(related_name='+', to='repo.FileType', null=True),
+            field=models.OneToOneField(related_name='+', to='ore.repo.FileType', null=True),
             preserve_default=True,
         ),
     ]

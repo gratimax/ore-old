@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .. import models
+from ore.repo import models
 
 
 class PermissionsTestCase(TestCase):

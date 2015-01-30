@@ -18,7 +18,7 @@ from model_utils import Choices
 import reversion
 import hashlib
 
-from .regexs import *
+from ore.repo.regexs import *
 
 Q = models.Q
 F = models.F
