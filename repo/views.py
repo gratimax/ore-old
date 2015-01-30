@@ -7,8 +7,8 @@ from django.views.generic import FormView, View, CreateView, DetailView, ListVie
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
-from ore.repo import forms, decorators
-from ore.repo.models import Organization, Project, Namespace, RepoUser, Version, File, Flag
+from repo import forms, decorators
+from repo.models import Organization, Project, Namespace, RepoUser, Version, File, Flag
 
 
 class RequiresPermissionMixin(object):

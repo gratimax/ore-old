@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RepoUser',
             fields=[
-                ('namespace_ptr', models.OneToOneField(serialize=False, to='ore.repo.Namespace', primary_key=True, auto_created=True, parent_link=True)),
+                ('namespace_ptr', models.OneToOneField(serialize=False, to='repo.Namespace', primary_key=True, auto_created=True, parent_link=True)),
                 ('password', models.CharField(verbose_name='password', max_length=128)),
                 ('last_login', models.DateTimeField(verbose_name='last login', default=django.utils.timezone.now)),
                 ('is_superuser', models.BooleanField(help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status', default=False)),
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Organization',
             fields=[
-                ('namespace_ptr', models.OneToOneField(serialize=False, to='ore.repo.Namespace', primary_key=True, auto_created=True, parent_link=True)),
+                ('namespace_ptr', models.OneToOneField(serialize=False, to='repo.Namespace', primary_key=True, auto_created=True, parent_link=True)),
             ],
             options={
             },
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('name', models.CharField(validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid project name.', 'invalid')], verbose_name='name', max_length=32)),
                 ('description', models.TextField(verbose_name='description')),
-                ('namespace', models.ForeignKey(related_name='projects', to='ore.repo.Namespace')),
+                ('namespace', models.ForeignKey(related_name='projects', to='repo.Namespace')),
             ],
             options={
             },
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('name', models.CharField(validators=[django.core.validators.RegexValidator('^[\\w.@+-]+([\\w.@+ -]*[\\w.@+-]+)?$', 'Enter a valid version name.', 'invalid')], verbose_name='name', max_length=32)),
                 ('description', models.TextField(verbose_name='description')),
-                ('project', models.ForeignKey(related_name='versions', to='ore.repo.Project')),
+                ('project', models.ForeignKey(related_name='versions', to='repo.Project')),
             ],
             options={
             },
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='version',
-            field=models.ForeignKey(related_name='files', to='ore.repo.Version'),
+            field=models.ForeignKey(related_name='files', to='repo.Version'),
             preserve_default=True,
         ),
     ]

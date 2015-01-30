@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from ore.repo import views
+from repo import views
 
 from . import regexs
 

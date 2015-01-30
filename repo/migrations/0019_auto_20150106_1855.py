@@ -33,13 +33,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='project',
-            field=models.ForeignKey(default=None, to='ore.repo.Project', related_name='files'),
+            field=models.ForeignKey(default=None, to='repo.Project', related_name='files'),
             preserve_default=False,
         ),
         migrations.AlterField(
             model_name='file',
             name='version',
-            field=models.ForeignKey(to='ore.repo.Version', related_name='files', blank=True, null=True),
+            field=models.ForeignKey(to='repo.Version', related_name='files', blank=True, null=True),
             preserve_default=True,
         ),
     ]

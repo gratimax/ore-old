@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=80, verbose_name=b'name')),
                 ('is_owner_team', models.BooleanField(default=False)),
                 ('is_all_projects', models.BooleanField(default=False)),
-                ('organization', models.ForeignKey(related_name='teams', to='ore.repo.Organization')),
+                ('organization', models.ForeignKey(related_name='teams', to='repo.Organization')),
             ],
             options={
                 'abstract': False,
@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=80, verbose_name=b'name')),
                 ('is_owner_team', models.BooleanField(default=False)),
-                ('permissions', models.ManyToManyField(related_name='+', to='ore.repo.Permission')),
-                ('project', models.ForeignKey(related_name='teams', to='ore.repo.Project')),
+                ('permissions', models.ManyToManyField(related_name='+', to='repo.Permission')),
+                ('project', models.ForeignKey(related_name='teams', to='repo.Project')),
                 ('users', models.ManyToManyField(related_name='projectteams', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -57,13 +57,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organizationteam',
             name='permissions',
-            field=models.ManyToManyField(related_name='+', to='ore.repo.Permission'),
+            field=models.ManyToManyField(related_name='+', to='repo.Permission'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='organizationteam',
             name='projects',
-            field=models.ManyToManyField(related_name='organizationteams', to='ore.repo.Project'),
+            field=models.ManyToManyField(related_name='organizationteams', to='repo.Project'),
             preserve_default=True,
         ),
         migrations.AddField(

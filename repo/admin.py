@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ore.repo import models
+from . import models
 import reversion
 
 

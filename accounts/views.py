@@ -1,11 +1,10 @@
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import views as auth_views, authenticate, login, logout
 from django.views.generic import TemplateView, FormView
 from django.db import IntegrityError
 
-from ore.accounts import forms, models
-
+from . import forms, models
 
 def loginview(request):
     return auth_views.login(request, template_name='accounts/login.html', authentication_form=forms.AuthenticationForm)

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import ore.repo.models
+import repo.models
 
 
 class Migration(migrations.Migration):
@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='file',
-            field=models.FileField(default='ERROR', upload_to=ore.repo.models.file_upload),
+            field=models.FileField(default='ERROR', upload_to=repo.models.file_upload),
             preserve_default=False,
         ),
     ]

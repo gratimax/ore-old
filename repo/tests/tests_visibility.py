@@ -1,6 +1,6 @@
 from django.test import TestCase as TestCase
 from django.contrib.auth.models import AnonymousUser
-from ore.repo import models
+from .. import models
 
 
 class VisibilityTestCase(TestCase):

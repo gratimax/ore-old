@@ -48,8 +48,8 @@ INSTALLED_APPS = (
 
     'rest_framework',
 
-    'ore.accounts',
-    'ore.repo',
+    'accounts',
+    'repo',
 )
 
 MIDDLEWARE_CLASSES = (
