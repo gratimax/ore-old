@@ -46,22 +46,6 @@
                     {% endifanypermitted %}
                 </ul>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">File types</h3>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        Build artifact
-                    </li>
-
-                    {% ifanypermitted user "filetype.create,filetype.edit,filetype.delete" proj %}
-                        <li class="list-group-item text-right">
-                            <i class="fa fa-cog"></i> Edit
-                        </li>
-                    {% endifanypermitted %}
-                </ul>
-            </div>
         </div>
     </div>
 
