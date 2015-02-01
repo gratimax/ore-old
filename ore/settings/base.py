@@ -31,7 +31,7 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'repo.RepoUser'
+AUTH_USER_MODEL = 'accounts.OreUser'
 
 # Application definition
 
@@ -48,8 +48,12 @@ INSTALLED_APPS = (
 
     'rest_framework',
 
-    'accounts',
-    'repo',
+    'ore.core',
+    'ore.accounts',
+    'ore.projects',
+    'ore.teams',
+    'ore.versions',
+    'ore.flags'
 )
 
 MIDDLEWARE_CLASSES = (

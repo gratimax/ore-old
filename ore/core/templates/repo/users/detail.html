@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% load permissions %}
+{% block title %}
+{{ user.name }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid wrapper-960">
+    <div class="row pad-top">
+        <div class="col-md-3 user-box">
+            <div class="well">
+                <h1>{{ oreuser.name }}</h1>
+                <img src="{{ oreuser.avatar }}" class="avatar oreuser-avatar">
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1 class="oreuser-projects-header">Projects</h1>
+            {% include "repo/_projects_list.html" with namespace=oreuser projects=oreuser.projects.all|as_user:oreuser only %}
+        </div>
+    </div>
+</div>
+{% endblock %}
