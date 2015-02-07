@@ -4,6 +4,7 @@ from ore.core import decorators
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.test import TestCase
+from ore.projects.models import Project
 
 
 __author__ = 'max'

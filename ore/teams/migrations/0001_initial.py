@@ -2,31 +2,31 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.core.validators
 from django.conf import settings
+import django.core.validators
 import ore.core.util
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0001_initial'),
         ('projects', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('core', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='OrganizationTeam',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=80, validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid team name.', 'invalid'), ore.core.util.validate_not_prohibited], verbose_name='name')),
                 ('is_owner_team', models.BooleanField(default=False)),
                 ('is_all_projects', models.BooleanField(default=False)),
-                ('organization', models.ForeignKey(to='ore.core.Organization', related_name='teams')),
-                ('permissions', models.ManyToManyField(blank=True, to='ore.core.Permission', related_name='+')),
-                ('projects', models.ManyToManyField(blank=True, to='ore.projects.Project', related_name='organizationteams')),
-                ('users', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL, related_name='organizationteams')),
+                ('organization', models.ForeignKey(related_name='teams', to='core.Organization')),
+                ('permissions', models.ManyToManyField(blank=True, related_name='+', to='core.Permission')),
+                ('projects', models.ManyToManyField(blank=True, related_name='organizationteams', to='projects.Project')),
+                ('users', models.ManyToManyField(blank=True, related_name='organizationteams', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
@@ -35,12 +35,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProjectTeam',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('name', models.CharField(max_length=80, validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid team name.', 'invalid'), ore.core.util.validate_not_prohibited], verbose_name='name')),
                 ('is_owner_team', models.BooleanField(default=False)),
-                ('permissions', models.ManyToManyField(blank=True, to='ore.core.Permission', related_name='+')),
-                ('project', models.ForeignKey(to='ore.projects.Project', related_name='teams')),
-                ('users', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL, related_name='projectteams')),
+                ('permissions', models.ManyToManyField(blank=True, related_name='+', to='core.Permission')),
+                ('project', models.ForeignKey(related_name='teams', to='projects.Project')),
+                ('users', models.ManyToManyField(blank=True, related_name='projectteams', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },

@@ -1,7 +1,7 @@
 from ore.accounts.models import OreUser
 from ore.core.models import Permission, Organization
 from django.test import TestCase
-from repo import models
+from ore.projects.models import Project
 from ore.teams.models import OrganizationTeam
 
 
@@ -21,7 +21,7 @@ class PermissionsTestCase(TestCase):
 
     def test_unrelated_people_cant_do_anything_on_organization_project(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge',
             )
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')
@@ -44,7 +44,7 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_owner_can_do_everything_on_project(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
 
@@ -59,7 +59,7 @@ class PermissionsTestCase(TestCase):
 
     def test_project_owner_can_do_everything_on_project(self):
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=user_john, description='Sponge'
         )
 
@@ -69,7 +69,7 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_all_project_teams_grant_permissions_on_projects(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')
@@ -106,7 +106,7 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_limited_project_teams_grant_permissions_on_selected_projects(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')
@@ -127,10 +127,10 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_limited_project_teams_dont_grant_permissions_on_unselected_projects(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
-        project_spongeapi = models.Project.objects.create(
+        project_spongeapi = Project.objects.create(
             name='SpongeAPI', namespace=organization_sponge, description='Sponge'
         )
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')
@@ -151,7 +151,7 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_limited_project_teams_dont_grant_permissions_on_organisations(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        project_sponge = models.Project.objects.create(
+        project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
         user_john = OreUser.objects.create_user('john', 'password', 'john@ore.spongepowered.org')

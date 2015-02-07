@@ -3,8 +3,9 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import model_utils.fields
-import django.core.validators
+import ore.core.util
 import ore.core.models
+import django.core.validators
 
 
 class Migration(migrations.Migration):
@@ -16,9 +17,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Namespace',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
-                ('status', model_utils.fields.StatusField(max_length=100, default='active', no_check_for_status=True, choices=[('active', 'active'), ('deleted', 'deleted')])),
-                ('name', models.CharField(max_length=32, validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a namespace organization name.', 'invalid'), ore.core.util.validate_not_prohibited], verbose_name='name', unique=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('status', model_utils.fields.StatusField(choices=[('active', 'active'), ('deleted', 'deleted')], max_length=100, no_check_for_status=True, default='active')),
+                ('name', models.CharField(max_length=32, unique=True, verbose_name='name', validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a namespace organization name.', 'invalid'), ore.core.util.validate_not_prohibited])),
             ],
             options={
             },
@@ -27,8 +28,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Organization',
             fields=[
-                ('namespace_ptr', models.OneToOneField(auto_created=True, to='ore.core.Namespace', serialize=False, parent_link=True, primary_key=True)),
-                ('avatar_image', models.ImageField(blank=True, upload_to=ore.core.models.organization_avatar_upload, default=None, null=True)),
+                ('namespace_ptr', models.OneToOneField(parent_link=True, primary_key=True, auto_created=True, to='core.Namespace', serialize=False)),
+                ('avatar_image', models.ImageField(null=True, blank=True, default=None, upload_to=ore.core.models.organization_avatar_upload)),
             ],
             options={
             },
@@ -37,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Permission',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
+                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('slug', models.SlugField(max_length=64, unique=True)),
                 ('name', models.CharField(max_length=64)),
                 ('description', models.TextField()),
