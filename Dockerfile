@@ -12,7 +12,7 @@ RUN pip3 install -r requirements/staging.txt
 ADD . /code
 
 ENV DJANGO_SETTINGS_MODULE ore.settings.collectstatic
-RUN echo 'yes' | python3 manage.py collectstatic
+RUN echo 'yes' | python3 ore/manage.py collectstatic
 
 ENV DJANGO_SETTINGS_MODULE ore.settings.staging
 

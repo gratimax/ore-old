@@ -5,3 +5,4 @@ django-crispy-forms==1.4.0
 django-model-utils==2.2
 django-reversion==1.8.5
 djangorestframework==3.0.3
+django-grappelli==2.6.3

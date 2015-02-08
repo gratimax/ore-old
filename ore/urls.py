@@ -11,7 +11,9 @@ import ore.teams.urls
 urlpatterns = patterns(
     '',
 
+    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
     url(r'', include(ore.accounts.urls)),
     url(r'', include(ore.core.urls)),
     url(r'', include(ore.projects.urls)),

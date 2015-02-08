@@ -9,6 +9,6 @@ class ProjectAdmin(reversion.VersionAdmin):
 
 admin.site.register(Project, ProjectAdmin)
 
-class FileAdmin(reversion.VersionAdmin):
-    pass
-admin.site.register(File, FileAdmin)
+
+
+
