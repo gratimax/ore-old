@@ -133,3 +133,4 @@ class Organization(Namespace):
 
 
 reversion.register(Organization, follow=['namespace_ptr'])
+

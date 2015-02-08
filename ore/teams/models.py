@@ -91,3 +91,13 @@ def create_project_owner_team(sender, instance, created, **kwargs):
                 )
             team.users = [owning_namespace]
             team.save()
+
+@receiver(post_save, sender=Organization)
+def create_organization_owner_team(sender, instance, created, **kwargs):
+    if instance and created:
+        OrganizationTeam.objects.create(
+            name='Owners',
+            organization=instance,
+            is_all_projects=True,
+            is_owner_team=True,
+            )

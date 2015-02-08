@@ -7,7 +7,6 @@ from django.test import TestCase
 from ore.projects.models import Project
 
 
-__author__ = 'max'
 
 
 class PermissionRequiredTestCase(TestCase):
@@ -60,7 +59,7 @@ class PermissionRequiredTestCase(TestCase):
         self.assertEqual(f.call_count, 0, "f should not be called")
         self.assertEqual(user.user_has_permission.call_count, 0, "user_has_permission should not be called")
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_fails_if_does_not_have_permission(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
@@ -74,7 +73,7 @@ class PermissionRequiredTestCase(TestCase):
         self.assertEqual(f.call_count, 0, "f should not be called")
         project.user_has_permission.assert_called_once_with(user, 'foo.bar')
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_succeeds_if_has_permission(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
@@ -87,7 +86,7 @@ class PermissionRequiredTestCase(TestCase):
         f.assert_called_with(request, namespace='wat', project='wat')
         project.user_has_permission.assert_called_once_with(user, 'foo.bar')
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_returns_value_from_wrapped_function(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
@@ -99,15 +98,15 @@ class PermissionRequiredTestCase(TestCase):
 
         self.assertEquals(resp, f())
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_looks_up_project(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
         decorators.permission_required('foo.bar')(f)(request, namespace='namespace', project='project')
         mock_get_object_or_404.assert_called_once_with(Project, namespace__name='namespace', name='project')
 
-    @patch('repo.decorators.get_object_or_404')
-    @patch('repo.decorators.models.Namespace')
+    @patch('ore.core.decorators.get_object_or_404')
+    @patch('ore.core.decorators.Namespace')
     def test_looks_up_namespace(self, mock_namespace, mock_get_object_or_404):
         f, user, request = self.make_request()
 
@@ -117,7 +116,7 @@ class PermissionRequiredTestCase(TestCase):
         decorators.permission_required('foo.bar')(f)(request, namespace='namespace')
         mock_get_object_or_404.assert_called_once_with(mock_select_subclasses_qs, name='namespace')
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_checks_multiple_permissions_if_specified(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
@@ -129,7 +128,7 @@ class PermissionRequiredTestCase(TestCase):
 
         project.user_has_permission.assert_has_calls([call(user, 'foo.bar'), call(user, 'baz.fern')])
 
-    @patch('repo.decorators.get_object_or_404')
+    @patch('ore.core.decorators.get_object_or_404')
     def test_fails_if_any_permission_missing(self, mock_get_object_or_404):
         f, user, request = self.make_request()
 
