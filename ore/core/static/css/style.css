@@ -126,6 +126,10 @@ h1 {
   color: #fbc400 !important;
 }
 
+.top-alert {
+    margin-bottom: 0;
+}
+
 a {
 
   outline: none;
@@ -320,4 +324,4 @@ a.no-underline:hover {
 
 .requiredField .asteriskField {
   display: none;
-} 
+}
