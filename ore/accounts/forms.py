@@ -17,7 +17,7 @@ class RegistrationForm(forms.Form):
     name = forms.CharField(label='Username', max_length=32)
     password = forms.CharField(widget=forms.PasswordInput, max_length=128)
     email = forms.CharField(widget=forms.EmailInput, max_length=75)
-    email_verify = forms.CharField(widget=forms.EmailInput, label='Confirm email', max_length=75)
+    email_verify = forms.BooleanField(label='I have confirmed that my email is correct, stop worrying about it!')
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -31,11 +31,9 @@ class RegistrationForm(forms.Form):
         )
 
     def clean_email_verify(self):
-        email1 = self.cleaned_data.get('email')
-        email2 = self.cleaned_data.get('email_verify')
+        checked = self.cleaned_data.get('email_verify')
 
-        if not email2:
-            raise forms.ValidationError("You must confirm your email address.")
-        if email1 != email2:
-            raise forms.ValidationError("Your email addresses need to match.")
-        return email2
+        if not checked:
+            raise forms.ValidationError("Please confirm your email.")
+
+        return checked
