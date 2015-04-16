@@ -10,3 +10,4 @@ django-appconf==1.0.1
 django-compressor==1.4
 libsass==0.7.0
 django-libsass==0.2
+django-bower==5.0.3

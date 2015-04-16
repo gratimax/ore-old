@@ -7,6 +7,8 @@ SECRET_KEY = from_env('SECRET_KEY')
 
 db_url = os.environ.get('DB_URL', os.environ.get('DATABASE_URL'))
 
+COMPRESS_ENABLED = True
+
 if db_url:
 
     DATABASES = {

@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'compressor',
+    'djangobower',
 
     'crispy_forms',
     'reversion',
@@ -110,6 +111,8 @@ STATICFILES_FINDERS = (
 
     # compressor finder
     'compressor.finders.CompressorFinder',
+    # bower finder
+    'djangobower.finders.BowerFinder',
 )
 
 # Default location for static files
@@ -121,6 +124,13 @@ USE_WHITENOISE = False
 # Compression
 COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+# Bower
+BOWER_COMPONENTS_ROOT = STATIC_ROOT
+
+BOWER_INSTALLED_APPS = (
+    'jquery#1.9',
 )
 
 # Templates
