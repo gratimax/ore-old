@@ -26,7 +26,7 @@ class HomeView(View, TemplateResponseMixin, ContextMixin):
         if request.user.is_authenticated():
             return self.render_to_response(template='home/user.html', context=context)
         else:
-            return self.render_to_response(template='home/index.html', context=context)
+            return self.render_to_response(template='home/home.html', context=context)
 
     def render_to_response(self, context, template, **response_kwargs):
         response_kwargs.setdefault('content_type', self.content_type)
