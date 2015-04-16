@@ -44,6 +44,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'compressor',
+
     'crispy_forms',
     'reversion',
 
@@ -102,11 +104,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+
+    # compressor finder
+    'compressor.finders.CompressorFinder',
+)
+
 # Default location for static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Static file serving with whitenoise
 USE_WHITENOISE = False
+
+# Compression
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
 
 # Templates
 TEMPLATE_DIRS = ()

@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load compress %}
 <!doctype html>
 <html lang="en">
 
@@ -9,12 +10,14 @@
 
         <meta charset="UTF-8">
 
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        {% compress css %}
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+            <link rel="stylesheet" type="text/css" href="{% static "vendor/css/opensans.css" %}">
+            <link rel="stylesheet" type="text/css" href="{% static "vendor/css/fontawesome.min.css" %}">
+            <link rel="stylesheet" type="text/css" href="{% static "vendor/css/bootstrap.min.css" %}">
+            <link rel="stylesheet" type="text/x-scss" href="{% static "css/style.scss" %}">
 
-        <link rel="stylesheet" href="{% static "css/style.css" %}" type="text/css">
+        {% endcompress %}
 
     </head>
 
@@ -43,35 +46,39 @@
 
         {% endblock %}
 
-        <script src="{% static "vendor/js/jquery.js" %}"></script>
-        <script src="{% static "vendor/js/jquery.easing.js" %}"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        {% compress js %}
 
-        <script>
-            (function () {
-                // taken from https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+            <script src="{% static "vendor/js/jquery.js" %}"></script>
+            <script src="{% static "vendor/js/jquery.easing.js" %}"></script>
+            <script src="{% static "vendor/js/bootstrap.min.js" %}"></script>
 
-                var csrfSafeMethod = function (method) {
-                    // these HTTP methods do not require CSRF protection
-                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-                };
+            <script>
+                (function () {
+                    // taken from https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 
-                var csrftoken = "{{ csrf_token }}";
+                    var csrfSafeMethod = function (method) {
+                        // these HTTP methods do not require CSRF protection
+                        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                    };
 
-                $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    var csrftoken = "{{ csrf_token }}";
+
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
                         }
-                    }
-                });
+                    });
 
-            })();
-        </script>
+                })();
+            </script>
 
-        {% block scripts %}
-        <script src="{% static "js/app.js" %}"></script>
-        {% endblock %}
+            {% block scripts %}
+            <script src="{% static "js/app.js" %}"></script>
+            {% endblock %}
+
+        {% endcompress %}
 
     </body>
 
