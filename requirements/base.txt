@@ -11,3 +11,7 @@ django-compressor==1.4
 libsass==0.7.0
 django-libsass==0.2
 django-bower==5.0.3
+markdown2==2.3.0
+pygments==2.0.2
+bleach==1.4.1
+html5lib==0.999
