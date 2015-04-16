@@ -12,7 +12,7 @@ from ore.projects.models import Project
 
 class ProjectForm(forms.ModelForm):
 
-    namespace = forms.ModelChoiceField(queryset=None, empty_label=None)
+    namespace = forms.ModelChoiceField(label='Owner User / Organization', queryset=None, empty_label=None)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
