@@ -77,13 +77,23 @@ Manage | {{ proj.name }}
                 <h4 class="modal-title">Delete project</h4>
             </div>
             <div class="modal-body">
-                <p>Are you sure you wish to delete this project?</p>
-                <p>This removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
-            </div>
-            <div class="modal-footer">
-                <form action="{% url 'repo-projects-delete' namespace=proj.namespace.name project=proj.name %}" method="POST">
+                <p>Deleting removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
+                <p>Please type the name of the project to confirm deletion.</p>
+
+                <form action="{% url 'repo-projects-delete' namespace=proj.namespace.name project=proj.name %}"
+                      method="POST"
+                      class="js-lock-form"
+                      data-confirm="{{ proj.name }}"
+                      data-input="input[name='lock']"
+                      data-locks="button">
+
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <div class="input-group">
+                        <input type="text" name="lock" class="form-control">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </span>
+                    </div>
                 </form>
             </div>
         </div>
