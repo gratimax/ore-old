@@ -47,4 +47,28 @@ $(function () {
     toggled = null;
   })
 
+  /**
+   * This provides a "lockable" form, which disables button(s) until a
+   * certain input is provided. It looks for elements with the class
+   * js-lock-form, and expects to find the following properties:
+   *
+   *  - data-confirm should be the string you want the user to verify.
+   *  - data-input should be the input box to "watch" for verification.
+   *  - data-locks should be elements which are disabled until the
+   *               input value matches the confirmation.
+   *
+   */
+  $('.js-lock-form').each(function () {
+    var $form = $(this);
+    var $input = $form.find($form.data('input'));
+    var $locks = $form.find($form.data('locks'));
+    var confirm = $form.data('confirm');
+
+    function checkLock () {
+      $locks.prop('disabled', $input.val() !== confirm);
+    }
+
+    $input.on('input', checkLock);
+    checkLock();
+  });
 });
