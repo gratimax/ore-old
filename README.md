@@ -88,3 +88,12 @@ $ docker run -t --link webdb:webdb \
     spongepowered/ore python3 manage.py migrate
 
 ```
+
+## Contributing
+
+We really appreciate any and all contributions!
+Contribute code with a PR or ideas with issues and/or discussion.
+If you wish to discuss something that isn't a project issue, please discuss Ore in the [sponge web subforum](https://forums.spongepowered.org/c/sponge/sponge-web) instead.
+
+By contributing code to Ore, you agree to license your contribution under the MIT license to this project.
+You still hold copyright to your work, as detailed in the [license](https://github.com/SpongePowered/Ore/blob/master/LICENSE.txt#L4).
