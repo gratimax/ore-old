@@ -1,0 +1,18 @@
+webdb:
+  image: postgres
+  environment:
+    - POSTGRES_USER=repo
+    - POSTGRES_PASSWORD=much_secret
+  ports:
+    - "5432"
+web:
+  build: .
+  ports:
+    - 80:80
+  links:
+    - webdb
+  environment:
+    - DB_USER=repo
+    - DB_PASSWORD=much_secret
+    - SECRET_KEY=much_secret
+
