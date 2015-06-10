@@ -1,18 +1,36 @@
-webdb:
-  image: postgres
-  environment:
-    - POSTGRES_USER=repo
-    - POSTGRES_PASSWORD=much_secret
-  ports:
-    - "5432"
 web:
   build: .
-  ports:
-    - 80:80
   links:
-    - webdb
+    - postgres:postgres
+  volumes:
+    - /code/ore/staticfiles/
   environment:
     - DB_USER=repo
     - DB_PASSWORD=much_secret
     - SECRET_KEY=much_secret
+    - DJANGO_SETTINGS_MODULE=ore.settings.staging
 
+nginx:
+  build: ./deploy/nginx/
+  ports:
+    - 80:80
+  volumes_from:
+    - web
+  links:
+    - web:web
+
+data:
+  image: postgres
+  volumes:
+    - /var/lib/postgresql
+  command: true
+
+postgres:
+  image: postgres
+  environment:
+    - POSTGRES_USER=repo
+    - POSTGRES_PASSWORD=much_secret
+  volumes_from:
+    - data
+  ports:
+    - 5432:5432

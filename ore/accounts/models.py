@@ -26,6 +26,9 @@ class OreUserManager(UserManager):
             date_joined=now,
             **extra_fields
         )
+        if self.count() == 0:
+            user.is_staff = True
+            user.is_superuser = True
         user.set_password(password)
         user.save(using=self._db)
         return user
