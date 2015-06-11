@@ -8,3 +8,5 @@ env:
 install: "pip install -r requirements/development.txt --use-mirrors"
 script: "python ore/manage.py test"
 sudo: false
+notifications:
+  email: false
