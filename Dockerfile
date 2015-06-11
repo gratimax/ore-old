@@ -1,4 +1,4 @@
-FROM python:3.4
+FROM spongepowered/python3.4-sass
 MAINTAINER Sponge Web Team <web@spongepowered.org>
 
 ADD requirements/ /app/requirements/
