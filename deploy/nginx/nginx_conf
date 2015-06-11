@@ -33,7 +33,11 @@ http {
       charset utf-8;
 
       location /static {
-          alias /code/ore/staticfiles;
+          alias /app/ore/staticfiles;
+      }
+
+      location /media {
+          alias /app/media;
       }
 
       location / {

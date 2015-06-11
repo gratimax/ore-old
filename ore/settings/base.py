@@ -118,9 +118,6 @@ STATICFILES_FINDERS = (
 # Default location for static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Static file serving with whitenoise
-USE_WHITENOISE = False
-
 # Compression
 COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),

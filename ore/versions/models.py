@@ -67,6 +67,9 @@ def file_upload(instance, filename):
     import posixpath
     import uuid
 
+    # namespace_name = instance.project.namespace.name
+    # project_name = instance.project.name
+
     uuid_bit = uuid.uuid4().hex
     return posixpath.join('files', uuid_bit, filename)
 

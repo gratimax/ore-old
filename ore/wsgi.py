@@ -14,8 +14,3 @@ from django.core.wsgi import get_wsgi_application
 from django.conf import settings
 
 application = get_wsgi_application()
-
-# Only use whitenoise as a static files server if configured to
-if settings.USE_WHITENOISE:
-    from whitenoise.django import DjangoWhiteNoise
-    application = DjangoWhiteNoise(application)

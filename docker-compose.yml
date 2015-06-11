@@ -3,7 +3,9 @@ web:
   links:
     - postgres:postgres
   volumes:
-    - /code/ore/staticfiles/
+    - /app/ore/staticfiles/
+  volumes_from:
+    - media
   environment:
     - DB_USER=repo
     - DB_PASSWORD=much_secret
@@ -23,6 +25,12 @@ data:
   image: postgres
   volumes:
     - /var/lib/postgresql
+  command: true
+
+media:
+  image: ubuntu
+  volumes:
+    - /app/media/
   command: true
 
 postgres:
