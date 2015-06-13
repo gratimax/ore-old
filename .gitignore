@@ -109,4 +109,7 @@ Temporary Items
 # Local settings
 /ore/settings/local.py
 
+# Deploy secrets
+/deploy/secrets/
+
 /media

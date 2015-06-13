@@ -2,6 +2,7 @@ web:
   build: .
   links:
     - postgres:postgres
+    - sentry:sentry
   volumes:
     - /app/ore/staticfiles/
   volumes_from:
@@ -11,6 +12,8 @@ web:
     - DB_PASSWORD=much_secret
     - SECRET_KEY=much_secret
     - DJANGO_SETTINGS_MODULE=ore.settings.staging
+  env_file:
+    - ./deploy/secrets/web.env
 
 nginx:
   build: ./deploy/nginx/
@@ -27,12 +30,6 @@ data:
     - /var/lib/postgresql
   command: true
 
-media:
-  image: ubuntu
-  volumes:
-    - /app/media/
-  command: true
-
 postgres:
   image: postgres
   environment:
@@ -40,5 +37,47 @@ postgres:
     - POSTGRES_PASSWORD=much_secret
   volumes_from:
     - data
+
+media:
+  image: ubuntu
+  volumes:
+    - /app/media/
+  command: true
+
+sentry:
+  build: ./deploy/sentry/
+  environment:
+    - DB_USER=sentry
+    - DB_PASSWORD=much_secret
+  links:
+    - sentrypostgres:postgres
+    - sentryredis:redis
   ports:
-    - 5432:5432
+    - 8080:9000
+
+#sentryworker:
+#  build: ./deploy/sentry
+#  environment:
+#    - DB_USER=sentry
+#    - DB_PASSWORD=much_secret
+#  links:
+#    - sentry:sentry
+#    - sentryredis:redis
+#  command: sentry celery worker -B
+
+sentryredis:
+  image: redis
+
+sentrydata:
+  image: postgres
+  volumes:
+    - /var/lib/postgresql
+  command: true
+
+sentrypostgres:
+  image: postgres
+  environment:
+      - POSTGRES_USER=sentry
+      - POSTGRES_PASSWORD=much_secret
+  volumes_from:
+    - sentrydata
