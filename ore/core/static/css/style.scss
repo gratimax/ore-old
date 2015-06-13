@@ -6,6 +6,7 @@ body {
   margin: 0;
   background-color: $lighter_grey;
   height: auto;
+  color: #000;
 }
 
 .white-background {
@@ -273,7 +274,7 @@ a {
 .dot {
   width: 12px;
   height: 12px;
-  //Instead of the line below you could use @includeborder-radius($radius, $vertical-radius)
+  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
   border-radius: 6px;
   display: inline-block;
   position: relative;
@@ -292,12 +293,25 @@ a {
 .navbar.top-navbar {
   background-color: $navbar_background;
   border-bottom: none;
-  //Instead of the line below you could use @includeuser-select($select)
+  //Instead of the line below you could use @include user-select($select)
   user-select: none;
+
+  .navbar-search {
+    padding-top: 3px;
+    .form-control {
+      width: 400px;
+    }
+  }
+
+  .logo-container {
+    padding: 0 5px !important;
+  }
+
   .col-md-12 {
     white-space-collapse: discard;
     height: 56px;
   }
+
   a {
     &:hover {
       background-color: $navbar_link_hover_background !important;
@@ -309,14 +323,47 @@ a {
       padding: 0 !important;
     }
   }
+
+  a.usr-avatar {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+
+    img {
+      height: 24px;
+      width: 24px;
+      border-radius: 4px;
+    }
+  }
+
+  .open a.dropdown-toggle {
+    background-color: $navbar_link_hover_background;
+  }
+
+  .dropdown-menu {
+    a {
+      color: #333;
+      &:hover {
+        background-color: #f5f5f5 !important;
+        color: #262626;
+      }
+      &:visited {
+        color: #333;
+      }
+    }
+    .user-info {
+      padding: 3px 20px;
+      display: block;
+    }
+  }
+
   .nav-btn {
     background: none;
     border: none;
     padding: 0;
     outline: none;
   }
-  .logout-btn {
-    padding: 18px 15px;
+  .logout-link {
+    padding: 3px 20px;
   }
   .notify {
     color: $faded_orange !important;

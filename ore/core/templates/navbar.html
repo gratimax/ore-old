@@ -5,47 +5,62 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-
-                        <a href="{% url 'index' %}">
-                            <img src="{% static "img/sponge-logo.png" %}" alt="Sponge logo" class="mini-logo">
-                        </a>
-
                         <ul class="nav navbar-nav">
-                            <li><a href="{% url 'index' %}">Ore</a></li>
-                            <li><a href="{% url 'repo-explore' %}">Explore</a></li>
-                        </ul>
-
-
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a>
-                                <i class="fa fa-search"></i>
+                            <li>
+                                <a href="{% url 'index' %}" class="logo-container">
+                                    <img src="{% static 'img/sponge-logo.png' %}" alt="Sponge logo" class="mini-logo">
+                                </a>
+                            </li>
+                            <li><a href="{% url 'repo-explore' %}">
+                                <i class="fa fa-globe"></i>
+                                Explore
                             </a></li>
+                        </ul>
+                        <div class="navbar-form navbar-left navbar-search">
+                            <div class="form-group">
+                                <input type="text" class="input-large form-control" placeholder="Search"/>
+                            </div>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
                             {% if user.is_authenticated %}
                                 <li><a><!--class="notify"-->
                                     <i class="fa fa-bell"></i>
                                 </a></li>
-                                <li><a href="{% url 'repo-namespace' namespace=user.name %}">
-                                    {{ user.name }}
-                                </a></li>
-                                {% if user.is_staff %}
-                                    <li><a href="{% url 'admin:index' %}">
-                                        Admin
-                                    </a></li>
-                                {% endif %}
-                                <li><a class="logout-a">
-                                        <form action="{% url 'accounts-logout' %}" method="POST">
-                                            {% csrf_token %}
-                                            <button type="submit" class="nav-btn logout-btn">
-                                                <i class="fa fa-sign-out"></i> Logout
-                                            </button>
-                                        </form>
-                                </a></li>
+                                <li class="dropdown">
+                                    <a href="#" class="usr-avatar dropdown-toggle" data-toggle="dropdown">
+                                        <img src="{{ user.avatar }}&s=24"/> <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        {% if user.is_staff %}
+                                        <li><a href="{% url 'admin:index' %}">
+                                            Admin
+                                        </a></li>
+                                        {% endif %}
+                                        <li><a class="logout-a">
+                                            <form action="{% url 'accounts-logout' %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="nav-btn logout-link">
+                                                    Sign out
+                                                </button>
+                                            </form>
+                                        </a></li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="{% url 'repo-namespace' namespace=user.name %}">
+                                                {{ user.name }}
+                                                <span class="pull-right text-muted">
+                                                    <i class="fa fa-user"></i>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
                             {% else %}
                                 <li><a href="{% url 'accounts-register' %}">
                                     <i class="fa fa-user"></i> Create account
                                 </a></li>
                                 <li><a href="{% url 'accounts-login' %}">
-                                    <i class="fa fa-sign-in"></i> Login
+                                    <i class="fa fa-sign-in"></i> Sign in
                                 </a></li>
                             {% endif %}
                         </ul>
