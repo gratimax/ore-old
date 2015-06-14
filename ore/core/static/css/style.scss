@@ -56,13 +56,6 @@ h1 {
   font-size: 28px;
 }
 
-.mini-logo {
-  height: 40px;
-  width: 40px;
-  float: left;
-  margin: 8px 15px;
-}
-
 .top-alert {
   margin-bottom: 0;
 }
@@ -304,8 +297,19 @@ a {
   }
 
   .logo-container {
-    padding: 0 5px !important;
+    height: 56px;
+
+    .mini-logo {
+      height: 36px;
+      width: 33px;
+      float: left;
+      margin-right: 15px;
+      position: relative;
+      top: -10px;
+    }
   }
+
+
 
   .col-md-12 {
     white-space-collapse: discard;
