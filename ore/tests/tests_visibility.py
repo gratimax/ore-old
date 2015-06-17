@@ -18,6 +18,13 @@ class VisibilityTestCase(TestCase):
         user = OreUser.objects.create_user(
             username, 'password', '{}@ore.spongepowered.org'.format(username)
         )
+
+        # The first user is always an admin, turn this off
+        if OreUser.objects.count() == 1:
+            user.is_staff = False
+            user.is_superuser = False
+            user.save()
+
         if status is not OreUser.STATUS.active:
             user.status = status
             user.save()

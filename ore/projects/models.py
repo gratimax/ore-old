@@ -107,7 +107,7 @@ class Page(models.Model):
     parent = models.ForeignKey('Page', related_name='children', null=True, blank=True)
 
     title = models.CharField(max_length=64)
-    slug = models.SlugField(unique=True, editable=False)
+    slug = models.SlugField(editable=False)
     content = models.TextField()
     html = models.TextField()
 
