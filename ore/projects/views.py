@@ -196,6 +196,7 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     model = File
     slug_field = 'file_name'
     slug_url_kwarg = 'file'
+    permanent = False
 
     def get_queryset(self):
         return File.objects.as_user(self.request.user).filter(
