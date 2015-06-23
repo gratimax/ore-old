@@ -154,4 +154,5 @@ PROHIBITED_NAMES = (
     'project',
     'admin',
     'administrator',
+    'static',
 )
