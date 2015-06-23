@@ -11,7 +11,10 @@ from ore.core.util import UserFilteringQuerySet, prefix_q
 import reversion
 
 
-class OreUserManager(UserManager):
+OreUserManagerBase = UserManager.from_queryset(UserFilteringQuerySet)
+
+
+class OreUserManager(OreUserManagerBase):
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
         if not username:
@@ -43,7 +46,7 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
                                              'site.')
     date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
 
-    objects = OreUserManager.from_queryset(UserFilteringQuerySet)()
+    objects = OreUserManager()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
