@@ -125,6 +125,14 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixi
         return data
 
     def form_valid(self, form, multi_form):
+
+        name = form.cleaned_data['name']
+
+        if self.get_project().versions.filter(name=name).count():
+            form.add_error(
+                'name', 'That version name already exists in this project')
+            return self.form_invalid(form, multi_form)
+
         self.object = form.save()
 
         self.multi_objects = multi_form.save(commit=False)

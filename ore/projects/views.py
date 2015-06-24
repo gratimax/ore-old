@@ -171,6 +171,15 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
 
     def form_valid(self, form):
         self.object = form.save()
+
+        name = form.cleaned_data['name']
+        namespace = form.cleaned_data['namespace']
+
+        if namespace.projects.filter(name=name).count():
+            form.add_error(
+                'name', 'That project already exists for the given namespace')
+            return self.form_invalid(form)
+
         messages.success(self.request, "The project's name has been changed.")
         return redirect(reverse('repo-projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
