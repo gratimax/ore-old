@@ -25,7 +25,7 @@ class Project(models.Model):
                                 validate_not_prohibited,
                             ])
     namespace = models.ForeignKey(Namespace, related_name='projects')
-    description = models.TextField('description')
+    description = models.TextField('description', blank=True, null=False)
 
     objects = UserFilteringManager()
 
