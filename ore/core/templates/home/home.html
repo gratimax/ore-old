@@ -10,6 +10,15 @@
     {% include "navbar.html" %}
     {% block navbarfixed %}{% endblock %}
 
+    <div class="wrapper-960 not-in-flow">
+        <div class="navbar-pad not-in-flow-child">
+
+            {% block messages %}
+                {% include "_messages.html" %}
+            {% endblock %}
+        </div>
+    </div>
+
     <header class="hero">
         <div class="logo-text">
             <strong>Ore</strong>

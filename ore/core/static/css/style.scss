@@ -368,6 +368,8 @@ a {
   }
   .logout-link {
     padding: 3px 20px;
+    width: 100%;
+    text-align: left;
   }
   .notify {
     color: $faded_orange !important;
@@ -396,4 +398,13 @@ a {
 
 .navbar-pad {
   padding-top: 15px;
+}
+
+.not-in-flow {
+  position: relative;
+}
+.not-in-flow-child {
+  position: absolute;
+  left: 0;
+  right: 0;
 }
