@@ -4,12 +4,13 @@ from django.shortcuts import get_object_or_404
 # Create your views here.
 from django.views.generic import DetailView, CreateView
 from ore.projects.models import Project
+from ore.projects.views import ProjectNavbarMixin
 from ore.core.views import RequiresPermissionMixin
 from ore.versions.forms import NewVersionForm, NewVersionInnerFileFormset
 from ore.versions.models import Version, File
 
 
-class ProjectsVersionsListView(DetailView):
+class ProjectsVersionsListView(ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -17,6 +18,7 @@ class ProjectsVersionsListView(DetailView):
 
     template_name = 'repo/versions/list.html'
     context_object_name = 'proj'
+    active_project_tab = 'versions'
 
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
@@ -89,13 +91,14 @@ class MultiFormMixin(object):
         return super(MultiFormMixin, self).form_valid(form)
 
 
-class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
+class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixin, CreateView):
 
     model = Version
     template_name = 'repo/versions/new.html'
 
     form_class = NewVersionForm
     prefix = 'version'
+    active_project_tab = 'versions'
 
     multi_form_class = NewVersionInnerFileFormset
     multi_prefix = 'file'
@@ -141,12 +144,13 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
         return kwargs
 
 
-class VersionsDetailView(DetailView):
+class VersionsDetailView(ProjectNavbarMixin, DetailView):
 
     model = Version
     slug_field = 'name'
     slug_url_kwarg = 'version'
     template_name = 'repo/versions/detail.html'
+    active_project_tab = 'versions'
 
     def get_queryset(self):
         return Version.objects.as_user(self.request.user).filter(project__namespace__name=self.kwargs['namespace'], project__name=self.kwargs['project']).select_related('project')

@@ -14,7 +14,18 @@ from ore.core.views import RequiresPermissionMixin
 from ore.versions.models import File
 
 
-class ProjectsDetailView(DetailView):
+class ProjectNavbarMixin(object):
+
+    def get_active_project_tab(self):
+        return self.active_project_tab
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_project_tab'] = self.get_active_project_tab()
+        return context
+
+
+class ProjectsDetailView(ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -22,12 +33,13 @@ class ProjectsDetailView(DetailView):
 
     template_name = 'repo/projects/detail.html'
     context_object_name = 'proj'
+    active_project_tab = 'docs'
 
     def get_queryset(self):
         return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
 
-class ProjectsManageView(RequiresPermissionMixin, DetailView):
+class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -35,6 +47,7 @@ class ProjectsManageView(RequiresPermissionMixin, DetailView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.edit']
 
@@ -60,7 +73,7 @@ class ProjectsManageView(RequiresPermissionMixin, DetailView):
         return context
 
 
-class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
+class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
 
     model = Project
     slug_field = 'name'
@@ -68,12 +81,11 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.edit']
 
     form_class = ProjectDescriptionForm
-
-    fields = ['description']
 
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
@@ -113,7 +125,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
 
 
-class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
+class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
 
     model = Project
     slug_field = 'name'
@@ -121,6 +133,7 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.rename']
 
@@ -167,7 +180,7 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
 
 
-class ProjectsDeleteView(RequiresPermissionMixin, DeleteView):
+class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView):
 
     model = Project
     slug_field = 'name'
@@ -175,6 +188,7 @@ class ProjectsDeleteView(RequiresPermissionMixin, DeleteView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.delete']
 

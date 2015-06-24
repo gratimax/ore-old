@@ -240,13 +240,20 @@ a {
   background: none;
   margin: 0;
   border-bottom: 2px solid $color_alto_approx;
-  li {
+  > .navbar-inner li {
     position: relative;
     bottom: -2px;
     > a {
       border-bottom: 2px solid transparent;
       &:hover {
         border-bottom: 2px solid $color_celeste_approx;
+      }
+    }
+    &.active {
+      > a, > a:hover {
+        color: $navbar_link_active_background;
+        background-color: transparent;
+        border-bottom: 2px solid $navbar_link_active_background;
       }
     }
   }
