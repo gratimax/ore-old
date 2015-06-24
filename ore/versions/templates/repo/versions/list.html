@@ -7,7 +7,7 @@
     <div class="row">
 
         <div class="col-md-9">
-            <ul class="list-group version-list-group top-panel">
+            <ul class="list-group version-list-group">
                 {% for version in proj.versions.all|as_user:user %}
                     <li class="list-group-item version-list-group-item">
                         <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
