@@ -142,8 +142,6 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
 
     form_class = ProjectRenameForm
 
-    fields = ['name']
-
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
 

@@ -7,13 +7,17 @@
     <div class="row">
         <div class="col-md-3 user-box">
             <div class="well">
-                <h1>{{ organization.name }}</h1>
                 <img src="{{ organization.avatar }}" class="avatar org-avatar">
+                <h1>{{ organization.name }}</h1>
             </div>
         </div>
         <div class="col-md-9">
-            <h1 class="user-projects-header">Projects</h1>
-            {% include "repo/_projects_list.html" with namespace=organization projects=organization.projects.all|as_user:user only %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Projects</h3>
+                </div>
+                {% include "repo/_projects_list.html" with namespace=organization projects=organization.projects.all|as_user:user only %}
+            </div>
         </div>
     </div>
 </div>

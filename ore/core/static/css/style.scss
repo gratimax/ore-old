@@ -89,6 +89,18 @@ a {
   h1 {
     margin-top: 0;
   }
+
+  >.well {
+    > img {
+      padding-bottom: 19px;
+    }
+    > h1, > div {
+      padding: 0 19px;
+    }
+    padding: 0;
+    border-radius: 4px;
+    background: white;
+  }
 }
 
 .user-projects-header {
@@ -410,4 +422,13 @@ a {
   position: absolute;
   left: 0;
   right: 0;
+}
+
+.center-card {
+  background-color: white;
+  margin-top: -20px;
+  padding: 1px 10px 20px 10px;
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
 }
