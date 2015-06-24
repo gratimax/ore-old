@@ -36,7 +36,7 @@
         </div>
         {% endcomment %}
 
-        <div class="wrapper-960 navbar-pad">
+        <div class="wrapper-960{% block message_padding %} navbar-pad{% endblock %}">
 
             {% block messages %}
                 {% include "_messages.html" %}
