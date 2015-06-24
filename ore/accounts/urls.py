@@ -14,7 +14,7 @@ urlpatterns = patterns(
                                         ))),
     url(r'^settings/', include(patterns('',
                                         url(r'^$', RedirectView.as_view(
-                                            pattern_name='settings-profile'), name='settings-root'),
+                                            pattern_name='settings-profile', permanent=True), name='settings-root' ),
                                         url(r'^profile/$', views.ProfileSettings.as_view(),
                                             name='settings-profile'),
                                         ))),
