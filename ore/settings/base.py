@@ -81,6 +81,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
+    "ore.core.context_processors.build_stamp",
 )
 
 ROOT_URLCONF = 'ore.urls'
@@ -167,3 +168,10 @@ PROHIBITED_NAMES = (
     'users',
     'staff',
 )
+
+BUILD_STAMP_PATH = os.path.join(os.path.dirname(BASE_DIR), 'build_stamp.txt')
+
+BUILD_STAMP = None
+if os.path.exists(BUILD_STAMP_PATH):
+    with open(BUILD_STAMP_PATH, 'r') as f:
+        BUILD_STAMP = f.read().strip()
