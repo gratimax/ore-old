@@ -1,3 +1,4 @@
+import actstream.urls
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -23,6 +24,7 @@ if settings.DISCOURSE_SSO_ENABLED:
     ]
 
 urlpatterns += [
+    url(r'^activity/', include(actstream.urls)),
     url(r'', include(ore.accounts.urls)),
     url(r'', include(ore.organizations.urls)),
     url(r'^users/(?P<namespace>' + EXTENDED_URL_REGEX + ')/$',
