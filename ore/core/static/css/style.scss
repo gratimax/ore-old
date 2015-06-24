@@ -428,3 +428,9 @@ a {
   border-right: 2px solid #ddd;
   border-bottom: 2px solid #ddd;
 }
+
+.pull-right.text-muted > .fa {
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+}
