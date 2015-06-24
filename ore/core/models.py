@@ -79,7 +79,8 @@ def organization_avatar_upload(instance, filename):
 
 
 class Organization(Namespace):
-    avatar_image = models.ImageField(upload_to=organization_avatar_upload, blank=True, null=True, default=None)
+    avatar_image = models.ImageField(
+        upload_to=organization_avatar_upload, blank=True, null=True, default=None)
 
     objects = UserFilteringManager()
 
@@ -108,15 +109,18 @@ class Organization(Namespace):
         if isinstance(user, AnonymousUser):
             return False
 
-        ownerships = user.__dict__.setdefault('_organization_ownerships', dict())
-        permissions = user.__dict__.setdefault('_organization_permissions', dict())
+        ownerships = user.__dict__.setdefault(
+            '_organization_ownerships', dict())
+        permissions = user.__dict__.setdefault(
+            '_organization_permissions', dict())
         if ownerships.get(self.id) is None:
             qs = self.teams.filter(users=user)
             qs = qs.filter(Q(is_all_projects=True) | Q(projects=project))
             if qs.filter(is_owner_team=True).count():
                 ownerships[self.id] = True
             else:
-                permissions[self.id] = qs.values_list('permissions__slug', flat=True)
+                permissions[self.id] = qs.values_list(
+                    'permissions__slug', flat=True)
 
         if self.id in ownerships:
             return True
@@ -133,4 +137,3 @@ class Organization(Namespace):
 
 
 reversion.register(Organization, follow=['namespace_ptr'])
-

@@ -15,6 +15,7 @@ OreUserManagerBase = UserManager.from_queryset(UserFilteringQuerySet)
 
 
 class OreUserManager(OreUserManagerBase):
+
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
         if not username:
@@ -44,7 +45,8 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     is_staff = models.BooleanField('staff status', default=False,
                                    help_text='Designates whether the user can log into this admin '
                                              'site.')
-    date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
+    date_joined = models.DateTimeField(
+        _t('creation date'), default=timezone.now)
 
     objects = OreUserManager()
 
@@ -100,7 +102,8 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
         return self.name
 
     def __repr__(self):
-        props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
+        props = (['staff'] if self.is_staff else []) + \
+            (['active'] if self.is_active else [])
         return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
 
 

@@ -29,11 +29,11 @@ class RegistrationForm(forms.Form):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-                'name',
-                'password',
-                'email',
-                'email_verify',
-                Submit('submit', 'Create account'),
+            'name',
+            'password',
+            'email',
+            'email_verify',
+            Submit('submit', 'Create account'),
         )
 
     def clean_email_verify(self):
@@ -51,10 +51,10 @@ class ProfileSettingsForm(forms.ModelForm):
         super(ProfileSettingsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-                Field('name', readonly=True),
-                'email',
-                Hidden('form', 'profile'),
-                Submit('submit', 'Update profile'),
+            Field('name', readonly=True),
+            'email',
+            Hidden('form', 'profile'),
+            Submit('submit', 'Update profile'),
         )
 
     def clean_name(self):
@@ -78,10 +78,10 @@ class PasswordChangeForm(forms.Form):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-                'old_password',
-                'new_password',
-                Hidden('form', 'password'),
-                Submit('submit', 'Change password'),
+            'old_password',
+            'new_password',
+            Hidden('form', 'password'),
+            Submit('submit', 'Change password'),
         )
         self.user = user
 

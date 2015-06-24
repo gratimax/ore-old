@@ -31,7 +31,8 @@ class MultiFormMixin(object):
 
     def get_multi_form_class(self):
         if self.multi_form_class is None:
-            raise ValueError("You must define multi_form_class or override get_multi_form_class!")
+            raise ValueError(
+                "You must define multi_form_class or override get_multi_form_class!")
         return self.multi_form_class
 
     def get_multi_form_kwargs(self):
@@ -157,7 +158,8 @@ class VersionsDetailView(ProjectNavbarMixin, DetailView):
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace

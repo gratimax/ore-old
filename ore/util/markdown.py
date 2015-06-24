@@ -56,5 +56,6 @@ MARKDOWN_EXTRAS = [
 
 def compile(text):
     md = markdown(text, extras=MARKDOWN_EXTRAS)
-    sanitized = clean(md, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, styles=ALLOWED_STYLES)
+    sanitized = clean(
+        md, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, styles=ALLOWED_STYLES)
     return sanitized

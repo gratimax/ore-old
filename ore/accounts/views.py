@@ -80,8 +80,10 @@ class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
         if request.method == 'POST':
             data = request.POST
 
-        self.profile_form = self.get_profile_form(request.user, submitted_form, data)
-        self.password_form = self.get_password_change_form(request.user, submitted_form, data)
+        self.profile_form = self.get_profile_form(
+            request.user, submitted_form, data)
+        self.password_form = self.get_password_change_form(
+            request.user, submitted_form, data)
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -122,11 +124,13 @@ class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
         elif submitted_form == 'password':
             if self.password_form.is_valid():
                 self.password_form.save()
-                messages.success(request, "Your password was changed successfully.")
+                messages.success(
+                    request, "Your password was changed successfully.")
                 # log them in again(!)
                 user = authenticate(
                     username=request.user.name,
-                    password=self.password_form.cleaned_data.get('new_password')
+                    password=self.password_form.cleaned_data.get(
+                        'new_password')
                 )
                 login(request, user)
 

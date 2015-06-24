@@ -8,6 +8,7 @@ from ore.versions.models import Version, File
 
 
 class VisibilityTestCase(TestCase):
+
     def make_project(self, name, namespace, status=Project.STATUS.active):
         proj = Project.objects.create(
             name=name, namespace=namespace,
@@ -80,6 +81,7 @@ class VisibilityTestCase(TestCase):
 
 
 class RepoUserVisibilityTestCase(VisibilityTestCase):
+
     def test_user_visible_anonymously(self):
         user_joe = self.make_user('joe')
         self.assertUserCanSee(OreUser, AnonymousUser(), user_joe)
@@ -98,7 +100,6 @@ class RepoUserVisibilityTestCase(VisibilityTestCase):
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(OreUser, user_janet, user_joe)
 
-
     def test_deleted_user_not_visible_anonymously(self):
         user_joe = self.make_user('joe', status=OreUser.STATUS.deleted)
         self.assertUserCanNotSee(OreUser, AnonymousUser(), user_joe)
@@ -115,6 +116,7 @@ class RepoUserVisibilityTestCase(VisibilityTestCase):
 
 
 class OrganizationVisibilityTestCase(VisibilityTestCase):
+
     def test_organization_visible_anonymously(self):
         org_sponge = self.make_organization('Sponge')
         self.assertUserCanSee(Organization, AnonymousUser(), org_sponge)
@@ -134,41 +136,48 @@ class OrganizationVisibilityTestCase(VisibilityTestCase):
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(Organization, user_janet, org_sponge)
 
-
     def test_deleted_organization_not_visible_anonymously(self):
-        org_sponge = self.make_organization('Sponge', status=Organization.STATUS.deleted)
+        org_sponge = self.make_organization(
+            'Sponge', status=Organization.STATUS.deleted)
         self.assertUserCanNotSee(Organization, AnonymousUser(), org_sponge)
 
     def test_deleted_organization_not_visible_randomer(self):
-        org_sponge = self.make_organization('Sponge', status=Organization.STATUS.deleted)
+        org_sponge = self.make_organization(
+            'Sponge', status=Organization.STATUS.deleted)
         user_jane = self.make_user('jane')
         self.assertUserCanNotSee(Organization, user_jane, org_sponge)
 
     def test_deleted_organization_not_visible_owner(self):
         user_joe = self.make_user('joe')
-        org_sponge = self.make_organization('Sponge', owners=[user_joe], status=Organization.STATUS.deleted)
+        org_sponge = self.make_organization(
+            'Sponge', owners=[user_joe], status=Organization.STATUS.deleted)
         self.assertUserCanNotSee(Organization, user_joe, org_sponge)
 
     def test_deleted_organization_visible_staff(self):
-        org_sponge = self.make_organization('Sponge', status=Organization.STATUS.deleted)
+        org_sponge = self.make_organization(
+            'Sponge', status=Organization.STATUS.deleted)
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(Organization, user_janet, org_sponge)
 
 
 class UserNamespaceMixin(object):
+
     def make_namespace(self, **kwargs):
         user_joe = self.make_user('joe', **kwargs)
         return user_joe, user_joe
 
 
 class OrganizationNamespaceMixin(object):
+
     def make_namespace(self, **kwargs):
         user_joe = self.make_user('joe')
-        org_sponge = self.make_organization('Sponge', owners=[user_joe], **kwargs)
+        org_sponge = self.make_organization(
+            'Sponge', owners=[user_joe], **kwargs)
         return user_joe, org_sponge
 
 
 class ProjectVisibilityTestCaseMixin(object):
+
     def test_project_visible_anonymously(self):
         user_joe, namespace = self.make_namespace()
         proj_sponge = self.make_project('Sponge', namespace)
@@ -189,7 +198,8 @@ class ProjectVisibilityTestCaseMixin(object):
         user_joe, namespace = self.make_namespace()
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        pteam_spongers = self.make_project_team('Spongers', proj_sponge, users=[user_jack])
+        pteam_spongers = self.make_project_team(
+            'Spongers', proj_sponge, users=[user_jack])
         self.assertUserCanSee(Project, user_jack, proj_sponge)
 
     def test_project_visible_staff(self):
@@ -197,7 +207,6 @@ class ProjectVisibilityTestCaseMixin(object):
         proj_sponge = self.make_project('Sponge', namespace)
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(Project, user_janet, proj_sponge)
-
 
     def test_namespace_deleted_project_not_visible_anonymously(self):
         user_joe, namespace = self.make_namespace(status='deleted')
@@ -219,7 +228,8 @@ class ProjectVisibilityTestCaseMixin(object):
         user_joe, namespace = self.make_namespace(status='deleted')
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        pteam_spongers = self.make_project_team('Spongers', proj_sponge, users=[user_jack])
+        pteam_spongers = self.make_project_team(
+            'Spongers', proj_sponge, users=[user_jack])
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_namespace_deleted_project_visible_staff(self):
@@ -228,33 +238,38 @@ class ProjectVisibilityTestCaseMixin(object):
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(Project, user_janet, proj_sponge)
 
-
     def test_deleted_project_not_visible_anonymously(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         self.assertUserCanNotSee(Project, AnonymousUser(), proj_sponge)
 
     def test_deleted_project_not_visible_randomer(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_jane = self.make_user('jane')
         self.assertUserCanNotSee(Project, user_jane, proj_sponge)
 
     def test_deleted_project_not_visible_owner(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         self.assertUserCanNotSee(Project, user_joe, proj_sponge)
 
     def test_deleted_project_not_visible_project_team_member(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_jack = self.make_user('jack')
-        pteam_spongers = self.make_project_team('Spongers', proj_sponge, users=[user_jack])
+        pteam_spongers = self.make_project_team(
+            'Spongers', proj_sponge, users=[user_jack])
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_deleted_project_visible_staff(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_janet = self.make_superuser('janet')
         self.assertUserCanSee(Project, user_janet, proj_sponge)
 
@@ -269,61 +284,73 @@ class OrganizationProjectVisibilityTestCase(OrganizationNamespaceMixin, ProjectV
         user_joe, namespace = self.make_namespace()
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
         self.assertUserCanSee(Project, user_jack, proj_sponge)
 
     def test_namespace_deleted_project_not_visible_irrelevant_organization_team_member(self):
         user_joe, namespace = self.make_namespace(status='deleted')
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_deleted_project_not_visible_irrelevant_organization_team_member(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=False)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_project_visible_all_projects_organization_team_member(self):
         user_joe, namespace = self.make_namespace()
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
         self.assertUserCanSee(Project, user_jack, proj_sponge)
 
     def test_namespace_deleted_project_not_visible_all_projects_organization_team_member(self):
         user_joe, namespace = self.make_namespace(status='deleted')
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_deleted_project_not_visible_all_projects_organization_team_member(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
+        oteam_spongers = self.make_organization_team(
+            'Spongers', namespace, users=[user_jack], projects=[], is_all_projects=True)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_project_visible_project_organization_team_member(self):
         user_joe, namespace = self.make_namespace()
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[proj_sponge], is_all_projects=False)
+        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[
+                                                     user_jack], projects=[proj_sponge], is_all_projects=False)
         self.assertUserCanSee(Project, user_jack, proj_sponge)
 
     def test_namespace_deleted_project_not_visible_project_organization_team_member(self):
         user_joe, namespace = self.make_namespace(status='deleted')
         proj_sponge = self.make_project('Sponge', namespace)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[proj_sponge], is_all_projects=False)
+        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[
+                                                     user_jack], projects=[proj_sponge], is_all_projects=False)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)
 
     def test_deleted_project_not_visible_project_organization_team_member(self):
         user_joe, namespace = self.make_namespace()
-        proj_sponge = self.make_project('Sponge', namespace, status=Project.STATUS.deleted)
+        proj_sponge = self.make_project(
+            'Sponge', namespace, status=Project.STATUS.deleted)
         user_jack = self.make_user('jack')
-        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[user_jack], projects=[proj_sponge], is_all_projects=False)
+        oteam_spongers = self.make_organization_team('Spongers', namespace, users=[
+                                                     user_jack], projects=[proj_sponge], is_all_projects=False)
         self.assertUserCanNotSee(Project, user_jack, proj_sponge)

@@ -19,7 +19,8 @@ class Version(models.Model):
 
     name = models.CharField('name', max_length=32,
                             validators=[
-                                validators.RegexValidator(TRIM_NAME_REGEX, 'Enter a valid version name.', 'invalid'),
+                                validators.RegexValidator(
+                                    TRIM_NAME_REGEX, 'Enter a valid version name.', 'invalid'),
                                 validate_not_prohibited,
                             ])
     description = models.TextField('description')
@@ -80,11 +81,14 @@ class File(models.Model):
     status = StatusField()
 
     project = models.ForeignKey(Project, related_name='files')
-    version = models.ForeignKey(Version, related_name='files', blank=True, null=True)
+    version = models.ForeignKey(
+        Version, related_name='files', blank=True, null=True)
 
-    file = models.FileField(upload_to=file_upload, blank=False, null=False, max_length=512)
+    file = models.FileField(
+        upload_to=file_upload, blank=False, null=False, max_length=512)
     file_name = models.CharField(blank=False, null=False, max_length=512)
-    file_extension = models.CharField('extension', max_length=12, blank=False, null=False)
+    file_extension = models.CharField(
+        'extension', max_length=12, blank=False, null=False)
     file_size = models.PositiveIntegerField(null=True, blank=False)
 
     objects = UserFilteringManager()
@@ -119,7 +123,8 @@ class File(models.Model):
 
     def save(self, *args, **kwargs):
         import posixpath
-        self.file_name, self.file_extension = posixpath.splitext(posixpath.basename(self.file.name))
+        self.file_name, self.file_extension = posixpath.splitext(
+            posixpath.basename(self.file.name))
         self.file_size = self.file.size
         super(File, self).save(*args, **kwargs)
 

@@ -6,9 +6,11 @@ register = template.Library()
 
 Node, NodeList = template.Node, template.NodeList
 
+
 @register.filter
 def as_user(value, arg):
     return value.as_user(arg)
+
 
 @register.assignment_tag
 def permitted(user, permslug, obj):
@@ -34,7 +36,8 @@ class IfPermittedNode(Node):
             permissions = permissions.split(',')
         object = self.object.resolve(context, True)
         check_func = any if self.check_any else all
-        result = check_func((object.user_has_permission(user, permission) for permission in permissions))
+        result = check_func(
+            (object.user_has_permission(user, permission) for permission in permissions))
         if result != self.negate:
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
@@ -43,7 +46,8 @@ class IfPermittedNode(Node):
 def do_ifpermitted(parser, token, negate, check_any):
     bits = list(token.split_contents())
     if len(bits) != 4:
-        raise TemplateSyntaxError("%r takes three arguments - the user, the permission and the object" % bits[0])
+        raise TemplateSyntaxError(
+            "%r takes three arguments - the user, the permission and the object" % bits[0])
     end_tag = 'end' + bits[0]
     nodelist_true = parser.parse(('else', end_tag))
     token = parser.next_token()
@@ -57,17 +61,21 @@ def do_ifpermitted(parser, token, negate, check_any):
     object = parser.compile_filter(bits[3])
     return IfPermittedNode(user, permission, object, nodelist_true, nodelist_false, negate, check_any)
 
+
 @register.tag
 def ifpermitted(parser, token):
     return do_ifpermitted(parser, token, False, False)
+
 
 @register.tag
 def ifnotpermitted(parser, token):
     return do_ifpermitted(parser, token, True, False)
 
+
 @register.tag
 def ifanypermitted(parser, token):
     return do_ifpermitted(parser, token, False, True)
+
 
 @register.tag
 def ifnotanypermitted(parser, token):

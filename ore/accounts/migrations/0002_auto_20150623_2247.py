@@ -21,16 +21,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='oreuser',
             name='email',
-            field=models.EmailField(verbose_name='email', max_length=254, blank=True),
+            field=models.EmailField(
+                verbose_name='email', max_length=254, blank=True),
         ),
         migrations.AlterField(
             model_name='oreuser',
             name='groups',
-            field=models.ManyToManyField(help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_query_name='user', related_name='user_set', verbose_name='groups', to='auth.Group', blank=True),
+            field=models.ManyToManyField(help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+                                         related_query_name='user', related_name='user_set', verbose_name='groups', to='auth.Group', blank=True),
         ),
         migrations.AlterField(
             model_name='oreuser',
             name='last_login',
-            field=models.DateTimeField(verbose_name='last login', null=True, blank=True),
+            field=models.DateTimeField(
+                verbose_name='last login', null=True, blank=True),
         ),
     ]

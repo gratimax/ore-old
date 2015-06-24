@@ -16,7 +16,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 def from_env(env_name, default=None):
     value = os.environ.get(env_name, default)
     if value is None:
-        raise ValueError("Environment variable '{}' must be set or have a default".format(env_name))
+        raise ValueError(
+            "Environment variable '{}' must be set or have a default".format(env_name))
     return value
 
 # Quick-start development settings - unsuitable for production
@@ -135,10 +136,10 @@ TEMPLATE_DIRS = ()
 
 LOGIN_REDIRECT_URL = '/'
 
-### Crispy Forms
+# Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-### Prohibited names (for namespaces, and projects, and versions)
+# Prohibited names (for namespaces, and projects, and versions)
 PROHIBITED_NAMES = (
     'manage',
     'new',

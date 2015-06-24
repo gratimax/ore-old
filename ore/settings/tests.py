@@ -5,6 +5,7 @@ except ImportError:
 
 
 class DisableMigrations(object):
+
     def __contains__(self, item):
         return True
 
@@ -12,5 +13,6 @@ class DisableMigrations(object):
         return 'notmigrations'
 
 
-# Migrations slow down tests quite substantially, so, at least locally, don't run with migrations
+# Migrations slow down tests quite substantially, so, at least locally,
+# don't run with migrations
 MIGRATION_MODULES = DisableMigrations()

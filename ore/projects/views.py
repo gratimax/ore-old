@@ -53,7 +53,8 @@ class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -92,7 +93,8 @@ class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateVi
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -114,7 +116,8 @@ class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateVi
 
     def form_valid(self, form):
         self.object = form.save()
-        messages.success(self.request, "The project's description has been changed.")
+        messages.success(
+            self.request, "The project's description has been changed.")
         return redirect(reverse('repo-projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
@@ -146,7 +149,8 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -240,20 +244,22 @@ class ProjectsNewView(FormView):
         description = form.cleaned_data['description']
 
         if namespace.projects.filter(name=name).count():
-            form.add_error('name', 'That project already exists for the given namespace')
+            form.add_error(
+                'name', 'That project already exists for the given namespace')
             return self.form_invalid(form)
 
         if isinstance(namespace, Organization) and not namespace.user_has_permission(self.request.user, 'project.create'):
-            form.add_error('name', 'You do not have permission to create a project for that namespace')
+            form.add_error(
+                'name', 'You do not have permission to create a project for that namespace')
             return self.form_invalid(form)
 
-        project = Project.objects.create(name=name, namespace=namespace, description=description)
+        project = Project.objects.create(
+            name=name, namespace=namespace, description=description)
         project.save()
 
         messages.success(self.request, "Your project has been created")
 
         return redirect(reverse('repo-projects-detail', args=(namespace.name, project.name)))
-
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

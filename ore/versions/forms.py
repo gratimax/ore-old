@@ -36,7 +36,7 @@ class NewFileForm(forms.ModelForm):
         super(NewFileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
-           'file'
+            'file'
         )
 
     class Meta:
@@ -44,6 +44,8 @@ class NewFileForm(forms.ModelForm):
         fields = ('file',)
 
 BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
+
+
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
 
     def __init__(self, *args, **kwargs):

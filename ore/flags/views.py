@@ -32,9 +32,11 @@ class FlagView(FormView):
 
         flag = Flag.create_flag(content, flag_type, flagger, extra_comments)
         if flag:
-            messages.success(self.request, "You have successfully flagged the content.")
+            messages.success(
+                self.request, "You have successfully flagged the content.")
         else:
-            messages.warning(self.request, "You have already flagged this content.")
+            messages.warning(
+                self.request, "You have already flagged this content.")
 
         return redirect(self._get_redirect_path())
 
@@ -63,6 +65,7 @@ class FlagView(FormView):
 
 
 class ProjectsFlagView(FlagView):
+
     def _get_content(self):
         self.namespace = self.kwargs['namespace']
         self.project = self.kwargs['project']
