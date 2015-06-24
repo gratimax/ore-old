@@ -73,3 +73,61 @@ class SettingsMixin(object):
 class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
     template_name = 'accounts/settings/profile.html'
     settings_name = 'profile'
+
+    def dispatch(self, request, *args, **kwargs):
+        data = None
+        submitted_form = request.POST.get('form', None)
+        if request.method == 'POST':
+            data = request.POST
+
+        self.profile_form = self.get_profile_form(request.user, submitted_form, data)
+        self.password_form = self.get_password_change_form(request.user, submitted_form, data)
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_profile_form(self, instance, submitted_form=None, data=None):
+        if submitted_form != 'profile':
+            data = None
+
+        return forms.ProfileSettingsForm(
+            data,
+            instance=instance,
+            prefix='profile'
+        )
+
+    def get_password_change_form(self, instance, submitted_form=None, data=None):
+        if submitted_form != 'password':
+            data = None
+
+        return forms.PasswordChangeForm(
+            data,
+            user=instance,
+            prefix='password'
+        )
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['profile_form'] = self.profile_form
+        data['password_form'] = self.password_form
+        return data
+
+    def post(self, request, *args, **kwargs):
+        submitted_form = request.POST.get('form', None)
+
+        if submitted_form == 'profile':
+            if self.profile_form.is_valid():
+                self.profile_form.save()
+                messages.success(request, "Your profile has been updated.")
+                self.profile_form = self.get_profile_form(request.user)
+        elif submitted_form == 'password':
+            if self.password_form.is_valid():
+                self.password_form.save()
+                messages.success(request, "Your password was changed successfully.")
+                # log them in again(!)
+                user = authenticate(
+                    username=request.user.name,
+                    password=self.password_form.cleaned_data.get('new_password')
+                )
+                login(request, user)
+
+        return self.get(request)
