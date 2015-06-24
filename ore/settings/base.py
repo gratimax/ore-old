@@ -37,6 +37,7 @@ AUTH_USER_MODEL = 'accounts.OreUser'
 # Application definition
 
 INSTALLED_APPS = (
+    'actstream',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -136,6 +137,16 @@ BOWER_INSTALLED_APPS = (
 TEMPLATE_DIRS = ()
 
 LOGIN_REDIRECT_URL = '/'
+
+# Activity Stream
+
+ACTSTREAM_SETTINGS = {
+    'MANAGER': 'actstream.managers.ActionManager',
+    'FETCH_RELATIONS': True,
+    'USE_PREFETCH': True,
+    'USE_JSONFIELD': True,
+    'GFK_FETCH_DEPTH': 1,
+}
 
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

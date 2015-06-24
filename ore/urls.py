@@ -1,3 +1,4 @@
+import actstream.urls
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
@@ -13,6 +14,8 @@ urlpatterns = patterns(
 
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^activity/', include(actstream.urls)),
 
     url(r'', include(ore.accounts.urls)),
     url(r'', include(ore.core.urls)),

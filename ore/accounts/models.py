@@ -1,3 +1,4 @@
+from actstream import registry
 from ore.core.models import Namespace, Organization
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AnonymousUser, UserManager
 from django.contrib.contenttypes.models import ContentType
