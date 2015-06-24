@@ -9,18 +9,20 @@ from ore.versions.models import Version, File
 
 class VisibilityTestCase(TestCase):
     def make_project(self, name, namespace, status=Project.STATUS.active):
-        return Project.objects.create(
+        proj = Project.objects.create(
             name=name, namespace=namespace,
             description='?', status=status,
         )
+        return proj
 
     def make_user(self, username, status=OreUser.STATUS.active):
         user = OreUser.objects.create_user(
             username, 'password', '{}@ore.spongepowered.org'.format(username)
         )
-        if status is not OreUser.STATUS.active:
-            user.status = status
-            user.save()
+        user.is_staff = False
+        user.is_superuser = False
+        user.status = status
+        user.save()
         return user
 
     def make_superuser(self, *args, **kwargs):
