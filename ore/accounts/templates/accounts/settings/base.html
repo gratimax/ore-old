@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block title %}
+Settings
+{% endblock %}
+{% block content %}
+<div class="container-fluid wrapper-960">
+    <div class="row">
+        <div class="col-md-9">
+        	{% block page %}{% endblock %}
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Your Settings</h3>
+                </div>
+                <div class="list-group">
+                    <a href="{% url "settings-profile" %}" class="list-group-item {% if active_settings == "profile" %}active{% endif %}">
+                        <i class="fa fa-user"></i> Profile
+                    </a>
+                </div>
+            </div>
+
+            {% if user.owned_organizations|length > 0 %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Organization Settings</h3>
+                </div>
+                <div class="list-group">
+                    {% for org in user.owned_organization %}
+                    <a href="{% url "settings-organization" organization_slug=org.name %}" class="list-group-item">
+                        <img src="{{ org.avatar_image }}"> {{ org.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

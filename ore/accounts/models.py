@@ -1,4 +1,4 @@
-from ore.core.models import Namespace
+from ore.core.models import Namespace, Organization
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AnonymousUser, UserManager
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
@@ -89,6 +89,12 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
         if isinstance(user, AnonymousUser):
             return False
         return user == self
+
+    def owned_organizations(self):
+        return Organization.objects.filter(
+            teams__is_owner_team=True,
+            teams__users=self
+        )
 
     def __str__(self):
         return self.name

@@ -2,10 +2,9 @@ from ore.accounts.models import OreUser
 from ore.core import decorators
 from ore.core.models import Namespace, Organization
 from django.http import HttpResponse
-
-# Create your views here.
 from django.views.generic import FormView, DetailView, ListView, View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.contrib.auth.decorators import login_required
 from ore.projects.models import Project
 from ore.teams.forms import TeamPermissionsForm
 
@@ -17,7 +16,20 @@ class RequiresPermissionMixin(object):
         return self.permissions
 
     def dispatch(self, request, *args, **kwargs):
-        return decorators.permission_required(self.get_permissions())(super(RequiresPermissionMixin, self).dispatch)(request, *args, **kwargs)
+        return decorators.permission_required(
+            self.get_permissions()
+        )(
+            super(RequiresPermissionMixin, self).dispatch
+        )(request, *args, **kwargs)
+
+
+class RequiresLoggedInMixin(object):
+
+    def dispatch(self, request, *args, **kwargs):
+        return login_required()(
+            super(RequiresLoggedInMixin, self).dispatch
+        )(request, *args, **kwargs)
+
 
 class HomeView(View, TemplateResponseMixin, ContextMixin):
 
@@ -36,15 +48,6 @@ class HomeView(View, TemplateResponseMixin, ContextMixin):
             context=context,
             **response_kwargs
         )
-
-
-class FormTestView(FormView):
-    form_class = TeamPermissionsForm
-    template_name = 'form_test.html'
-
-    def form_valid(self, form):
-        from pprint import pformat
-        return HttpResponse(pformat(form.get_selected_permissions()), content_type='text/plain')
 
 
 class NamespaceDetailView(DetailView):
@@ -76,3 +79,12 @@ class ExploreView(ListView):
 
     template_name = 'repo/projects/index.html'
     context_object_name = 'projects'
+
+
+class FormTestView(FormView):
+    form_class = TeamPermissionsForm
+    template_name = 'form_test.html'
+
+    def form_valid(self, form):
+        from pprint import pformat
+        return HttpResponse(pformat(form.get_selected_permissions()), content_type='text/plain')
