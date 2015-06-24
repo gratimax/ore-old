@@ -13,6 +13,7 @@ from ore.projects.models import Project
 class ProjectForm(forms.ModelForm):
 
     namespace = forms.ModelChoiceField(label='Owner User / Organization', queryset=None, empty_label=None)
+    description = forms.CharField(label='Tagline (optional)', widget=forms.TextInput())
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -36,7 +37,7 @@ class ProjectForm(forms.ModelForm):
 
 class ProjectDescriptionForm(forms.ModelForm):
 
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': '3'}))
+    description = forms.CharField(label='Tagline (optional)', widget=forms.TextInput())
 
     def __init__(self, *args, **kwargs):
         namespace = kwargs.pop('namespace')
