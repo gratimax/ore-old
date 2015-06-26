@@ -37,6 +37,7 @@ AUTH_USER_MODEL = 'accounts.OreUser'
 # Application definition
 
 INSTALLED_APPS = (
+    'actstream',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,8 +48,6 @@ INSTALLED_APPS = (
 
     'compressor',
     'djangobower',
-
-    'actstream',
 
     'crispy_forms',
     'reversion',
@@ -136,16 +135,7 @@ BOWER_INSTALLED_APPS = (
 )
 
 # Templates
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': TEMPLATE_CONTEXT_PROCESSORS
-        }
-    }
-]
+TEMPLATE_DIRS = ()
 
 LOGIN_REDIRECT_URL = '/'
 
