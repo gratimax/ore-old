@@ -16,7 +16,4 @@ RUN \
     DB_USER=lemons \
     DB_PASSWORD=lemons \
     DB_HOST=lemons \
-    python3 -m ore.manage bower_install && \
-    apt-get remove -y npm && \
-    apt-get autoremove -y && \
-    rm -rf /usr/local/{lib/node{,/.npm,_modules},bin,share/man}/{npm,bower}* /var/lib/apt/lists/*
+    python3 -m ore.manage bower_install
