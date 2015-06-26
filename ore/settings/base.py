@@ -37,7 +37,6 @@ AUTH_USER_MODEL = 'accounts.OreUser'
 # Application definition
 
 INSTALLED_APPS = (
-    'actstream',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
