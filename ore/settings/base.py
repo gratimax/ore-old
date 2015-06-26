@@ -149,16 +149,6 @@ TEMPLATES = [
 
 LOGIN_REDIRECT_URL = '/'
 
-# Activity Stream
-
-ACTSTREAM_SETTINGS = {
-    'MANAGER': 'actstream.managers.ActionManager',
-    'FETCH_RELATIONS': True,
-    'USE_PREFETCH': True,
-    'USE_JSONFIELD': True,
-    'GFK_FETCH_DEPTH': 1,
-}
-
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

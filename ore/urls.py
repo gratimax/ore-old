@@ -1,4 +1,3 @@
-import actstream.urls
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
@@ -15,10 +14,6 @@ urlpatterns = patterns(
 
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
-
-    url(r'^activity/', include(actstream.urls)),
-
-
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DISCOURSE_SSO_ENABLED:
