@@ -7,7 +7,7 @@ CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-"]
 WORKDIR /app
 
 ADD requirements/ /app/requirements/
-RUN pip install -r requirements/staging.txt
+RUN pip3 install -r requirements/docker.txt
 
 ADD . /app
 RUN \
@@ -16,7 +16,7 @@ RUN \
     DB_USER=lemons \
     DB_PASSWORD=lemons \
     DB_HOST=lemons \
-    python3.4 -m ore.manage bower_install && \
+    python3 -m ore.manage bower_install && \
     apt-get remove -y npm && \
     apt-get autoremove -y && \
     rm -rf /usr/local/{lib/node{,/.npm,_modules},bin,share/man}/{npm,bower}* /var/lib/apt/lists/*
