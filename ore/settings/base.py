@@ -60,7 +60,8 @@ INSTALLED_APPS = (
     'ore.projects',
     'ore.teams',
     'ore.versions',
-    'ore.flags'
+    'ore.flags',
+    'ore.discourse_sso',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -196,3 +197,8 @@ BUILD_STAMP = None
 if os.path.exists(BUILD_STAMP_PATH):
     with open(BUILD_STAMP_PATH, 'r') as f:
         BUILD_STAMP = f.read().strip()
+
+DISCOURSE_SSO_ENABLED = from_env('DISCOURSE_SSO_ENABLED', False) == 'true'
+if DISCOURSE_SSO_ENABLED:
+    DISCOURSE_SSO_URL = from_env('DISCOURSE_SSO_URL', 'https://forums.spongepowered.org/session/sso_provider')
+    DISCOURSE_SSO_SECRET = from_env('DISCOURSE_SSO_SECRET')

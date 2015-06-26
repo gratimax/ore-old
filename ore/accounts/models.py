@@ -46,6 +46,7 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     is_staff = models.BooleanField('staff status', default=False,
                                    help_text='Designates whether the user can log into this admin '
                                              'site.')
+    external_id = models.CharField(default=None, blank=True, null=True, max_length=64, unique=True)
     date_joined = models.DateTimeField(
         _t('creation date'), default=timezone.now)
 
