@@ -422,9 +422,9 @@ a {
   background-color: white;
   margin-top: -20px;
   padding: 1px 10px 20px 10px;
-  border-left: 2px solid #ddd;
-  border-right: 2px solid #ddd;
-  border-bottom: 2px solid #ddd;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
 }
 
 .pull-right > .fa {
