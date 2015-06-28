@@ -6,10 +6,10 @@ CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-"]
 
 WORKDIR /app
 
-ADD requirements/ /app/requirements/
+COPY requirements/ /app/requirements/
 RUN pip3 install -r requirements/docker.txt
 
-ADD . /app
+COPY . /app
 RUN \
     DJANGO_SETTINGS_MODULE=ore.settings.docker \
     SECRET_KEY=lemons \
