@@ -7,7 +7,7 @@ CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-"]
 WORKDIR /app
 
 COPY requirements/ /app/requirements/
-RUN pip3 install -r requirements/docker.txt
+RUN pip3 install --find-links https://repo.spongepowered.org/wheels/ -r requirements/docker.txt
 
 COPY . /app
 RUN \
