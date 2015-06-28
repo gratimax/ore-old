@@ -3,7 +3,7 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 REQUIREMENTSPATH=$(dirname "$SCRIPTPATH")/requirements
-OUTPUTDIR=$(pwd)/wheels-${ENVIRONMENT}
+OUTPUTDIR=xxxunspecified
 
 ENVIRONMENT=base
 if [ "$#" -eq 1 ]; then
@@ -18,10 +18,14 @@ else
 	exit 3
 fi
 
+if [ "$OUTPUTDIR" == "xxxunspecified" ]; then
+	OUTPUTDIR=$(pwd)/wheels-${ENVIRONMENT}
+fi
+
 ENVIRONMENT_FILE="${REQUIREMENTSPATH}/${ENVIRONMENT}.txt"
 
 echo Building wheels for $ENVIRONMENT from $ENVIRONMENT_FILE
-if [ ! -f $ENVIRONMENT_PATH ]; then
+if [ ! -f $ENVIRONMENT_FILE ]; then
 	echo No such environment: $ENVIRONMENT
 	exit 1
 fi
