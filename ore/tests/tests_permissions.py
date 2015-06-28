@@ -7,6 +7,13 @@ from ore.teams.models import OrganizationTeam
 
 class PermissionsTestCase(TestCase):
 
+    def make_john(self):
+        user_john = OreUser.objects.create_user(
+            'john', 'password', 'john@ore.spongepowered.org')
+        user_john.is_superuser = False
+        user_john.save()
+        return user_john
+
     def setUp(self):
         self.permission_foo = Permission.objects.create(
             slug='foo.do', name='Do Foo', description='Performs foo')
@@ -17,8 +24,7 @@ class PermissionsTestCase(TestCase):
 
     def test_unrelated_people_cant_do_anything_on_organization(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         self.assertFalse(organization_sponge.user_has_permission(
             user_john, 'foo.do'), 'John can\'t foo.do')
@@ -32,8 +38,7 @@ class PermissionsTestCase(TestCase):
         project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge',
         )
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         self.assertFalse(project_sponge.user_has_permission(
             user_john, 'foo.do'), 'John can\'t foo.do')
@@ -47,8 +52,7 @@ class PermissionsTestCase(TestCase):
 
         team = organization_sponge.teams.get(is_owner_team=True)
 
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
         team.users = [user_john]
 
         self.assertTrue(organization_sponge.user_has_permission(
@@ -66,8 +70,7 @@ class PermissionsTestCase(TestCase):
 
         team = organization_sponge.teams.get(is_owner_team=True)
 
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
         team.users = [user_john]
 
         self.assertTrue(project_sponge.user_has_permission(
@@ -78,8 +81,7 @@ class PermissionsTestCase(TestCase):
             user_john, 'baz.do'), 'John can baz.do')
 
     def test_project_owner_can_do_everything_on_project(self):
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
         project_sponge = Project.objects.create(
             name='Sponge', namespace=user_john, description='Sponge'
         )
@@ -96,8 +98,7 @@ class PermissionsTestCase(TestCase):
         project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         team = OrganizationTeam.objects.create(
             name='People',
@@ -117,8 +118,7 @@ class PermissionsTestCase(TestCase):
 
     def test_organization_all_project_teams_grant_permissions_on_organisations(self):
         organization_sponge = Organization.objects.create(name='Sponge')
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         team = OrganizationTeam.objects.create(
             name='People',
@@ -141,8 +141,7 @@ class PermissionsTestCase(TestCase):
         project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         team = OrganizationTeam.objects.create(
             name='People',
@@ -169,8 +168,7 @@ class PermissionsTestCase(TestCase):
         project_spongeapi = Project.objects.create(
             name='SpongeAPI', namespace=organization_sponge, description='Sponge'
         )
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         team = OrganizationTeam.objects.create(
             name='People',
@@ -194,8 +192,7 @@ class PermissionsTestCase(TestCase):
         project_sponge = Project.objects.create(
             name='Sponge', namespace=organization_sponge, description='Sponge'
         )
-        user_john = OreUser.objects.create_user(
-            'john', 'password', 'john@ore.spongepowered.org')
+        user_john = self.make_john()
 
         team = OrganizationTeam.objects.create(
             name='People',
