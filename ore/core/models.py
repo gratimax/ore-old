@@ -108,6 +108,8 @@ class Organization(Namespace):
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
             return False
+        elif user.is_superuser:
+            return True
 
         ownerships = user.__dict__.setdefault(
             '_organization_ownerships', dict())

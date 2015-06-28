@@ -91,6 +91,8 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
             return False
+        elif user.is_superuser:
+            return True
         return user == self
 
     def owned_organizations(self):
