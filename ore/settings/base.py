@@ -16,7 +16,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 def from_env(env_name, default=None):
     value = os.environ.get(env_name, default)
     if value is None:
-        raise ValueError("Environment variable '{}' must be set or have a default".format(env_name))
+        raise ValueError(
+            "Environment variable '{}' must be set or have a default".format(env_name))
     return value
 
 # Quick-start development settings - unsuitable for production
@@ -57,7 +58,8 @@ INSTALLED_APPS = (
     'ore.projects',
     'ore.teams',
     'ore.versions',
-    'ore.flags'
+    'ore.flags',
+    'ore.discourse_sso',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -80,6 +82,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
+    "ore.core.context_processors.build_stamp",
 )
 
 ROOT_URLCONF = 'ore.urls'
@@ -135,10 +138,10 @@ TEMPLATE_DIRS = ()
 
 LOGIN_REDIRECT_URL = '/'
 
-### Crispy Forms
+# Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-### Prohibited names (for namespaces, and projects, and versions)
+# Prohibited names (for namespaces, and projects, and versions)
 PROHIBITED_NAMES = (
     'manage',
     'new',
@@ -154,4 +157,27 @@ PROHIBITED_NAMES = (
     'project',
     'admin',
     'administrator',
+    'static',
+    'settings',
+    'config',
+    'setting',
+    'login',
+    'logout',
+    'log-in',
+    'log-out',
+    'user',
+    'users',
+    'staff',
 )
+
+BUILD_STAMP_PATH = os.path.join(os.path.dirname(BASE_DIR), 'build_stamp.txt')
+
+BUILD_STAMP = None
+if os.path.exists(BUILD_STAMP_PATH):
+    with open(BUILD_STAMP_PATH, 'r') as f:
+        BUILD_STAMP = f.read().strip()
+
+DISCOURSE_SSO_ENABLED = from_env('DISCOURSE_SSO_ENABLED', False) == 'true'
+if DISCOURSE_SSO_ENABLED:
+    DISCOURSE_SSO_URL = from_env('DISCOURSE_SSO_URL', 'https://forums.spongepowered.org/session/sso_provider')
+    DISCOURSE_SSO_SECRET = from_env('DISCOURSE_SSO_SECRET')

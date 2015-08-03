@@ -1,4 +1,4 @@
-from ore.core.models import Namespace
+from ore.core.models import Namespace, Organization
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AnonymousUser, UserManager
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
@@ -11,7 +11,11 @@ from ore.core.util import UserFilteringQuerySet, prefix_q
 import reversion
 
 
-class OreUserManager(UserManager):
+OreUserManagerBase = UserManager.from_queryset(UserFilteringQuerySet)
+
+
+class OreUserManager(OreUserManagerBase):
+
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
         if not username:
@@ -41,9 +45,11 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     is_staff = models.BooleanField('staff status', default=False,
                                    help_text='Designates whether the user can log into this admin '
                                              'site.')
-    date_joined = models.DateTimeField(_t('creation date'), default=timezone.now)
+    external_id = models.CharField(default=None, blank=True, null=True, max_length=64, unique=True)
+    date_joined = models.DateTimeField(
+        _t('creation date'), default=timezone.now)
 
-    objects = OreUserManager.from_queryset(UserFilteringQuerySet)()
+    objects = OreUserManager()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = ['email']
@@ -85,13 +91,22 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
             return False
+        elif user.is_superuser:
+            return True
         return user == self
+
+    def owned_organizations(self):
+        return Organization.objects.filter(
+            teams__is_owner_team=True,
+            teams__users=self
+        )
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        props = (['staff'] if self.is_staff else []) + (['active'] if self.is_active else [])
+        props = (['staff'] if self.is_staff else []) + \
+            (['active'] if self.is_active else [])
         return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
 
 

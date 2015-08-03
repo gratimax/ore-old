@@ -14,7 +14,18 @@ from ore.core.views import RequiresPermissionMixin
 from ore.versions.models import File
 
 
-class ProjectsDetailView(DetailView):
+class ProjectNavbarMixin(object):
+
+    def get_active_project_tab(self):
+        return self.active_project_tab
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_project_tab'] = self.get_active_project_tab()
+        return context
+
+
+class ProjectsDetailView(ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -22,6 +33,7 @@ class ProjectsDetailView(DetailView):
 
     template_name = 'repo/projects/detail.html'
     context_object_name = 'proj'
+    active_project_tab = 'docs'
 
     def get_queryset(self):
         return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
@@ -35,7 +47,7 @@ class ProjectsDetailView(DetailView):
         context_data['home_page'] = home_page
         return context_data
 
-class ProjectsManageView(RequiresPermissionMixin, DetailView):
+class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -43,12 +55,14 @@ class ProjectsManageView(RequiresPermissionMixin, DetailView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.edit']
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -68,7 +82,7 @@ class ProjectsManageView(RequiresPermissionMixin, DetailView):
         return context
 
 
-class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
+class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
 
     model = Project
     slug_field = 'name'
@@ -76,19 +90,19 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.edit']
 
     form_class = ProjectDescriptionForm
-
-    fields = ['description']
 
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -110,7 +124,8 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        messages.success(self.request, "The project's description has been changed.")
+        messages.success(
+            self.request, "The project's description has been changed.")
         return redirect(reverse('repo-projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
@@ -121,7 +136,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, UpdateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
 
 
-class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
+class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
 
     model = Project
     slug_field = 'name'
@@ -129,19 +144,19 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.rename']
 
     form_class = ProjectRenameForm
-
-    fields = ['name']
 
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace
@@ -164,6 +179,15 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
+
+        name = form.cleaned_data['name']
+        namespace = form.cleaned_data['namespace']
+
+        if namespace.projects.filter(name=name).count():
+            form.add_error(
+                'name', 'That project already exists for the given namespace')
+            return self.form_invalid(form)
+
         messages.success(self.request, "The project's name has been changed.")
         return redirect(reverse('repo-projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
@@ -175,7 +199,7 @@ class ProjectsRenameView(RequiresPermissionMixin, UpdateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
 
 
-class ProjectsDeleteView(RequiresPermissionMixin, DeleteView):
+class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView):
 
     model = Project
     slug_field = 'name'
@@ -183,6 +207,7 @@ class ProjectsDeleteView(RequiresPermissionMixin, DeleteView):
 
     template_name = 'repo/projects/manage.html'
     context_object_name = 'proj'
+    active_project_tab = 'manage'
 
     permissions = ['project.delete']
 
@@ -204,6 +229,7 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
     model = File
     slug_field = 'file_name'
     slug_url_kwarg = 'file'
+    permanent = False
 
     def get_queryset(self):
         return File.objects.as_user(self.request.user).filter(
@@ -233,20 +259,22 @@ class ProjectsNewView(FormView):
         description = form.cleaned_data['description']
 
         if namespace.projects.filter(name=name).count():
-            form.add_error('name', 'That project already exists for the given namespace')
+            form.add_error(
+                'name', 'That project already exists for the given namespace')
             return self.form_invalid(form)
 
         if isinstance(namespace, Organization) and not namespace.user_has_permission(self.request.user, 'project.create'):
-            form.add_error('name', 'You do not have permission to create a project for that namespace')
+            form.add_error(
+                'name', 'You do not have permission to create a project for that namespace')
             return self.form_invalid(form)
 
-        project = Project.objects.create(name=name, namespace=namespace, description=description)
+        project = Project.objects.create(
+            name=name, namespace=namespace, description=description)
         project.save()
 
         messages.success(self.request, "Your project has been created")
 
         return redirect(reverse('repo-projects-detail', args=(namespace.name, project.name)))
-
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

@@ -17,15 +17,18 @@ def prefix_q(prefix, **kwargs):
 
 
 class UserFilteringQuerySet(models.QuerySet):
+
     def as_user(self, user):
         return self.filter(self.model.is_visible_q('', user))
 
 UserFilteringManager = models.Manager.from_queryset(UserFilteringQuerySet)
+
 
 class UserFilteringInheritanceQuerySet(InheritanceQuerySetMixin, UserFilteringQuerySet):
     pass
 
 
 class UserFilteringInheritanceManager(InheritanceManagerMixin, UserFilteringManager):
+
     def get_queryset(self):
         return UserFilteringInheritanceQuerySet(self.model, using=self._db)

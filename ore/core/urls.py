@@ -8,5 +8,6 @@ urlpatterns = patterns(
     url(r'^explore/$', ExploreView.as_view(), name='repo-explore'),
     url(r'^test/$', FormTestView.as_view()),
 
-    url(r'^(?P<namespace>' + EXTENDED_URL_REGEX + ')/$', NamespaceDetailView.as_view(), name='repo-namespace'),
+    url(r'^(?P<namespace>' + EXTENDED_URL_REGEX + ')/$',
+        NamespaceDetailView.as_view(), name='repo-namespace'),
 )

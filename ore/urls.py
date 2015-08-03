@@ -7,13 +7,21 @@ import ore.accounts.urls
 import ore.projects.urls
 import ore.versions.urls
 import ore.teams.urls
+import ore.discourse_sso.urls
 
 urlpatterns = patterns(
     '',
 
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DISCOURSE_SSO_ENABLED:
+    urlpatterns += patterns('',
+        url(r'', include(ore.discourse_sso.urls)),
+    )
+
+urlpatterns += patterns('',
     url(r'', include(ore.accounts.urls)),
     url(r'', include(ore.core.urls)),
     url(r'', include(ore.projects.urls)),
@@ -21,5 +29,4 @@ urlpatterns = patterns(
     # commented out for now because there are no urls in these files
     url(r'', include(ore.versions.urls)),
     url(r'', include(ore.teams.urls))
-
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+)

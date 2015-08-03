@@ -36,12 +36,12 @@ h1 {
   margin: 0 auto;
 }
 
-.pad-top {
-  margin-top: 24px;
-}
-
 .navbar-space {
   margin-top: 56px;
+}
+
+.navbar-pad {
+  padding-top: 15px;
 }
 
 .logo {
@@ -88,6 +88,18 @@ a {
   text-align: center;
   h1 {
     margin-top: 0;
+  }
+
+  >.well {
+    > img {
+      padding-bottom: 7px;
+    }
+    > h1, > div {
+      padding: 0 10px;
+    }
+    padding: 0;
+    border-radius: 4px;
+    background: white;
   }
 }
 
@@ -240,13 +252,20 @@ a {
   background: none;
   margin: 0;
   border-bottom: 2px solid $color_alto_approx;
-  li {
+  > .navbar-inner li {
     position: relative;
     bottom: -2px;
     > a {
       border-bottom: 2px solid transparent;
       &:hover {
         border-bottom: 2px solid $color_celeste_approx;
+      }
+    }
+    &.active {
+      > a, > a:hover {
+        color: $navbar_link_active_background;
+        background-color: transparent;
+        border-bottom: 2px solid $navbar_link_active_background;
       }
     }
   }
@@ -275,12 +294,7 @@ a {
 }
 
 .btn-panel {
-  margin-top: 20px;
   margin-bottom: 20px;
-}
-
-.top-panel {
-  margin-top: 20px;
 }
 
 .navbar.top-navbar {
@@ -301,7 +315,6 @@ a {
 
     .mini-logo {
       height: 36px;
-      width: 33px;
       float: left;
       margin-right: 15px;
       position: relative;
@@ -368,6 +381,8 @@ a {
   }
   .logout-link {
     padding: 3px 20px;
+    width: 100%;
+    text-align: left;
   }
   .notify {
     color: $faded_orange !important;
@@ -392,4 +407,28 @@ a {
 
 .requiredField .asteriskField {
   display: none;
+}
+
+.not-in-flow {
+  position: relative;
+}
+.not-in-flow-child {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.center-card {
+  background-color: white;
+  margin-top: -20px;
+  padding: 1px 10px 20px 10px;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+.pull-right > .fa {
+  display: inline-block;
+  width: 1em;
+  text-align: left;
 }

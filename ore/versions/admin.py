@@ -7,6 +7,7 @@ class VersionAdmin(reversion.VersionAdmin):
     pass
 admin.site.register(Version, VersionAdmin)
 
+
 class FileAdmin(reversion.VersionAdmin):
     pass
 admin.site.register(File, FileAdmin)

@@ -8,7 +8,3 @@ class ProjectAdmin(reversion.VersionAdmin):
     pass
 
 admin.site.register(Project, ProjectAdmin)
-
-
-
-

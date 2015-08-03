@@ -29,23 +29,9 @@
                                 </a></li>
                                 <li class="dropdown">
                                     <a href="#" class="usr-avatar dropdown-toggle" data-toggle="dropdown">
-                                        <img src="{{ user.avatar }}&s=24"/> <span class="caret"></span>
+                                        <img src="{{ user.avatar }}&amp;s=24"/> <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        {% if user.is_staff %}
-                                        <li><a href="{% url 'admin:index' %}">
-                                            Admin
-                                        </a></li>
-                                        {% endif %}
-                                        <li><a class="logout-a">
-                                            <form action="{% url 'accounts-logout' %}" method="POST">
-                                                {% csrf_token %}
-                                                <button type="submit" class="nav-btn logout-link">
-                                                    Sign out
-                                                </button>
-                                            </form>
-                                        </a></li>
-                                        <li class="divider"></li>
                                         <li>
                                             <a href="{% url 'repo-namespace' namespace=user.name %}">
                                                 {{ user.name }}
@@ -54,6 +40,32 @@
                                                 </span>
                                             </a>
                                         </li>
+                                        <li class="divider"></li>
+                                        <li><a href="{% url 'settings-profile' %}">
+                                            Settings
+                                            <span class="pull-right text-muted">
+                                                <i class="fa fa-cog"></i>
+                                            </span>
+                                        </a></li>
+                                        {% if user.is_staff %}
+                                        <li><a href="{% url 'admin:index' %}">
+                                            Admin
+                                            <span class="pull-right text-muted">
+                                                <i class="fa fa-bomb"></i>
+                                            </span>
+                                        </a></li>
+                                        {% endif %}
+                                        <li><a class="logout-a">
+                                            <form action="{% url 'accounts-logout' %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="nav-btn logout-link">
+                                                    Sign out
+                                                    <span class="pull-right text-muted">
+                                                        <i class="fa fa-sign-out"></i>
+                                                    </span>
+                                                </button>
+                                            </form>
+                                        </a></li>
                                     </ul>
                                 </li>
                             {% else %}

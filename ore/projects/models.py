@@ -27,9 +27,9 @@ class Project(models.Model):
                                 validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.',
                                                           'invalid'),
                                 validate_not_prohibited,
-                                ])
+                            ])
     namespace = models.ForeignKey(Namespace, related_name='projects')
-    description = models.TextField('description')
+    description = models.TextField('description', blank=True, null=False)
 
     objects = UserFilteringManager()
 
@@ -59,7 +59,8 @@ class Project(models.Model):
             (
                 (
                     prefix_q(prefix, namespace__organization__teams__is_all_projects=True) |
-                    prefix_q(prefix, namespace__organization__teams__projects__id=F('id'))
+                    prefix_q(
+                        prefix, namespace__organization__teams__projects__id=F('id'))
                 ) &
                 prefix_q(prefix, namespace__organization__teams__users=user)
             )
@@ -71,6 +72,8 @@ class Project(models.Model):
     def user_has_permission(self, user, perm_slug):
         if isinstance(user, AnonymousUser):
             return False
+        elif user.is_superuser:
+            return True
 
         ownerships = user.__dict__.setdefault('_project_ownerships', dict())
         permissions = user.__dict__.setdefault('_project_permissions', dict())
@@ -79,7 +82,8 @@ class Project(models.Model):
             if qs.filter(is_owner_team=True).count():
                 ownerships[self.id] = True
             else:
-                permissions[self.id] = qs.values_list('permissions__slug', flat=True)
+                permissions[self.id] = qs.values_list(
+                    'permissions__slug', flat=True)
 
         if self.id in ownerships:
             return True

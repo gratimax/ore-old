@@ -5,16 +5,20 @@
 {% endblock %}
 {% block content %}
 <div class="container-fluid wrapper-960">
-    <div class="row pad-top">
+    <div class="row">
         <div class="col-md-3 user-box">
             <div class="well">
+                <img src="{{ oreuser.avatar }}&amp;s=200" class="avatar oreuser-avatar">
                 <h1>{{ oreuser.name }}</h1>
-                <img src="{{ oreuser.avatar }}&s=200" class="avatar oreuser-avatar">
             </div>
         </div>
         <div class="col-md-9">
-            <h1 class="oreuser-projects-header">Projects</h1>
-            {% include "repo/_projects_list.html" with namespace=oreuser projects=oreuser.projects.all|as_user:oreuser only %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Projects</h3>
+                </div>
+                {% include "repo/_projects_list.html" with namespace=oreuser projects=oreuser.projects.all|as_user:oreuser only %}
+            </div>
         </div>
     </div>
 </div>

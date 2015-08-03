@@ -12,12 +12,16 @@ import reversion
 
 @reversion.register
 class Flag(models.Model):
-    STATUS = Choices('new', 'quashed', 'retracted', 'content_removed_moderator', 'content_removed_creator')
+    STATUS = Choices('new', 'quashed', 'retracted',
+                     'content_removed_moderator', 'content_removed_creator')
     status = StatusField()
 
-    flagger = models.ForeignKey(OreUser, null=False, blank=False, related_name='flagger_flags')
-    resolver = models.ForeignKey(OreUser, null=True, blank=True, related_name='resolver_flags')
-    date_flagged = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    flagger = models.ForeignKey(
+        OreUser, null=False, blank=False, related_name='flagger_flags')
+    resolver = models.ForeignKey(
+        OreUser, null=True, blank=True, related_name='resolver_flags')
+    date_flagged = models.DateTimeField(
+        auto_now_add=True, null=False, blank=False)
     date_resolved = models.DateTimeField(null=True, blank=True, default=None)
 
     FLAG_TYPE = Choices('inappropriate', 'spam')
@@ -39,7 +43,8 @@ class Flag(models.Model):
     @classmethod
     def flagged(cls, flag_content, flagger=None, include_resolved=False):
         content_type = ContentType.objects.get_for_model(flag_content)
-        qs = Flag.objects.filter(content_type=content_type, object_id=flag_content.id)
+        qs = Flag.objects.filter(
+            content_type=content_type, object_id=flag_content.id)
         if flagger is not None:
             qs = qs.filter(flagger=flagger)
         if not include_resolved:

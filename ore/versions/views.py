@@ -4,12 +4,13 @@ from django.shortcuts import get_object_or_404
 # Create your views here.
 from django.views.generic import DetailView, CreateView
 from ore.projects.models import Project
+from ore.projects.views import ProjectNavbarMixin
 from ore.core.views import RequiresPermissionMixin
 from ore.versions.forms import NewVersionForm, NewVersionInnerFileFormset
 from ore.versions.models import Version, File
 
 
-class ProjectsVersionsListView(DetailView):
+class ProjectsVersionsListView(ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -17,6 +18,7 @@ class ProjectsVersionsListView(DetailView):
 
     template_name = 'repo/versions/list.html'
     context_object_name = 'proj'
+    active_project_tab = 'versions'
 
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
@@ -29,7 +31,8 @@ class MultiFormMixin(object):
 
     def get_multi_form_class(self):
         if self.multi_form_class is None:
-            raise ValueError("You must define multi_form_class or override get_multi_form_class!")
+            raise ValueError(
+                "You must define multi_form_class or override get_multi_form_class!")
         return self.multi_form_class
 
     def get_multi_form_kwargs(self):
@@ -89,13 +92,14 @@ class MultiFormMixin(object):
         return super(MultiFormMixin, self).form_valid(form)
 
 
-class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
+class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixin, CreateView):
 
     model = Version
     template_name = 'repo/versions/new.html'
 
     form_class = NewVersionForm
     prefix = 'version'
+    active_project_tab = 'versions'
 
     multi_form_class = NewVersionInnerFileFormset
     multi_prefix = 'file'
@@ -121,6 +125,14 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
         return data
 
     def form_valid(self, form, multi_form):
+
+        name = form.cleaned_data['name']
+
+        if self.get_project().versions.filter(name=name).count():
+            form.add_error(
+                'name', 'That version name already exists in this project')
+            return self.form_invalid(form, multi_form)
+
         self.object = form.save()
 
         self.multi_objects = multi_form.save(commit=False)
@@ -141,19 +153,21 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, CreateView):
         return kwargs
 
 
-class VersionsDetailView(DetailView):
+class VersionsDetailView(ProjectNavbarMixin, DetailView):
 
     model = Version
     slug_field = 'name'
     slug_url_kwarg = 'version'
     template_name = 'repo/versions/detail.html'
+    active_project_tab = 'versions'
 
     def get_queryset(self):
         return Version.objects.as_user(self.request.user).filter(project__namespace__name=self.kwargs['namespace'], project__name=self.kwargs['project']).select_related('project')
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
             return self._namespace
         else:
             return self._namespace

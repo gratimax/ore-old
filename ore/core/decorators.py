@@ -28,9 +28,11 @@ def permission_required(permission_slug, raise_exception=False):
             project = kwargs.get('project')
 
             if project:
-                obj = get_object_or_404(Project, name=project, namespace__name=namespace)
+                obj = get_object_or_404(
+                    Project, name=project, namespace__name=namespace)
             else:
-                obj = get_object_or_404(Namespace.objects.select_subclasses(), name=namespace)
+                obj = get_object_or_404(
+                    Namespace.objects.select_subclasses(), name=namespace)
 
             for perm in perms:
                 if not obj.user_has_permission(request.user, perm):

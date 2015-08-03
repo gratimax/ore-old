@@ -17,11 +17,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Project',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
-                ('status', model_utils.fields.StatusField(choices=[('active', 'active'), ('deleted', 'deleted')], max_length=100, no_check_for_status=True, default='active')),
-                ('name', models.CharField(max_length=32, validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid project name.', 'invalid'), ore.core.util.validate_not_prohibited], verbose_name='name')),
+                ('id', models.AutoField(
+                    serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('status', model_utils.fields.StatusField(choices=[
+                 ('active', 'active'), ('deleted', 'deleted')], max_length=100, no_check_for_status=True, default='active')),
+                ('name', models.CharField(max_length=32, validators=[django.core.validators.RegexValidator(
+                    '^[\\w.@+-]+$', 'Enter a valid project name.', 'invalid'), ore.core.util.validate_not_prohibited], verbose_name='name')),
                 ('description', models.TextField(verbose_name='description')),
-                ('namespace', models.ForeignKey(related_name='projects', to='core.Namespace')),
+                ('namespace', models.ForeignKey(
+                    related_name='projects', to='core.Namespace')),
             ],
             options={
             },

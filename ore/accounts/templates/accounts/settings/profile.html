@@ -1,0 +1,25 @@
+{% extends "accounts/settings/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}
+Profile Settings
+{% endblock %}
+{% block list-group-item-settings-profile %}active{% endblock %}
+{% block page %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Profile Settings</h3>
+    </div>
+    <div class="panel-body">
+    	{% crispy profile_form %}
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Change Password</h3>
+    </div>
+    <div class="panel-body">
+    	{% crispy password_form %}
+    </div>
+</div>
+{% endblock %}

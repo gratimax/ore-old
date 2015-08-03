@@ -12,7 +12,10 @@ from ore.projects.models import Project
 
 class ProjectForm(forms.ModelForm):
 
-    namespace = forms.ModelChoiceField(label='Owner User / Organization', queryset=None, empty_label=None)
+    namespace = forms.ModelChoiceField(
+        label='Owner User / Organization', queryset=None, empty_label=None)
+    description = forms.CharField(
+        label='Tagline (optional)', widget=forms.TextInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -24,7 +27,8 @@ class ProjectForm(forms.ModelForm):
         namespace = self.fields['namespace']
         namespace.queryset = Namespace.objects.select_subclasses(Organization, OreUser).filter(
             Q(oreuser=user) |
-            (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(organization__teams__permissions__slug='project.create')))
+            (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(
+                organization__teams__permissions__slug='project.create')))
         )
 
         namespace.initial = user.id
@@ -36,7 +40,8 @@ class ProjectForm(forms.ModelForm):
 
 class ProjectDescriptionForm(forms.ModelForm):
 
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': '3'}))
+    description = forms.CharField(
+        label='Tagline (optional)', widget=forms.TextInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         namespace = kwargs.pop('namespace')
@@ -54,7 +59,8 @@ class ProjectDescriptionForm(forms.ModelForm):
             'description',
             Div(
                 ButtonHolder(
-                    Submit('submit', 'Change description', css_class='btn-default'),
+                    Submit(
+                        'submit', 'Change description', css_class='btn-default'),
                     css_class='col-md-offset-2 col-md-10'
                 ),
                 css_class='form-group',
@@ -73,7 +79,8 @@ class ProjectRenameForm(forms.ModelForm):
 
     name = forms.CharField(max_length=32,
                            validators=[
-                               validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a valid project name.', 'invalid')
+                               validators.RegexValidator(
+                                   EXTENDED_NAME_REGEX, 'Enter a valid project name.', 'invalid')
                            ])
 
     def __init__(self, *args, **kwargs):
@@ -89,12 +96,12 @@ class ProjectRenameForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Fieldset('',
-                    HTML('''
+                         HTML('''
                     <p>Are you sure you wish to rename this project?</p>
                      <p>While this operation is reversible, no redirects of any kind are set up and former links to your project may not work as expected.</p>
                 '''),
-                    'name',
-                ),
+                         'name',
+                         ),
                 css_class='modal-body'
             ),
             ButtonHolder(
@@ -102,7 +109,6 @@ class ProjectRenameForm(forms.ModelForm):
                 css_class='modal-footer'
             )
         )
-
 
     class Meta:
         model = Project

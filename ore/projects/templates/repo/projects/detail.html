@@ -6,6 +6,8 @@
 {% block page %}
 
 <div class="clearfix"></div>
-<h1> {{ home_page.title }}</h1>
-{{ home_page.html|safe }}
+<div class="center-card wrapper-960">
+    <h1> {{ home_page.title }}</h1>
+    {{ home_page.html|safe }}
+</div>
 {% endblock %}
