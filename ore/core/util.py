@@ -15,6 +15,15 @@ def prefix_q(prefix, **kwargs):
         prefix + k: v for k, v in kwargs.items()
     })
 
+def prefix(pre, q, sep='__'):
+    if hasattr(q, 'children'):
+        cloned = q.clone()
+        cloned.children = [prefix(pre, child, sep) for child in q.children]
+        return cloned
+    elif isinstance(q, tuple) and len(q) == 2:
+        return prefix(pre, q[0], sep), q[1]
+    else:
+        return pre + sep + q
 
 class UserFilteringQuerySet(models.QuerySet):
 
