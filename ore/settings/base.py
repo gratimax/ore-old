@@ -126,6 +126,8 @@ COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
 
+COMPRESS_ENABLED = True
+
 # Bower
 BOWER_COMPONENTS_ROOT = STATIC_ROOT
 

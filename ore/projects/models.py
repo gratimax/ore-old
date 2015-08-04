@@ -17,7 +17,7 @@ import reversion
 from ore.util import markdown
 
 
-@reversion.register
+@reversion.register(follow=['pages'])
 class Project(models.Model):
     STATUS = Choices('active', 'deleted')
     status = StatusField()
@@ -138,6 +138,12 @@ class Page(models.Model):
             return Q()
 
         return ~prefix_q(prefix, status='deleted') & Project.is_visible_if_hidden_q(prefix + 'project__', user)
+
+    def __repr__(self):
+        return '<Page \'%s\' in project %s>' % (self.title, self.project)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         unique_together = (
