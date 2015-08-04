@@ -151,6 +151,8 @@ class Page(models.Model):
             ('project', 'title')
         )
 
+        order_with_respect_to = 'parent'
+
 @receiver(post_save, sender=Project)
 def create_home_page(sender, instance, created, **kwargs):
     if instance and created:
