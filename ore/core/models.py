@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models import Q
 from model_utils import Choices
 from model_utils.fields import StatusField
-from ore.core.util import validate_not_prohibited, UserFilteringInheritanceManager, prefix_q, UserFilteringManager
+from ore.core.util import validate_not_prohibited, UserFilteringInheritanceManager, UserFilteringManager
 from ore.core.regexs import EXTENDED_NAME_REGEX
 import reversion
 
@@ -27,19 +27,19 @@ class Namespace(models.Model):
     objects = UserFilteringInheritanceManager()
 
     @staticmethod
-    def is_visible_q(prefix, user):
+    def is_visible_q(user):
         if user.is_anonymous():
-            return prefix_q(prefix, status='active')
+            return Q(status='active')
         elif user.is_superuser:
             return Q()
 
         return (
-            prefix_q(prefix, status='active') |
+            Q(status='active') |
             (
-                ~prefix_q(prefix, status='deleted') &
+                ~Q(status='deleted') &
                 (
-                    prefix_q(prefix, oreuser=user) |
-                    prefix_q(prefix, organization__teams__users=user)
+                    Q(oreuser=user) |
+                    Q(organization__teams__users=user)
                 )
             )
         )
@@ -85,17 +85,17 @@ class Organization(Namespace):
     objects = UserFilteringManager()
 
     @staticmethod
-    def is_visible_q(prefix, user):
+    def is_visible_q(user):
         if user.is_anonymous():
-            return prefix_q(prefix, status='active')
+            return Q(status='active')
         elif user.is_superuser:
             return Q()
 
         return (
-            prefix_q(prefix, status='active') |
+            Q(status='active') |
             (
-                ~prefix_q(prefix, status='deleted') &
-                prefix_q(prefix, teams__users=user)
+                ~Q(status='deleted') &
+                Q(teams__users=user)
             )
         )
 
