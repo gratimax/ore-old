@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _t
 import hashlib
-from ore.core.util import UserFilteringQuerySet, prefix_q
+from ore.core.util import UserFilteringQuerySet
 import reversion
 
 
@@ -55,17 +55,17 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
     REQUIRED_FIELDS = ['email']
 
     @staticmethod
-    def is_visible_q(prefix, user):
+    def is_visible_q(user):
         if user.is_anonymous():
-            return prefix_q(prefix, status='active')
+            return Q(status='active')
         elif user.is_superuser:
             return Q()
 
         return (
-            prefix_q(prefix, status='active') |
+            Q(status='active') |
             (
-                ~prefix_q(prefix, status='deleted') &
-                prefix_q(prefix, id=user.id)
+                ~Q(status='deleted') &
+                Q(id=user.id)
             )
         )
 

@@ -8,7 +8,7 @@ from django.db.models import Q, F
 from model_utils import Choices
 from model_utils.fields import StatusField
 from ore.core.models import Namespace
-from ore.core.util import validate_not_prohibited, prefix_q, UserFilteringManager
+from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.core.regexs import EXTENDED_NAME_REGEX
 import reversion
 
@@ -33,32 +33,31 @@ class Project(models.Model):
         return reverse('repo-projects-detail', kwargs={'namespace': self.namespace.name, 'project': self.name})
 
     @classmethod
-    def is_visible_q(cls, prefix, user):
+    def is_visible_q(cls, user):
         if user.is_anonymous():
-            return Namespace.is_visible_q(prefix + 'namespace__', user) & prefix_q(prefix, status='active')
+            return add_prefix('namespace', Namespace.is_visible_q(user)) & Q(status='active')
         elif user.is_superuser:
             return Q()
 
-        return Namespace.is_visible_q(prefix + 'namespace__', user) & (
-            prefix_q(prefix, status='active') |
-            cls.is_visible_if_hidden_q(prefix, user)
+        return add_prefix('namespace', Namespace.is_visible_q(user)) & (
+            Q(status='active') |
+            cls.is_visible_if_hidden_q(user)
         )
 
     @staticmethod
-    def is_visible_if_hidden_q(prefix, user):
+    def is_visible_if_hidden_q(user):
         if user.is_anonymous():
             return Q()
 
-        return ~prefix_q(prefix, status='deleted') & (
-            (prefix_q(prefix, teams__users=user)) |
-            (prefix_q(prefix, namespace__oreuser=user)) |
+        return ~Q(status='deleted') & (
+            (Q(teams__users=user)) |
+            (Q(namespace__oreuser=user)) |
             (
                 (
-                    prefix_q(prefix, namespace__organization__teams__is_all_projects=True) |
-                    prefix_q(
-                        prefix, namespace__organization__teams__projects__id=F('id'))
+                    Q(namespace__organization__teams__is_all_projects=True) |
+                    Q(namespace__organization__teams__projects__id=F('id'))
                 ) &
-                prefix_q(prefix, namespace__organization__teams__users=user)
+                Q(namespace__organization__teams__users=user)
             )
         )
 
