@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -57,9 +58,9 @@ class Namespace(models.Model):
 @reversion.register
 class Permission(models.Model):
     slug = models.SlugField(max_length=64, unique=True)
-    name = models.CharField(max_length=64, null=False, blank=False)
-    description = models.TextField(null=False, blank=False)
-    applies_to_project = models.BooleanField(default=True)
+    name = models.CharField(max_length=64)
+    description = models.TextField()
+    applies_to_model = models.ForeignKey(ContentType, related_name='ore_permissions')
 
     def __repr__(self):
         props = ['applies_to_project'] if self.applies_to_project else []

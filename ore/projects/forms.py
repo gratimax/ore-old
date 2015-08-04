@@ -28,7 +28,7 @@ class ProjectForm(forms.ModelForm):
         namespace.queryset = Namespace.objects.select_subclasses(Organization, OreUser).filter(
             Q(oreuser=user) |
             (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(
-                organization__teams__permissions__slug='project.create')))
+                organization__teams__permissions__slug='org.project.create')))
         )
 
         namespace.initial = user.id

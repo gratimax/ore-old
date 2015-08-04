@@ -32,7 +32,7 @@ class TeamPermissionsForm(forms.Form):
             (
                 'Project Management',
                 [
-                    'project.create',
+                    'org.project.create',
                     'project.edit',
                     'project.rename',
                     'project.transfer',
