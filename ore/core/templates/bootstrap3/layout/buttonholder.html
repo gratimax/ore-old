@@ -1,0 +1,5 @@
+{% comment %}
+    crispy-forms seems to be broken in looking inside the bootstrap3 template pack for the buttonholder form instead of uni_form.
+    We copy the uni_form template to where crispy-forms can find it.
+{% endcomment %}
+{% include "uni_form/layout/buttonholder.html" %}

@@ -263,7 +263,7 @@ class ProjectsNewView(FormView):
                 'name', 'That project already exists for the given namespace')
             return self.form_invalid(form)
 
-        if isinstance(namespace, Organization) and not namespace.user_has_permission(self.request.user, 'project.create'):
+        if isinstance(namespace, Organization) and not namespace.user_has_permission(self.request.user, 'org.project.create'):
             form.add_error(
                 'name', 'You do not have permission to create a project for that namespace')
             return self.form_invalid(form)

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -7,7 +8,7 @@ from django.db import models
 from django.db.models import Q
 from model_utils import Choices
 from model_utils.fields import StatusField
-from ore.core.util import validate_not_prohibited, UserFilteringInheritanceManager, prefix_q, UserFilteringManager
+from ore.core.util import validate_not_prohibited, UserFilteringInheritanceManager, UserFilteringManager
 from ore.core.regexs import EXTENDED_NAME_REGEX
 import reversion
 
@@ -27,19 +28,19 @@ class Namespace(models.Model):
     objects = UserFilteringInheritanceManager()
 
     @staticmethod
-    def is_visible_q(prefix, user):
+    def is_visible_q(user):
         if user.is_anonymous():
-            return prefix_q(prefix, status='active')
+            return Q(status='active')
         elif user.is_superuser:
             return Q()
 
         return (
-            prefix_q(prefix, status='active') |
+            Q(status='active') |
             (
-                ~prefix_q(prefix, status='deleted') &
+                ~Q(status='deleted') &
                 (
-                    prefix_q(prefix, oreuser=user) |
-                    prefix_q(prefix, organization__teams__users=user)
+                    Q(oreuser=user) |
+                    Q(organization__teams__users=user)
                 )
             )
         )
@@ -57,9 +58,9 @@ class Namespace(models.Model):
 @reversion.register
 class Permission(models.Model):
     slug = models.SlugField(max_length=64, unique=True)
-    name = models.CharField(max_length=64, null=False, blank=False)
-    description = models.TextField(null=False, blank=False)
-    applies_to_project = models.BooleanField(default=True)
+    name = models.CharField(max_length=64)
+    description = models.TextField()
+    applies_to_model = models.ForeignKey(ContentType, related_name='ore_permissions')
 
     def __repr__(self):
         props = ['applies_to_project'] if self.applies_to_project else []
@@ -85,17 +86,17 @@ class Organization(Namespace):
     objects = UserFilteringManager()
 
     @staticmethod
-    def is_visible_q(prefix, user):
+    def is_visible_q(user):
         if user.is_anonymous():
-            return prefix_q(prefix, status='active')
+            return Q(status='active')
         elif user.is_superuser:
             return Q()
 
         return (
-            prefix_q(prefix, status='active') |
+            Q(status='active') |
             (
-                ~prefix_q(prefix, status='deleted') &
-                prefix_q(prefix, teams__users=user)
+                ~Q(status='deleted') &
+                Q(teams__users=user)
             )
         )
 

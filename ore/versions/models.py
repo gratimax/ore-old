@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Q
 from model_utils import Choices
 from model_utils.fields import StatusField
-from ore.core.util import validate_not_prohibited, UserFilteringManager, prefix_q
+from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.projects.models import Project
 from ore.core.regexs import TRIM_NAME_REGEX
 import reversion
@@ -29,21 +29,21 @@ class Version(models.Model):
     objects = UserFilteringManager()
 
     @classmethod
-    def is_visible_q(cls, prefix, user):
+    def is_visible_q(cls, user):
         if user.is_superuser:
             return Q()
 
-        return Project.is_visible_q(prefix + 'project__', user) & (
-            prefix_q(prefix, status='active') |
-            cls.is_visible_if_hidden_q(prefix, user)
+        return add_prefix('project', Project.is_visible_q(user)) & (
+            Q(status='active') |
+            cls.is_visible_if_hidden_q(user)
         )
 
     @staticmethod
-    def is_visible_if_hidden_q(prefix, user):
+    def is_visible_if_hidden_q(user):
         if user.is_anonymous():
             return Q()
 
-        return ~prefix_q(prefix, status='deleted') & Project.is_visible_if_hidden_q(prefix + 'project__', user)
+        return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
 
     def __repr__(self):
         return '<Version %s of %s>' % (self.name, self.project.name)
@@ -94,23 +94,23 @@ class File(models.Model):
     objects = UserFilteringManager()
 
     @classmethod
-    def is_visible_q(cls, prefix, user):
+    def is_visible_q(cls, user):
         if user.is_anonymous():
-            return Version.is_visible_q(prefix + 'version__', user) & prefix_q(prefix, status='active')
+            return add_prefix('version', Version.is_visible_q(user)) & Q(status='active')
         elif user.is_superuser:
             return Q()
 
-        return Version.is_visible_q(prefix + 'version__', user) & (
-            prefix_q(prefix, status='active') |
-            cls.is_visible_if_hidden_q(prefix, user)
+        return add_prefix('version', Version.is_visible_q(user)) & (
+            Q(status='active') |
+            cls.is_visible_if_hidden_q(user)
         )
 
     @staticmethod
-    def is_visible_if_hidden_q(prefix, user):
+    def is_visible_if_hidden_q(user):
         if user.is_anonymous():
             return Q()
 
-        return ~prefix_q(prefix, status='deleted') & Version.is_visible_if_hidden_q(prefix + 'version__', user)
+        return ~Q(status='deleted') & Version.is_visible_if_hidden_q(user)
 
     def full_name(self):
         return "{}/{}".format(self.version.full_name(), str(self.file))
