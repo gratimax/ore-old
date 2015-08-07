@@ -7,7 +7,7 @@ from django import forms
 from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from ore.projects.models import Project
+from ore.projects.models import Project, Page
 
 
 class ProjectForm(forms.ModelForm):
@@ -60,7 +60,7 @@ class ProjectDescriptionForm(forms.ModelForm):
             Div(
                 ButtonHolder(
                     Submit(
-                        'submit', 'Change description', css_class='btn-default'),
+                        'submit', 'Change tagline', css_class='btn-default'),
                     css_class='col-md-offset-2 col-md-10'
                 ),
                 css_class='form-group',
@@ -113,3 +113,17 @@ class ProjectRenameForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name']
+
+
+class PageEditForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        namespace = kwargs.pop('namespace')
+        project = kwargs.pop('project')
+        super(PageEditForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+
+    class Meta:
+        model = Page
+        fields = ['title', 'content']

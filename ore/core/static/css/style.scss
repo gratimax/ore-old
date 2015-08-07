@@ -424,6 +424,14 @@ a {
   border: 1px solid #ddd;
   border-top: none;
   border-radius: 0 0 4px 4px;
+
+  .page-edit {
+    margin-top: 18px;
+  }
+}
+
+.nav-indent {
+  margin-left: 5px;
 }
 
 .pull-right > .fa {

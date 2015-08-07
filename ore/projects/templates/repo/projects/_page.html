@@ -13,15 +13,19 @@
         {% include "repo/projects/_navbar.html" %}
     </div>
 
-    <div class="light-background">
-        <div class="container-fluid wrapper-960 ">
-            <div class="row">
-                <div class="col-md-12">
-                    {% block page %}
-                    {% endblock %}
+    {% block page_wrapper %}
+
+        <div class="light-background">
+            <div class="container-fluid wrapper-960 ">
+                <div class="row">
+                    <div class="col-md-12">
+                        {% block page %}
+                        {% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+    {% endblock %}
 {% endblock %}
 {% block message_padding %}{% endblock %}

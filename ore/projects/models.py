@@ -112,7 +112,7 @@ class Page(models.Model):
     title = models.CharField(max_length=64)
     slug = models.SlugField(editable=False)
     content = models.TextField()
-    html = models.TextField()
+    html = models.TextField(blank=True)
 
     objects = UserFilteringManager()
 
@@ -122,21 +122,21 @@ class Page(models.Model):
         super(Page, self).save(*args, **kwargs)
 
     @classmethod
-    def is_visible_q(cls, prefix, user):
+    def is_visible_q(cls, user):
         if user.is_superuser:
             return Q()
 
-        return Project.is_visible_q(prefix + 'project__', user) & (
-            prefix_q(prefix, status='active') |
-            cls.is_visible_if_hidden_q(prefix, user)
+        return add_prefix('project', Project.is_visible_q(user)) & (
+            Q(status='active') |
+            cls.is_visible_if_hidden_q(user)
         )
 
     @staticmethod
-    def is_visible_if_hidden_q(prefix, user):
+    def is_visible_if_hidden_q(user):
         if user.is_anonymous():
             return Q()
 
-        return ~prefix_q(prefix, status='deleted') & Project.is_visible_if_hidden_q(prefix + 'project__', user)
+        return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
 
     def __repr__(self):
         return '<Page \'%s\' in project %s>' % (self.title, self.project)

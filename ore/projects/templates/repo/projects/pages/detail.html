@@ -2,15 +2,14 @@
 {% load permissions %}
 {% load querysets %}
 {% block title %}
-{{ proj.namespace.name }}
+{{ proj.namespace.name }} | {{ page.title }}
 {% endblock %}
 {% block page_wrapper %}
-
 <div class="container-fluid wrapper-960 light-background">
     <div class="row">
         <div class="col-md-2 center-card">
             <ul class="nav nav-pills nav-stacked">
-                <li class="active"><a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}">Home</a></li>
+                <li><a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}">Home</a></li>
                 {% for page in home_page.children|all %}
                     {% include "repo/projects/pages/_nav.html" %}
                 {% endfor %}
@@ -18,7 +17,7 @@
         </div>
         <div class="col-md-10">
             <div class="center-card">
-                <h1 class="pull-left"> {{ home_page.title }}</h1>
+                <h1 class="pull-left"> {{ page.title }}</h1>
                 {% ifpermitted user "project.edit" proj %}
                 <div class="btn-group pull-right page-edit">
                     <a class="btn btn-default">
@@ -28,7 +27,7 @@
                 </div>
                 {% endifpermitted %}
                 <div class="clearfix"></div>
-                {{ home_page.html|safe }}
+                {{ page.html|safe }}
             </div>
         </div>
     </div>
