@@ -5,8 +5,6 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
 
 DEBUG = TEMPLATE_DEBUG = True
 
-#COMPRESS_ENABLED = True
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

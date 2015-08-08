@@ -13,11 +13,21 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-def from_env(env_name, default=None):
-    value = os.environ.get(env_name, default)
+def from_env(env_options, default=None):
+    value = None
+    if isinstance(env_options, str) and env_options in os.environ:
+        value = os.environ[env_options]
+    else:
+        for option in env_options:
+            if option in os.environ:
+                value = os.environ[option]
+                break
     if value is None:
-        raise ValueError(
-            "Environment variable '{}' must be set or have a default".format(env_name))
+        if default is not None:
+            return default
+        else:
+            raise ValueError(
+            "Environment variable(s) '{}' must be set or have a default".format(env_options))
     return value
 
 # Quick-start development settings - unsuitable for production
@@ -46,7 +56,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'compressor',
-    'djangobower',
 
     'crispy_forms',
     'reversion',
@@ -114,8 +123,6 @@ STATICFILES_FINDERS = (
 
     # compressor finder
     'compressor.finders.CompressorFinder',
-    # bower finder
-    'djangobower.finders.BowerFinder',
 )
 
 # Default location for static files
@@ -124,13 +131,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Compression
 COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
-)
-
-# Bower
-BOWER_COMPONENTS_ROOT = STATIC_ROOT
-
-BOWER_INSTALLED_APPS = (
-    'jquery#1.9',
 )
 
 # Templates
