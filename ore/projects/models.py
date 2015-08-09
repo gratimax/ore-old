@@ -104,7 +104,7 @@ class Page(models.Model):
 
     project = models.ForeignKey(Project, related_name='pages')
 
-    parent = models.ForeignKey('Page', related_name='children', null=True, blank=True)
+    listed = models.ManyToManyField('Page', related_name='listed_by')
 
     title = models.CharField(max_length=64)
     slug = models.SlugField(editable=False)
@@ -144,14 +144,11 @@ class Page(models.Model):
             ('project', 'title')
         )
 
-        order_with_respect_to = 'parent'
-
 @receiver(post_save, sender=Project)
 def create_home_page(sender, instance, created, **kwargs):
     if instance and created:
         home_page = Page.objects.create(
             project=instance,
-            parent=None,
             title='Home',
             content='Welcome to your new project!'
         )
