@@ -91,11 +91,8 @@ class Project(models.Model):
 
         return Namespace.objects.get_subclass(id=self.namespace_id).user_has_permission(user, perm_slug, project=self)
 
-    def __repr__(self):
-        return '<Project %s by %s>' % (self.name, self.namespace.name)
-
     def __str__(self):
-        return self.name
+        return '%s by %s' % (self.name, self.namespace.name)
 
     class Meta:
         unique_together = ('namespace', 'name')
@@ -138,11 +135,8 @@ class Page(models.Model):
 
         return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
 
-    def __repr__(self):
-        return '<Page \'%s\' in project %s>' % (self.title, self.project)
-
     def __str__(self):
-        return self.title
+        return '\'%s\' in project %s' % (self.title, self.project)
 
     class Meta:
         unique_together = (

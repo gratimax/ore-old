@@ -51,9 +51,6 @@ class Namespace(models.Model):
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return '<Namespace %s>' % self.name
-
 
 @reversion.register
 class Permission(models.Model):
@@ -62,12 +59,8 @@ class Permission(models.Model):
     description = models.TextField()
     applies_to_model = models.ForeignKey(ContentType, related_name='ore_permissions')
 
-    def __repr__(self):
-        props = ['applies_to_project'] if self.applies_to_project else []
-        return '<Permission %s [%s]>' % (self.slug, ' '.join(props))
-
     def __str__(self):
-        return self.slug
+        return '%s (%s)' % (self.slug, self.applies_to_model)
 
 
 def organization_avatar_upload(instance, filename):
@@ -131,9 +124,6 @@ class Organization(Namespace):
             return True
 
         return False
-
-    def __repr__(self):
-        return '<Organization %s>' % self.name
 
     def __str__(self):
         return self.name

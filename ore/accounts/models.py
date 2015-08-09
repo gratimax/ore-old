@@ -102,12 +102,9 @@ class OreUser(AbstractBaseUser, PermissionsMixin, Namespace):
         )
 
     def __str__(self):
-        return self.name
-
-    def __repr__(self):
         props = (['staff'] if self.is_staff else []) + \
-            (['active'] if self.is_active else [])
-        return '<RepoUser %s <%s> [%s]>' % (self.name, self.email, ' '.join(props))
+                (['active'] if self.is_active else [])
+        return '%s <%s> [%s]' % (self.name, self.email, ' '.join(props))
 
 
 reversion.register(OreUser, follow=['namespace_ptr'])
