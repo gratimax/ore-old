@@ -1,37 +1,13 @@
-web:
-  build: .
-  links:
-    - postgres:lemons
-  volumes:
-    - /app/ore/staticfiles/
-  volumes_from:
-    - media
-
-nginx:
-  build: ./deploy/nginx/
-  ports:
-    - 80:80
-  volumes_from:
-    - web
-  links:
-    - web:web
-
-data:
-  image: postgres
-  volumes:
-    - /var/lib/postgresql
-  command: /bin/true
-
 postgres:
   image: postgres
   environment:
     - POSTGRES_USER=lemons
     - POSTGRES_PASSWORD=lemons
-  volumes_from:
-    - data
+  ports:
+    - 5432:5432
 
-media:
-  image: ubuntu
-  volumes:
-    - /app/media/
-  command: /bin/true
+elasticsearch:
+  image: elasticsearch
+  ports:
+    - 9200:9200
+    - 9300:9300
