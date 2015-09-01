@@ -65,9 +65,9 @@ class NamespaceDetailView(DetailView):
     def get_template_names(self):
         obj = self.object
         if isinstance(obj, OreUser):
-            return ['repo/users/detail.html']
+            return ['core/users/detail.html']
         elif isinstance(obj, Organization):
-            return ['repo/orgs/detail.html']
+            return ['core/orgs/detail.html']
 
         return super(NamespaceDetailView, self).get_template_names()
 
@@ -77,7 +77,7 @@ class ExploreView(ListView):
     def get_queryset(self):
         return Project.objects.as_user(self.request.user).select_related('namespace')
 
-    template_name = 'repo/projects/index.html'
+    template_name = 'projects/index.html'
     context_object_name = 'projects'
 
 

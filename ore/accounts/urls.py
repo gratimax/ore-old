@@ -24,15 +24,16 @@ else:
         url(r'^new/$', sso_redirect_view,
             name='accounts-register'),
     )
-    
+
 
 urlpatterns = patterns(
     '',
     url(r'^accounts/', include(accounts_urlpatterns)),
     url(r'^settings/', include(patterns('',
                                         url(r'^$', RedirectView.as_view(
-                                            pattern_name='settings-profile', permanent=True), name='settings-root' ),
+                                            pattern_name='settings-profile', permanent=True),
+                                            name='accounts-settings-root' ),
                                         url(r'^profile/$', views.ProfileSettings.as_view(),
-                                            name='settings-profile'),
+                                            name='accounts-settings-profile'),
                                         ))),
 )

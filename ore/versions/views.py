@@ -16,7 +16,7 @@ class ProjectsVersionsListView(ProjectNavbarMixin, DetailView):
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/versions/list.html'
+    template_name = 'versions/list.html'
     context_object_name = 'proj'
     active_project_tab = 'versions'
 
@@ -95,7 +95,7 @@ class MultiFormMixin(object):
 class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixin, CreateView):
 
     model = Version
-    template_name = 'repo/versions/new.html'
+    template_name = 'versions/new.html'
 
     form_class = NewVersionForm
     prefix = 'version'
@@ -158,7 +158,7 @@ class VersionsDetailView(ProjectNavbarMixin, DetailView):
     model = Version
     slug_field = 'name'
     slug_url_kwarg = 'version'
-    template_name = 'repo/versions/detail.html'
+    template_name = 'versions/detail.html'
     active_project_tab = 'versions'
 
     def get_queryset(self):

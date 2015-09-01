@@ -34,7 +34,7 @@ class Project(models.Model):
     objects = UserFilteringManager()
 
     def get_absolute_url(self):
-        return reverse('repo-projects-detail', kwargs={'namespace': self.namespace.name, 'project': self.name})
+        return reverse('projects-detail', kwargs={'namespace': self.namespace.name, 'project': self.name})
 
     @classmethod
     def is_visible_q(cls, user):
@@ -137,12 +137,12 @@ class Page(models.Model):
 
     def get_absolute_url(self):
         if self.slug == 'home':
-            return reverse('repo-projects-detail', kwargs=dict(
+            return reverse('projects-detail', kwargs=dict(
                 namespace=self.project.namespace.name,
                 project=self.project.name
             ))
         else:
-            return reverse('repo-projects-pages-detail', kwargs=dict(
+            return reverse('projects-pages-detail', kwargs=dict(
                 namespace=self.project.namespace.name,
                 project=self.project.name,
                 page=self.slug

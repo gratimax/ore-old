@@ -1,14 +1,15 @@
 {% extends "layout.html" %}
+{% load permissions %}
 {% block title %}
-{{ organization.name }}
+{{ user.name }}
 {% endblock %}
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-md-3 user-box">
             <div class="well">
-                <img src="{{ organization.avatar }}" class="avatar org-avatar">
-                <h1>{{ organization.name }}</h1>
+                <img src="{{ oreuser.avatar }}&amp;s=200" class="avatar oreuser-avatar">
+                <h1>{{ oreuser.name }}</h1>
             </div>
         </div>
         <div class="col-md-9">
@@ -16,7 +17,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Projects</h3>
                 </div>
-                {% include "repo/_projects_list.html" with namespace=organization projects=organization.projects.all|as_user:user only %}
+                {% include "projects/_projects_list.html" with namespace=oreuser projects=oreuser.projects.all|as_user:oreuser only %}
             </div>
         </div>
     </div>

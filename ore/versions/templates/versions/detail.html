@@ -1,4 +1,4 @@
-{% extends "repo/projects/_page.html" %}
+{% extends "projects/_page.html" %}
 {% load permissions %}
 {% block title %}
 {{ version.full_name }}
@@ -22,7 +22,7 @@
             <ul class="list-group file-list-group">
                 {% for file in files_qs %}
                     <li class="list-group-item file-list-group-item">
-                        <a href="{% url 'repo-files-download' namespace=namespace.name project=proj.name version=version.name file=file.file_name file_extension=file.file_extension %}" class="file-listing">
+                        <a href="{% url 'versions-files-download' namespace=namespace.name project=proj.name version=version.name file=file.file_name file_extension=file.file_extension %}" class="file-listing">
                             <span class="file-listing-size">{{file.file_size|filesizeformat}}</span>
                             <span class="file-listing-name">{{file.file_name}}</span>
                         </a>

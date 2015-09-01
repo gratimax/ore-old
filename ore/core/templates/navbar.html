@@ -4,12 +4,12 @@
         <div class="container">
             <ul class="nav navbar-nav">
                 <li>
-                  <a href="{% url 'index' %}" class="logo-container">
+                  <a href="{% url 'core-index' %}" class="logo-container">
                     <img src="{% static 'img/spongie.png' %}" alt="Sponge logo" class="mini-logo">
                     Ore
                   </a>
                 </li>
-                <li><a href="{% url 'repo-explore' %}">
+                <li><a href="{% url 'core-explore' %}">
                     <i class="fa fa-globe"></i>
                     Explore
                 </a></li>
@@ -30,7 +30,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="{% url 'repo-namespace' namespace=user.name %}">
+                                <a href="{% url 'core-namespace' namespace=user.name %}">
                                     {{ user.name }}
                                     <span class="pull-right text-muted">
                                         <i class="fa fa-user"></i>
@@ -38,7 +38,7 @@
                                 </a>
                             </li>
                             <li class="divider"></li>
-                            <li><a href="{% url 'settings-profile' %}">
+                            <li><a href="{% url 'accounts-settings-profile' %}">
                                 Settings
                                 <span class="pull-right text-muted">
                                     <i class="fa fa-cog"></i>

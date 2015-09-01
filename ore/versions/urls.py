@@ -7,16 +7,16 @@ from ore.versions.views import VersionsNewView, ProjectsVersionsListView, Versio
 urlpatterns = patterns('',
     url(r'^(?P<namespace>' + EXTENDED_URL_REGEX + ')/(?P<project>' + EXTENDED_URL_REGEX + ')/',
         include(patterns('',
-            url(r'^upload/$', VersionsNewView.as_view(), name='repo-versions-new'),
-            url(r'^versions/$', ProjectsVersionsListView.as_view(), name='repo-versions-list'),
+            url(r'^upload/$', VersionsNewView.as_view(), name='versions-new'),
+            url(r'^versions/$', ProjectsVersionsListView.as_view(), name='versions-list'),
             url(r'^versions/(?P<version>' + TRIM_URL_REGEX + ')/',
                 include(patterns('',
-                    url(r'^$', VersionsDetailView.as_view(), name='repo-versions-detail'),
-                    url(r'^manage/$', VersionsDetailView.as_view(), name='repo-versions-manage'),
-                    url(r'^flag/$', VersionsFlagView.as_view(), name='repo-versions-flag'),
-                    url(r'^delete/$', VersionsDetailView.as_view(), name='repo-versions-delete'),
+                    url(r'^$', VersionsDetailView.as_view(), name='versions-detail'),
+                    url(r'^manage/$', VersionsDetailView.as_view(), name='versions-manage'),
+                    url(r'^flag/$', VersionsFlagView.as_view(), name='versions-flag'),
+                    url(r'^delete/$', VersionsDetailView.as_view(), name='versions-delete'),
                     url(r'^(?P<file>' + TRIM_URL_REGEX + ')(?P<file_extension>\.[a-zA-Z0-9-]+)',
-                        FileDownloadView.as_view(), name='repo-files-download'),
+                        FileDownloadView.as_view(), name='versions-files-download'),
                 ))
             )
         ))

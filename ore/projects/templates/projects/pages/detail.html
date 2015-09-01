@@ -1,16 +1,15 @@
-{% extends "repo/projects/_page.html" %}
+{% extends "projects/_page.html" %}
 {% load permissions %}
 {% load querysets %}
 {% block title %}
-{{ proj.namespace.name }}
+{{ proj.namespace.name }} | {{ page.title }}
 {% endblock %}
 {% block page_wrapper %}
-
 <div class="container light-background">
     <div class="row">
         <div class="col-md-12">
             <div class="center-card">
-                <h1 class="pull-left"> {{ home_page.title }}</h1>
+                <h1 class="pull-left"> {{ page.title }}</h1>
                 {% ifpermitted user "project.edit" proj %}
                 <div class="btn-group pull-right page-edit">
                     <a class="btn btn-default">
@@ -20,18 +19,31 @@
                 </div>
                 {% endifpermitted %}
                 <div class="clearfix"></div>
-                {{ home_page.html|safe }}
+                {{ page.html|safe }}
                 {% if listed_pages %}
                 <h2>Listed Pages</h2>
                 <ul>
                     {% for listed in listed_pages %}
                     <li>
                         <a href="{{ listed.get_absolute_url }}">
-                            {{ listed.title }}
+                        {{ listed.title }}
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
+                {% endif %}
+                {% if listed_by %}
+                <ol class="breadcrumb">
+                    <li class="active">Listed by:</li>
+                    {% for listing in listed_by %}
+
+                    <li>
+                        <a href="{{ listing.get_absolute_url }}">
+                            {{ listing.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ol>
                 {% endif %}
             </div>
         </div>

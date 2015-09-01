@@ -1,7 +1,12 @@
 <ul class="list-group project-list-group">
     {% for proj in projects %}
          <li class="list-group-item project-list-group-item">
-             <a href="{% if not namespace %}{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}{% else %}{% url 'repo-projects-detail' namespace=namespace.name project=proj.name %}{% endif %}" class="project-listing">
+             <a href="
+             {% if not namespace %}
+                {% url 'projects-detail' namespace=proj.namespace.name project=proj.name %}
+            {% else %}
+                {% url 'projects-detail' namespace=namespace.name project=proj.name %}
+            {% endif %}" class="project-listing">
                  <span class="project-listing-name">{% if show_full_name %}{{proj.full_name}}{% else %}{{proj.name}}{% endif %}</span>
                  <span class="project-listing-tagline">{{proj.description}}</span>
              </a>

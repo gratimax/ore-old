@@ -1,4 +1,4 @@
-{% extends "repo/projects/_page.html" %}
+{% extends "projects/_page.html" %}
 {% load crispy_forms_tags %}
 {% load permissions %}
 {% load static %}
@@ -80,7 +80,7 @@ Manage | {{ proj.name }}
                 <p>Deleting removes all data, including files, related to this project forever and is <em>not reversible</em>.</p>
                 <p>Please type the name of the project to confirm deletion.</p>
 
-                <form action="{% url 'repo-projects-delete' namespace=proj.namespace.name project=proj.name %}"
+                <form action="{% url 'projects-delete' namespace=proj.namespace.name project=proj.name %}"
                       method="POST"
                       class="js-lock-form"
                       data-confirm="{{ proj.name }}"

@@ -32,7 +32,7 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/projects/detail.html'
+    template_name = 'projects/detail.html'
     context_object_name = 'proj'
     active_project_tab = 'docs'
 
@@ -56,7 +56,7 @@ class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/projects/manage.html'
+    template_name = 'projects/manage.html'
     context_object_name = 'proj'
     active_project_tab = 'manage'
 
@@ -91,7 +91,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateVi
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/projects/manage.html'
+    template_name = 'projects/manage.html'
     context_object_name = 'proj'
     active_project_tab = 'manage'
 
@@ -129,7 +129,7 @@ class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateVi
         self.object = form.save()
         messages.success(
             self.request, "The project's description has been changed.")
-        return redirect(reverse('repo-projects-manage',
+        return redirect(reverse('projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
     def dispatch(self, request, *args, **kwargs):
@@ -145,7 +145,7 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/projects/manage.html'
+    template_name = 'projects/manage.html'
     context_object_name = 'proj'
     active_project_tab = 'manage'
 
@@ -184,15 +184,15 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
         self.object = form.save()
 
         name = form.cleaned_data['name']
-        namespace = form.cleaned_data['namespace']
+        namespace = self.get_namespace()
 
-        if namespace.projects.filter(name=name).count():
-            form.add_error(
-                'name', 'That project already exists for the given namespace')
-            return self.form_invalid(form)
+        # if namespace.projects.filter(name=name).count():
+        #     form.add_error(
+        #         'name', 'That project already exists for the given namespace')
+        #     return self.form_invalid(form)
 
         messages.success(self.request, "The project's name has been changed.")
-        return redirect(reverse('repo-projects-manage',
+        return redirect(reverse('projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
     def dispatch(self, request, *args, **kwargs):
@@ -208,7 +208,7 @@ class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'repo/projects/manage.html'
+    template_name = 'projects/manage.html'
     context_object_name = 'proj'
     active_project_tab = 'manage'
 
@@ -218,7 +218,7 @@ class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
 
     def get_success_url(self):
-        return reverse('repo-namespace', kwargs=dict(namespace=self.object.namespace.name))
+        return reverse('namespace', kwargs=dict(namespace=self.object.namespace.name))
 
     def dispatch(self, request, *args, **kwargs):
         if request.method.lower() == 'post':
@@ -247,7 +247,7 @@ class FileDownloadView(RedirectView, SingleObjectMixin):
 
 class ProjectsNewView(FormView):
 
-    template_name = 'repo/projects/new.html'
+    template_name = 'projects/new.html'
     form_class = ProjectForm
 
     def get_form_kwargs(self):
@@ -277,7 +277,7 @@ class ProjectsNewView(FormView):
 
         messages.success(self.request, "Your project has been created")
 
-        return redirect(reverse('repo-projects-detail', args=(namespace.name, project.name)))
+        return redirect(reverse('projects-detail', args=(namespace.name, project.name)))
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -290,7 +290,7 @@ class PagesDetailView(ProjectNavbarMixin, DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'page'
 
-    template_name = 'repo/projects/pages/detail.html'
+    template_name = 'projects/pages/detail.html'
     context_object_name = 'page'
     active_project_tab = 'docs'
 

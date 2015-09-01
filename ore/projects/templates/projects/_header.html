@@ -1,9 +1,9 @@
 {% load permissions %}
 <h1 class="project-header pull-left">
-    <a href="{% url 'repo-namespace' namespace=proj.namespace.name %}" class="no-underline">{{proj.namespace.name}}</a>
+    <a href="{% url 'core-namespace' namespace=proj.namespace.name %}" class="no-underline">{{proj.namespace.name}}</a>
     /
     <strong>
-        <a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}"
+        <a href="{% url 'projects-detail' namespace=proj.namespace.name project=proj.name %}"
            class="no-underline">
             {{proj.name}}
         </a>
@@ -14,13 +14,13 @@
     <div class="navbar-inner">
         <ul class="nav navbar-nav">
             <li class="{% if active_project_tab == 'docs' %}active{% endif %}">
-                <a href="{% url "repo-projects-detail" namespace=proj.namespace.name project=proj.name %}">
+                <a href="{% url "projects-detail" namespace=proj.namespace.name project=proj.name %}">
                 <i class="fa fa-book"></i>
                 Docs
                 </a>
             </li>
             <li class="{% if active_project_tab == 'versions' %}active{% endif %}">
-                <a href="{% url "repo-versions-list" namespace=proj.namespace.name project=proj.name %}">
+                <a href="{% url "versions-list" namespace=proj.namespace.name project=proj.name %}">
                 <i class="fa fa-download"></i> Versions
                 </a>
             </li>
@@ -30,11 +30,11 @@
 
 <div class="project-toolbar btn-group pull-right">
     {% ifpermitted user "project.edit" proj %}
-    <a href="{% url 'repo-projects-manage' proj.namespace.name proj.name %}" class="btn btn-default">
+    <a href="{% url 'projects-manage' proj.namespace.name proj.name %}" class="btn btn-default">
         <i class="fa fa-wrench"></i> Manage
     </a>
     {% endifpermitted %}
-    <a href="{% url 'repo-projects-flag' namespace=proj.namespace.name project=proj.name %}"
+    <a href="{% url 'projects-flag' namespace=proj.namespace.name project=proj.name %}"
        class="btn btn-default">
         <i class="fa fa-flag"></i>
     </a>

@@ -1,4 +1,4 @@
-{% extends "repo/projects/_page.html" %}
+{% extends "projects/_page.html" %}
 {% load permissions %}
 {% block title %}
 {{ proj.name }} | Versions
@@ -10,7 +10,7 @@
             <ul class="list-group version-list-group">
                 {% for version in proj.versions.all|as_user:user %}
                     <li class="list-group-item version-list-group-item">
-                        <a href="{% url 'repo-versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
+                        <a href="{% url 'versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
                            class="version-listing">
                             <span class="version-listing-name">{{version.name}}</span>
                             <span class="version-listing-tagline">{{version.description}}</span>
@@ -21,7 +21,7 @@
         </div>
         <div class="col-md-3">
             {% ifpermitted user "version.create" proj %}
-                <a href="{% url 'repo-versions-new' namespace=proj.namespace.name project=proj.name %}"
+                <a href="{% url 'versions-new' namespace=proj.namespace.name project=proj.name %}"
                    class="btn btn-block btn-primary btn-panel">
                     <i class="fa fa-plus"></i> Create Version
                 </a>
