@@ -439,3 +439,16 @@ a {
   width: 1em;
   text-align: left;
 }
+
+
+.breadcrumb > li + li:before {
+  display: none;
+}
+
+.breadcrumb > li {
+  padding-left: 5px;
+}
+
+.breadcrumb {
+  margin-top: 10px;
+}

@@ -135,6 +135,19 @@ class Page(models.Model):
 
         return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
 
+    def get_absolute_url(self):
+        if self.slug == 'home':
+            return reverse('repo-projects-detail', kwargs=dict(
+                namespace=self.project.namespace.name,
+                project=self.project.name
+            ))
+        else:
+            return reverse('repo-projects-pages-detail', kwargs=dict(
+                namespace=self.project.namespace.name,
+                project=self.project.name,
+                page=self.slug
+            ))
+
     def __str__(self):
         return '\'%s\' in project %s' % (self.title, self.project)
 

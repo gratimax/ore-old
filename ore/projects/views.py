@@ -47,6 +47,7 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
         )
         context_data['home_page'] = home_page
         context_data['active_page'] = 'home'
+        context_data['listed_pages'] = home_page.listed.as_user(self.request.user).all()
         return context_data
 
 class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
@@ -309,13 +310,10 @@ class PagesDetailView(ProjectNavbarMixin, DetailView):
             return self._namespace
 
     def get_context_data(self, **kwargs):
-        context = super(PagesDetailView, self).get_context_data(**kwargs)
-        context['namespace'] = self.get_namespace()
-        context['proj'] = context['page'].project
-        home_page = Page.objects.get(
-            project=context['proj'],
-            slug='home'
-        )
-        context['home_page'] = home_page
-        context['active_page'] = self.get_object().slug
-        return context
+        context_data = super(PagesDetailView, self).get_context_data(**kwargs)
+        context_data['namespace'] = self.get_namespace()
+        context_data['proj'] = context_data['page'].project
+        context_data['active_page'] = self.get_object().slug
+        context_data['listed_pages'] = self.get_object().listed.as_user(self.request.user).all()
+        context_data['listed_by'] = self.get_object().listed_by.as_user(self.request.user).all()
+        return context_data

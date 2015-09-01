@@ -7,12 +7,7 @@
 {% block page_wrapper %}
 <div class="container-fluid wrapper-960 light-background">
     <div class="row">
-        <div class="col-md-2 center-card">
-            <ul class="nav nav-pills nav-stacked">
-                <li><a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}">Home</a></li>
-            </ul>
-        </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="center-card">
                 <h1 class="pull-left"> {{ page.title }}</h1>
                 {% ifpermitted user "project.edit" proj %}
@@ -25,6 +20,31 @@
                 {% endifpermitted %}
                 <div class="clearfix"></div>
                 {{ page.html|safe }}
+                {% if listed_pages %}
+                <h2>Listed Pages</h2>
+                <ul>
+                    {% for listed in listed_pages %}
+                    <li>
+                        <a href="{{ listed.get_absolute_url }}">
+                        {{ listed.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if listed_by %}
+                <ol class="breadcrumb">
+                    <li class="active">Listed by:</li>
+                    {% for listing in listed_by %}
+
+                    <li>
+                        <a href="{{ listing.get_absolute_url }}">
+                            {{ listing.title }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% endif %}
             </div>
         </div>
     </div>
