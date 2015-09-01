@@ -104,7 +104,7 @@ class Page(models.Model):
 
     project = models.ForeignKey(Project, related_name='pages')
 
-    listed = models.ManyToManyField('Page', related_name='listed_by')
+    listed = models.ManyToManyField('Page', related_name='listed_by', blank=True)
 
     title = models.CharField(max_length=64)
     slug = models.SlugField(editable=False)
