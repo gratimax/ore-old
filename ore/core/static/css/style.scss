@@ -27,10 +27,6 @@ body {
 
 }
 
-h1 {
-  font-size: 32px;
-}
-
 .navbar-space {
   margin-top: 56px;
 }
@@ -75,8 +71,10 @@ a {
 }
 
 .project-header {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 20px;
+  font-size: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
 }
 
 .user-box {
@@ -112,7 +110,7 @@ a {
 }
 
 .project-toolbar {
-  margin-top: 28px;
+  margin-top: 14px;
 }
 
 .project-subheader {
@@ -230,6 +228,10 @@ a {
   margin-top: 30px;
 }
 
+.project-header-container {
+  border-bottom: 2px solid $color_alto_approx;
+}
+
 .attach-bottom {
   //Instead of the line below you could use @includeborder-radius($radius, $vertical-radius)
   border-radius: 4px 4px 0 0;
@@ -246,12 +248,12 @@ a {
   border-radius: 0;
   background: none;
   margin: 0;
-  border-bottom: 2px solid $color_alto_approx;
   > .navbar-inner li {
     position: relative;
     bottom: -2px;
     > a {
       border-bottom: 2px solid transparent;
+      padding: 19px 15px 21px 15px;
       &:hover {
         border-bottom: 2px solid $color_celeste_approx;
       }

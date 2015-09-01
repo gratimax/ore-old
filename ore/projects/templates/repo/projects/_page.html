@@ -1,16 +1,11 @@
 {% extends "layout.html" %}
 {% block messages %}{% endblock %}
 {% block content %}
-    <div class="white-background">
+    <div class="white-background project-header-container">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    {% include "_messages.html" %}
-                    {% include "repo/projects/_header.html" %}
-                </div>
-            </div>
+            {% include "_messages.html" %}
+            {% include "repo/projects/_header.html" %}
         </div>
-        {% include "repo/projects/_navbar.html" %}
     </div>
 
     {% block page_wrapper %}
