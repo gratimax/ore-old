@@ -4,13 +4,19 @@
 body {
   font-family: $font-stack;
   margin: 0;
-  background-color: $lighter_grey;
   height: auto;
   color: #000;
 }
 
 .white-background {
   background-color: $white;
+}
+
+.btn-shaded {
+  background-color: #e7e7e7;
+  &:hover {
+    background-color: #e3e3e3;
+  }
 }
 
 .hero {
@@ -71,9 +77,9 @@ a {
 }
 
 .project-header {
-  margin-top: 20px;
+  margin-top: 24px;
   font-size: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   margin-right: 20px;
 }
 
@@ -110,7 +116,7 @@ a {
 }
 
 .project-toolbar {
-  margin-top: 14px;
+  margin-top: 22px;
 }
 
 .project-subheader {
@@ -229,7 +235,7 @@ a {
 }
 
 .project-header-container {
-  border-bottom: 2px solid $color_alto_approx;
+  border-bottom: 1px solid $color_alto_approx;
 }
 
 .attach-bottom {
@@ -238,7 +244,6 @@ a {
 }
 
 .light-background {
-  background: $lighter_grey;
   padding-top: 20px;
 }
 
@@ -252,17 +257,17 @@ a {
     position: relative;
     bottom: -2px;
     > a {
-      border-bottom: 2px solid transparent;
-      padding: 19px 15px 21px 15px;
+      border-bottom: 1px solid transparent;
+      padding: 23px 15px 25px 15px;
       &:hover {
-        border-bottom: 2px solid $color_celeste_approx;
+        border-bottom: 1px solid $color_celeste_approx;
       }
     }
     &.active {
       > a, > a:hover {
         color: $navbar_link_active_background;
         background-color: transparent;
-        border-bottom: 2px solid $navbar_link_active_background;
+        border-bottom: 1px solid $navbar_link_active_background;
       }
     }
   }
@@ -418,9 +423,6 @@ a {
 .center-card {
   background-color: white;
   padding: 1px 10px 20px 10px;
-  border: 1px solid #ddd;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
 
   .page-edit {
     margin-top: 18px;

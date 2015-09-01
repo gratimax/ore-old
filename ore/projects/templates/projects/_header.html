@@ -29,13 +29,23 @@
 </div>
 
 <div class="project-toolbar btn-group pull-right">
+    <a class="btn btn-sm btn-default btn-shaded"
+       data-toggle="tooltip" data-placement="bottom" title="Download latest version">
+        <i class="fa fa-download"></i>
+    </a>
+    <a class="btn btn-default btn-sm"
+        data-toggle="tooltip" data-placement="bottom" title="Show support and stay updated">
+        <i class="fa fa-star"></i>
+    </a>
     {% ifpermitted user "project.edit" proj %}
-    <a href="{% url 'projects-manage' proj.namespace.name proj.name %}" class="btn btn-default">
-        <i class="fa fa-wrench"></i> Manage
+    <a href="{% url 'projects-manage' proj.namespace.name proj.name %}" class="btn btn-default btn-sm"
+       data-toggle="tooltip" data-placement="bottom" title="Manage">
+        <i class="fa fa-wrench"></i>
     </a>
     {% endifpermitted %}
     <a href="{% url 'projects-flag' namespace=proj.namespace.name project=proj.name %}"
-       class="btn btn-default">
+       class="btn btn-default btn-sm"
+       data-toggle="tooltip" data-placement="bottom" title="Flag for inappropriate content">
         <i class="fa fa-flag"></i>
     </a>
 </div>

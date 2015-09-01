@@ -71,4 +71,10 @@ $(function () {
     $input.on('input', checkLock);
     checkLock();
   });
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body'
+    })
+  });
 });
