@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
                 ('status', model_utils.fields.StatusField(no_check_for_status=True, max_length=100, default='active', choices=[('active', 'active'), ('deleted', 'deleted')])),
                 ('title', models.CharField(max_length=64)),
-                ('slug', models.SlugField(editable=False, unique=True)),
+                ('slug', models.SlugField(editable=False)),
                 ('content', models.TextField()),
                 ('html', models.TextField()),
                 ('parent', models.ForeignKey(blank=True, to='projects.Page', null=True, related_name='children')),
