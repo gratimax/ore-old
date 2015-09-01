@@ -21,9 +21,34 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
-                    <li><a><!--class="notify"-->
-                        <i class="fa fa-bell"></i>
-                    </a></li>
+{#                    <li><a><!--class="notify"-->#}
+{#                        <i class="fa fa-bell"></i>#}
+{#                    </a></li>#}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'projects-new' %}">
+                                    New project
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-book"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="disabled">
+                                    <span class="text-muted">
+                                        New org
+                                    </span>
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-users"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a href="#" class="usr-avatar dropdown-toggle" data-toggle="dropdown">
                             <img src="{{ user.avatar }}&amp;s=24"/> <span class="caret"></span>
