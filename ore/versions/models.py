@@ -45,11 +45,8 @@ class Version(models.Model):
 
         return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
 
-    def __repr__(self):
-        return '<Version %s of %s>' % (self.name, self.project.name)
-
     def __str__(self):
-        return self.name
+        return '%s of %s' % (self.name, self.project.name)
 
     def get_absolute_url(self):
         return reverse('repo-versions-detail',
@@ -115,11 +112,8 @@ class File(models.Model):
     def full_name(self):
         return "{}/{}".format(self.version.full_name(), str(self.file))
 
-    def __repr__(self):
-        return '<File %s in %s of %s>' % (str(self.file), self.version.name, self.version.project.name)
-
     def __str__(self):
-        return str(self.file)
+        return '%s in %s of %s' % (str(self.file), self.version.name, self.version.project.name)
 
     def save(self, *args, **kwargs):
         import posixpath

@@ -420,15 +420,35 @@ a {
 
 .center-card {
   background-color: white;
-  margin-top: -20px;
   padding: 1px 10px 20px 10px;
   border: 1px solid #ddd;
   border-top: none;
   border-radius: 0 0 4px 4px;
+
+  .page-edit {
+    margin-top: 18px;
+  }
+}
+
+.nav-indent {
+  margin-left: 5px;
 }
 
 .pull-right > .fa {
   display: inline-block;
   width: 1em;
   text-align: left;
+}
+
+
+.breadcrumb > li + li:before {
+  display: none;
+}
+
+.breadcrumb > li {
+  padding-left: 5px;
+}
+
+.breadcrumb {
+  margin-top: 10px;
 }

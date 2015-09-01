@@ -4,6 +4,9 @@ from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q, F
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.text import slugify
 
 from model_utils import Choices
 from model_utils.fields import StatusField
@@ -11,9 +14,10 @@ from ore.core.models import Namespace
 from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.core.regexs import EXTENDED_NAME_REGEX
 import reversion
+from ore.util import markdown
 
 
-@reversion.register
+@reversion.register(follow=['pages'])
 class Project(models.Model):
     STATUS = Choices('active', 'deleted')
     status = StatusField()
@@ -87,11 +91,78 @@ class Project(models.Model):
 
         return Namespace.objects.get_subclass(id=self.namespace_id).user_has_permission(user, perm_slug, project=self)
 
-    def __repr__(self):
-        return '<Project %s by %s>' % (self.name, self.namespace.name)
-
     def __str__(self):
-        return self.name
+        return '%s by %s' % (self.name, self.namespace.name)
 
     class Meta:
         unique_together = ('namespace', 'name')
+
+@reversion.register
+class Page(models.Model):
+    STATUS = Choices('active', 'deleted')
+    status = StatusField()
+
+    project = models.ForeignKey(Project, related_name='pages')
+
+    listed = models.ManyToManyField('Page', related_name='listed_by')
+
+    title = models.CharField(max_length=64)
+    slug = models.SlugField(editable=False)
+    content = models.TextField()
+    html = models.TextField(blank=True)
+
+    objects = UserFilteringManager()
+
+    def save(self, *args, **kwargs):
+        self.html = markdown.compile(self.content)
+        self.slug = slugify(self.title)
+        super(Page, self).save(*args, **kwargs)
+
+    @classmethod
+    def is_visible_q(cls, user):
+        if user.is_superuser:
+            return Q()
+
+        return add_prefix('project', Project.is_visible_q(user)) & (
+            Q(status='active') |
+            cls.is_visible_if_hidden_q(user)
+        )
+
+    @staticmethod
+    def is_visible_if_hidden_q(user):
+        if user.is_anonymous():
+            return Q()
+
+        return ~Q(status='deleted') & add_prefix('project', Project.is_visible_if_hidden_q(user))
+
+    def get_absolute_url(self):
+        if self.slug == 'home':
+            return reverse('repo-projects-detail', kwargs=dict(
+                namespace=self.project.namespace.name,
+                project=self.project.name
+            ))
+        else:
+            return reverse('repo-projects-pages-detail', kwargs=dict(
+                namespace=self.project.namespace.name,
+                project=self.project.name,
+                page=self.slug
+            ))
+
+    def __str__(self):
+        return '\'%s\' in project %s' % (self.title, self.project)
+
+    class Meta:
+        unique_together = (
+            ('project', 'slug'),
+            ('project', 'title')
+        )
+
+@receiver(post_save, sender=Project)
+def create_home_page(sender, instance, created, **kwargs):
+    if instance and created:
+        home_page = Page.objects.create(
+            project=instance,
+            title='Home',
+            content='Welcome to your new project!'
+        )
+        home_page.save()

@@ -25,12 +25,9 @@ class Team(models.Model):
         Permission, related_name='+', blank=True)
     is_owner_team = models.BooleanField(default=False)
 
-    def __repr__(self):
-        props = ['owner'] if self.is_owner_team else []
-        return '<Team %s [%s]>' % (self.name, ' '.join(props))
-
     def __str__(self):
-        return self.name
+        props = ['owner'] if self.is_owner_team else []
+        return '%s [%s]' % (self.name, ' '.join(props))
 
     def check_consistent(self):
         return True
@@ -57,12 +54,9 @@ class OrganizationTeam(Team):
         return self.projects.exclude(namespace=self.organization).count() == 0
 
     def __str__(self):
-        return self.name
-
-    def __repr__(self):
         props = (['all_projects'] if self.is_all_projects else []) + \
-            (['owner'] if self.is_owner_team else [])
-        return '<OrganizationTeam %s in %s [%s]>' % (self.name, self.organization.name, ' '.join(props))
+                (['owner'] if self.is_owner_team else [])
+        return '%s in %s [%s]' % (self.name, self.organization.name, ' '.join(props))
 
     class Meta:
         unique_together = ('organization', 'name')
@@ -73,11 +67,8 @@ class ProjectTeam(Team):
     project = models.ForeignKey(Project, related_name='teams')
 
     def __str__(self):
-        return self.name
-
-    def __repr__(self):
         props = ['owner'] if self.is_owner_team else []
-        return '<ProjectTeam %s in %s [%s]>' % (self.name, self.project.name, ' '.join(props))
+        return '%s in %s [%s]' % (self.name, self.project.name, ' '.join(props))
 
     # TODO: we need to check here that if we're a user's project and we're the
     # owner team, that that user is in us!

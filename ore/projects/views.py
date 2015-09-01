@@ -1,3 +1,4 @@
+from django.db.models import Q
 from ore.core.models import Namespace, Organization
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,7 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm
-from ore.projects.models import Project
+from ore.projects.models import Project, Page
 from ore.core.views import RequiresPermissionMixin
 from ore.versions.models import File
 
@@ -38,6 +39,16 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
     def get_queryset(self):
         return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
+    def get_context_data(self, **kwargs):
+        context_data = super(ProjectsDetailView, self).get_context_data(**kwargs)
+        home_page = Page.objects.get(
+            project=self.get_object(),
+            slug='home'
+        )
+        context_data['home_page'] = home_page
+        context_data['active_page'] = 'home'
+        context_data['listed_pages'] = home_page.listed.as_user(self.request.user).all()
+        return context_data
 
 class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
 
@@ -271,3 +282,38 @@ class ProjectsNewView(FormView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
+
+
+class PagesDetailView(ProjectNavbarMixin, DetailView):
+
+    model = Page
+    slug_field = 'slug'
+    slug_url_kwarg = 'page'
+
+    template_name = 'repo/projects/pages/detail.html'
+    context_object_name = 'page'
+    active_project_tab = 'docs'
+
+    def get_queryset(self):
+        return Page.objects.as_user(self.request.user).filter(
+            Q(
+                project__namespace__name=self.kwargs['namespace'],
+                project__name=self.kwargs['project'],
+            ) & ~Q(slug='home')).select_related('project')
+
+    def get_namespace(self):
+        if not hasattr(self, "_namespace"):
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            return self._namespace
+        else:
+            return self._namespace
+
+    def get_context_data(self, **kwargs):
+        context_data = super(PagesDetailView, self).get_context_data(**kwargs)
+        context_data['namespace'] = self.get_namespace()
+        context_data['proj'] = context_data['page'].project
+        context_data['active_page'] = self.get_object().slug
+        context_data['listed_pages'] = self.get_object().listed.as_user(self.request.user).all()
+        context_data['listed_by'] = self.get_object().listed_by.as_user(self.request.user).all()
+        return context_data
