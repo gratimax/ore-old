@@ -75,7 +75,7 @@ class SSOReturnView(SSOViewMixin, RedirectView):
     permanent = False
 
     def get_redirect_url(self):
-        return reverse('index')
+        return reverse('core-index')
 
     def get(self, request, *args, **kwargs):
         try:
