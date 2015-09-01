@@ -11,9 +11,6 @@
         <div class="col-md-2 center-card">
             <ul class="nav nav-pills nav-stacked">
                 <li class="active"><a href="{% url 'repo-projects-detail' namespace=proj.namespace.name project=proj.name %}">Home</a></li>
-                {% comment %} {% for page in home_page.children|all %}
-                    {% include "repo/projects/pages/_nav.html" %}
-                {% endfor %} {% endcomment %}
             </ul>
         </div>
         <div class="col-md-10">
