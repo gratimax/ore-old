@@ -30,14 +30,11 @@
 
         {% comment %}
         <div class="alert alert-danger text-center top-alert">
-            <div class="wrapper-960">
-                <b>Warning:</b> Ore is still preview software, so expect your data to be cleaned anytime we perform updates.
-            </div>
+            <b>Warning:</b> Ore is still preview software, so expect your data to be cleaned anytime we perform updates.
         </div>
         {% endcomment %}
 
-        <div class="wrapper-960{% block message_padding %} navbar-pad{% endblock %}">
-
+        <div class="{% block message_padding %} navbar-pad{% endblock %}">
             {% block messages %}
                 {% include "_messages.html" %}
             {% endblock %}

@@ -1,85 +1,79 @@
 {% load staticfiles %}
 <div class="navbar navbar-fixed-top navbar-inverse top-navbar">
     <div class="navbar-inner">
-        <div class="wrapper-960">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-12">
-                        <ul class="nav navbar-nav">
-                            <li>
-                              <a href="{% url 'index' %}" class="logo-container">
-                                <img src="{% static 'img/spongie.png' %}" alt="Sponge logo" class="mini-logo">
-                                Ore
-                              </a>
-                            </li>
-                            <li><a href="{% url 'repo-explore' %}">
-                                <i class="fa fa-globe"></i>
-                                Explore
-                            </a></li>
-                        </ul>
-                        <div class="navbar-form navbar-left navbar-search">
-                            <div class="form-group">
-                                <input type="text" class="input-large form-control" placeholder="Search"/>
-                            </div>
-                        </div>
-                        <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
-                                <li><a><!--class="notify"-->
-                                    <i class="fa fa-bell"></i>
-                                </a></li>
-                                <li class="dropdown">
-                                    <a href="#" class="usr-avatar dropdown-toggle" data-toggle="dropdown">
-                                        <img src="{{ user.avatar }}&amp;s=24"/> <span class="caret"></span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a href="{% url 'repo-namespace' namespace=user.name %}">
-                                                {{ user.name }}
-                                                <span class="pull-right text-muted">
-                                                    <i class="fa fa-user"></i>
-                                                </span>
-                                            </a>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li><a href="{% url 'settings-profile' %}">
-                                            Settings
-                                            <span class="pull-right text-muted">
-                                                <i class="fa fa-cog"></i>
-                                            </span>
-                                        </a></li>
-                                        {% if user.is_staff %}
-                                        <li><a href="{% url 'admin:index' %}">
-                                            Admin
-                                            <span class="pull-right text-muted">
-                                                <i class="fa fa-bomb"></i>
-                                            </span>
-                                        </a></li>
-                                        {% endif %}
-                                        <li><a class="logout-a">
-                                            <form action="{% url 'accounts-logout' %}" method="POST">
-                                                {% csrf_token %}
-                                                <button type="submit" class="nav-btn logout-link">
-                                                    Sign out
-                                                    <span class="pull-right text-muted">
-                                                        <i class="fa fa-sign-out"></i>
-                                                    </span>
-                                                </button>
-                                            </form>
-                                        </a></li>
-                                    </ul>
-                                </li>
-                            {% else %}
-                                <li><a href="{% url 'accounts-register' %}">
-                                    <i class="fa fa-user"></i> Create account
-                                </a></li>
-                                <li><a href="{% url 'accounts-login' %}">
-                                    <i class="fa fa-sign-in"></i> Sign in
-                                </a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li>
+                  <a href="{% url 'index' %}" class="logo-container">
+                    <img src="{% static 'img/spongie.png' %}" alt="Sponge logo" class="mini-logo">
+                    Ore
+                  </a>
+                </li>
+                <li><a href="{% url 'repo-explore' %}">
+                    <i class="fa fa-globe"></i>
+                    Explore
+                </a></li>
+            </ul>
+            <div class="navbar-form navbar-left navbar-search">
+                <div class="form-group">
+                    <input type="text" class="input-large form-control" placeholder="Search"/>
                 </div>
             </div>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li><a><!--class="notify"-->
+                        <i class="fa fa-bell"></i>
+                    </a></li>
+                    <li class="dropdown">
+                        <a href="#" class="usr-avatar dropdown-toggle" data-toggle="dropdown">
+                            <img src="{{ user.avatar }}&amp;s=24"/> <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'repo-namespace' namespace=user.name %}">
+                                    {{ user.name }}
+                                    <span class="pull-right text-muted">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'settings-profile' %}">
+                                Settings
+                                <span class="pull-right text-muted">
+                                    <i class="fa fa-cog"></i>
+                                </span>
+                            </a></li>
+                            {% if user.is_staff %}
+                            <li><a href="{% url 'admin:index' %}">
+                                Admin
+                                <span class="pull-right text-muted">
+                                    <i class="fa fa-bomb"></i>
+                                </span>
+                            </a></li>
+                            {% endif %}
+                            <li><a class="logout-a">
+                                <form action="{% url 'accounts-logout' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-btn logout-link">
+                                        Sign out
+                                        <span class="pull-right text-muted">
+                                            <i class="fa fa-sign-out"></i>
+                                        </span>
+                                    </button>
+                                </form>
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'accounts-register' %}">
+                        <i class="fa fa-user"></i> Create account
+                    </a></li>
+                    <li><a href="{% url 'accounts-login' %}">
+                        <i class="fa fa-sign-in"></i> Sign in
+                    </a></li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </div>

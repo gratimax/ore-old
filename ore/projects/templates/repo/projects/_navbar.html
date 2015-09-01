@@ -1,7 +1,7 @@
 {% load permissions %}
 <div class="navbar navbar-default project-navbar">
     <div class="navbar-inner">
-        <div class="container-fluid wrapper-960">
+        <div class="container">
             <ul class="nav navbar-nav">
                 <li class="{% if active_project_tab == "docs" %}active{% endif %}">
                     <a href="{% url "repo-projects-detail" namespace=proj.namespace.name project=proj.name %}">
