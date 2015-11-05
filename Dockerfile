@@ -17,5 +17,5 @@ ENV DJANGO_SETTINGS_MODULE=ore.settings.docker \
     DB_PASSWORD=lemons \
     DB_HOST=lemons
 
-RUN git rev-parse --short HEAD > APP-VERSION && \
+RUN git rev-parse --short ${BUILD_VCS_NUMBER_ore_Ore:=HEAD} > APP-VERSION && \
     bower install
