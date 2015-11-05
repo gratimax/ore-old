@@ -7,7 +7,7 @@ CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-"]
 WORKDIR /app
 
 COPY requirements/ /app/requirements/
-RUN pip3 install --find-links https://repo.spongepowered.org/wheels/ -r requirements/production.txt
+RUN pip3 install --find-links https://repo.spongepowered.org/wheels/ -r requirements/docker.txt
 
 COPY . /app
 ENV DJANGO_SETTINGS_MODULE=ore.settings.docker \
@@ -17,4 +17,5 @@ ENV DJANGO_SETTINGS_MODULE=ore.settings.docker \
     DB_PASSWORD=lemons \
     DB_HOST=lemons
 
-RUN bower install
+RUN git rev-parse --short HEAD > APP-VERSION && \
+    bower install
