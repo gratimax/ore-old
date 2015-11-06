@@ -49,7 +49,7 @@ class Version(models.Model):
         return '%s of %s' % (self.name, self.project.name)
 
     def get_absolute_url(self):
-        return reverse('repo-versions-detail',
+        return reverse('versions-detail',
                        kwargs={'namespace': self.project.namespace.name, 'project': self.project.name,
                                'version': self.name})
 
