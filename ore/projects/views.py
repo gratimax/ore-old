@@ -218,7 +218,7 @@ class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView
         return Project.objects.filter(namespace__name=self.kwargs['namespace'])
 
     def get_success_url(self):
-        return reverse('namespace', kwargs=dict(namespace=self.object.namespace.name))
+        return reverse('core-namespace', kwargs=dict(namespace=self.object.namespace.name))
 
     def dispatch(self, request, *args, **kwargs):
         if request.method.lower() == 'post':
