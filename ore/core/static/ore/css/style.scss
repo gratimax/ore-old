@@ -117,6 +117,17 @@ a {
 
 .project-toolbar {
   margin-top: 22px;
+
+  .btn-form {
+    display: inline;
+    float: left;
+
+    .btn {
+      border-radius: 0;
+      border-right: none;
+      border-left: none;
+    }
+  }
 }
 
 .project-subheader {

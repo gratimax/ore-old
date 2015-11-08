@@ -154,7 +154,7 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
     form_class = ProjectRenameForm
 
     def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
@@ -284,6 +284,35 @@ class ProjectsNewView(FormView):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
 
 
+class ProjectsStarView(UpdateView):
+
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'projects/manage.html'
+    context_object_name = 'proj'
+
+    def get_queryset(self):
+        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        project = self.get_object()
+        if user.is_authenticated():
+            if user.starred.filter(pk=project.pk).exists():
+                user.starred.remove(project)
+            else:
+                user.starred.add(project)
+        return redirect(reverse('projects-detail', args=(project.namespace.name, project.name)))
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'post':
+            return super(ProjectsStarView, self).dispatch(request, *args, **kwargs)
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+
 class PagesDetailView(ProjectNavbarMixin, DetailView):
 
     model = Page
@@ -293,6 +322,7 @@ class PagesDetailView(ProjectNavbarMixin, DetailView):
     template_name = 'projects/pages/detail.html'
     context_object_name = 'page'
     active_project_tab = 'docs'
+    fields = 'stargazers'
 
     def get_queryset(self):
         return Page.objects.as_user(self.request.user).filter(
