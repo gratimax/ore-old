@@ -10,11 +10,11 @@ DEBUG = TEMPLATE_DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'repo',
-        'USER': 'admin',
-        'PASSWORD': 'password',
-        'PORT': 5432,
-        'HOST': 'localhost',
+        'NAME': from_env('POSTGRES_ENV_POSTGRES_USER', 'repo'),
+        'USER': from_env('POSTGRES_ENV_POSTGRES_USER', 'admin'),
+        'PASSWORD': from_env('POSTGRES_ENV_POSTGRES_PASSWORD', 'password'),
+        'PORT': int(from_env('POSTGRES_PORT_5432_TCP_PORT', 5432)),
+        'HOST': from_env('POSTGRES_PORT_5432_TCP_ADDR', '127.0.0.1'),
         'ATOMIC_REQUESTS': True,
     }
 }

@@ -1,0 +1,14 @@
+FROM spongepowered/ore-base
+MAINTAINER Sponge Web Team <web@spongepowered.org>
+
+WORKDIR /app
+
+COPY requirements/ /app/requirements/
+RUN pip3 install --find-links https://repo.spongepowered.org/wheels/ -r requirements/development.txt
+
+COPY . /app
+ENV DJANGO_SETTINGS_MODULE=ore.settings.development \
+    SECRET_KEY=lemons \
+    PYTHONPATH=/app
+
+RUN bower install

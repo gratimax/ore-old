@@ -11,3 +11,15 @@ elasticsearch:
   ports:
     - 9200:9200
     - 9300:9300
+
+web:
+  build: .
+  dockerfile: Dockerfile-dev
+  command: django-admin.py runserver 0.0.0.0:8000
+  volumes:
+    - .:/app
+  ports:
+    - "8000:8000"
+  links:
+    - postgres
+    - elasticsearch
