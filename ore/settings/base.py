@@ -15,8 +15,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 def from_env(env_options, default=None):
     value = None
-    if isinstance(env_options, str) and env_options in os.environ:
-        value = os.environ[env_options]
+    if isinstance(env_options, str):
+        value = os.environ.get(env_options, None)
     else:
         for option in env_options:
             if option in os.environ:
