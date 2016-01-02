@@ -316,22 +316,28 @@ a {
   //Instead of the line below you could use @include user-select($select)
   user-select: none;
 
+  .navbar-always-nav {
+    margin: 0;
+    float: left;
+  }
+
   .navbar-search {
-    padding-top: 3px;
-    .form-control {
-      width: 400px;
+    line-height: 36px;
+    @media (min-width: 768px) {
+      .form-control {
+        width: 400px;
+      }
     }
   }
 
   .logo-container {
     height: 56px;
+    line-height: 26px;
 
     .mini-logo {
-      height: 36px;
+      height: 100%;
       float: left;
-      margin-right: 15px;
-      position: relative;
-      top: -10px;
+      margin-right: 8px;
     }
   }
 
@@ -350,7 +356,9 @@ a {
       color: $color_alto_approx;
     }
     &.logout-a {
-      padding: 0 !important;
+      @media (min-width: 768px) {
+        padding: 0 !important;
+      }
     }
   }
 
@@ -393,7 +401,9 @@ a {
     outline: none;
   }
   .logout-link {
-    padding: 3px 20px;
+    @media (min-width: 768px) {
+      padding: 3px 20px;
+    }
     width: 100%;
     text-align: left;
   }
@@ -403,7 +413,6 @@ a {
   .navbar-nav > li > a {
     padding: 18px 15px;
     color: $color_alto_approx;
-    float: left;
     cursor: pointer;
   }
   li.active a {
