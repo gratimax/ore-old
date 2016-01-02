@@ -10,7 +10,7 @@ from model_utils import Choices
 from model_utils.fields import StatusField
 from ore.core.util import validate_not_prohibited, UserFilteringInheritanceManager, UserFilteringManager
 from ore.core.regexs import EXTENDED_NAME_REGEX
-import reversion
+from reversion import revisions as reversion
 
 
 @reversion.register

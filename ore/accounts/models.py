@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _t
 import hashlib
 from ore.core.util import UserFilteringQuerySet
-import reversion
+from reversion import revisions as reversion
 
 
 OreUserManagerBase = UserManager.from_queryset(UserFilteringQuerySet)

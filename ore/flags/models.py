@@ -7,7 +7,7 @@ from django.db import models
 from django.utils import timezone
 from model_utils import Choices
 from model_utils.fields import StatusField
-import reversion
+from reversion import revisions as reversion
 
 
 @reversion.register
