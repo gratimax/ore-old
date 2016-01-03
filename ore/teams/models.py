@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from ore.core.util import validate_not_prohibited
 from ore.projects.models import Project
 from ore.core.regexs import EXTENDED_NAME_REGEX
-import reversion
+from reversion import revisions as reversion
 
 
 class Team(models.Model):

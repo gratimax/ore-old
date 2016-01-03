@@ -1,16 +1,16 @@
 from django.contrib import admin
 from ore.projects.models import Project, Page
-import reversion
+from reversion.admin import VersionAdmin
 from ore.versions.models import File
 
 
-class ProjectAdmin(reversion.VersionAdmin):
+class ProjectAdmin(VersionAdmin):
     pass
 
 admin.site.register(Project, ProjectAdmin)
 
 
-class PageAdmin(reversion.VersionAdmin):
+class PageAdmin(VersionAdmin):
     pass
 
 admin.site.register(Page, PageAdmin)

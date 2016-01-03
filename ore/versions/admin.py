@@ -1,13 +1,13 @@
 from django.contrib import admin
 from ore.versions.models import File, Version
-import reversion
+from reversion.admin import VersionAdmin
 
 
-class VersionAdmin(reversion.VersionAdmin):
+class VersionAdmin(VersionAdmin):
     pass
 admin.site.register(Version, VersionAdmin)
 
 
-class FileAdmin(reversion.VersionAdmin):
+class FileAdmin(VersionAdmin):
     pass
 admin.site.register(File, FileAdmin)

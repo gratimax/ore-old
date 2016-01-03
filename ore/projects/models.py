@@ -14,7 +14,7 @@ from ore.accounts.models import OreUser
 from ore.core.models import Namespace
 from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.core.regexs import EXTENDED_NAME_REGEX
-import reversion
+from reversion import revisions as reversion
 from ore.util import markdown
 
 

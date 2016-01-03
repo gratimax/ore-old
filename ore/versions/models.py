@@ -9,7 +9,7 @@ from model_utils.fields import StatusField
 from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.projects.models import Project
 from ore.core.regexs import TRIM_NAME_REGEX
-import reversion
+from reversion import revisions as reversion
 
 
 @reversion.register

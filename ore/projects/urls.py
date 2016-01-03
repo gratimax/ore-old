@@ -1,15 +1,14 @@
 from ore.core.regexs import EXTENDED_URL_REGEX
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from ore.flags.views import ProjectsFlagView
 from ore.projects.views import ProjectsNewView, ProjectsDetailView, ProjectsManageView, ProjectsDescribeView, \
     ProjectsRenameView, ProjectsDeleteView, PagesDetailView, ProjectsStarView
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^projects/new/$', ProjectsNewView.as_view(),
         name='projects-new'),
     url(r'^(?P<namespace>' + EXTENDED_URL_REGEX + ')/(?P<project>' + EXTENDED_URL_REGEX + ')/',
-        include(patterns('',
+        include([
             url(r'^$', ProjectsDetailView.as_view(), name='projects-detail'),
             url(r'^manage/$', ProjectsManageView.as_view(), name='projects-manage'),
             url(r'^flag/$', ProjectsFlagView.as_view(), name='projects-flag'),
@@ -20,5 +19,5 @@ urlpatterns = patterns(
                 name='projects-pages-detail'),
             # url(r'^pages/(?P<page>' + EXTENDED_URL_REGEX + ')/edit/$', name='projects-pages-edit')
             url(r'^star/$', ProjectsStarView.as_view(), name='projects-star'),
-        )))
-)
+        ]))
+]

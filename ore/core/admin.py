@@ -1,9 +1,9 @@
 from ore.core.models import Organization
 from django.contrib import admin
-import reversion
+from reversion.admin import VersionAdmin
 
 
-class OrganizationAdmin(reversion.VersionAdmin):
+class OrganizationAdmin(VersionAdmin):
     pass
 
 admin.site.register(Organization, OrganizationAdmin)

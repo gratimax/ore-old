@@ -1,13 +1,13 @@
 from django.contrib import admin
-import reversion
+from reversion.admin import VersionAdmin
 from ore.teams.models import OrganizationTeam, ProjectTeam
 
 
-class OrganizationTeamAdmin(reversion.VersionAdmin):
+class OrganizationTeamAdmin(VersionAdmin):
     pass
 admin.site.register(OrganizationTeam, OrganizationTeamAdmin)
 
 
-class ProjectTeamAdmin(reversion.VersionAdmin):
+class ProjectTeamAdmin(VersionAdmin):
     pass
 admin.site.register(ProjectTeam, ProjectTeamAdmin)

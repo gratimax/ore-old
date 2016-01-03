@@ -1,9 +1,9 @@
 from ore.accounts.models import OreUser
 from django.contrib import admin
-import reversion
+from reversion.admin import VersionAdmin
 
 
-class OreUserAdmin(reversion.VersionAdmin):
+class OreUserAdmin(VersionAdmin):
     pass
 
 admin.site.register(OreUser, OreUserAdmin)
