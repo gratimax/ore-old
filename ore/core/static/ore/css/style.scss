@@ -139,10 +139,35 @@ a {
   margin-top: 3px;
 }
 
-.avatar {
+// Hack to make avatars become square before we download them
+// and deduce their aspect ratio
+.avatar-container {
+  .user-box > .well > & {
+    padding: 0;
+  }
+  
+  position: relative;
   width: 100%;
-  height: auto;
+
+  &:before {
+    display: block;
+    content: "";
+    padding-top: 100%;
+  }
+
+  .avatar {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
 }
+.avatar-pull-right {
+  width: 1.4em;
+}
+
 
 .project-list-group {
 

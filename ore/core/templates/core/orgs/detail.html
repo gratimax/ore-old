@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-2 user-box">
             <div class="well">
-                <img src="{{ organization.avatar }}" class="avatar org-avatar">
+                {% include "core/avatar.html" with avatar=organization.avatar type="org" alt=organization.name only %}
                 <h3>{{ organization.name }}</h3>
             </div>
         </div>
