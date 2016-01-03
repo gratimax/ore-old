@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.views.generic import RedirectView
 from ore.accounts import views
+from ore.core.regexs import EXTENDED_URL_REGEX
 
 accounts_urlpatterns = [
     url(r'^logout/$', views.LogoutView.as_view(),
@@ -27,9 +28,9 @@ else:
 
 urlpatterns = [
     url(r'^accounts/', include(accounts_urlpatterns)),
-    url(r'^settings/', include([
+    url(r'^users/(?P<user_slug>' + EXTENDED_URL_REGEX + ')/settings/', include([
         url(r'^$', RedirectView.as_view(
-            pattern_name='settings-profile', permanent=True),
+            pattern_name='accounts-settings-profile', permanent=False),
             name='accounts-settings-root'),
         url(r'^profile/$', views.ProfileSettings.as_view(),
             name='accounts-settings-profile'),
