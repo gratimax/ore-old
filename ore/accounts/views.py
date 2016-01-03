@@ -1,6 +1,7 @@
 from ore.accounts.models import OreUser
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, FormView
@@ -76,9 +77,11 @@ class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         data = None
-        submitted_form = request.POST.get('form', None)
-        if request.method == 'POST':
-            data = request.POST
+        submitted_form = None
+        if not settings.DISCOURSE_SSO_ENABLED:
+            submitted_form = request.POST.get('form', None)
+            if request.method == 'POST':
+                data = request.POST
 
         self.profile_form = self.get_profile_form(
             request.user, submitted_form, data)
@@ -111,6 +114,7 @@ class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
         data = super().get_context_data(**kwargs)
         data['profile_form'] = self.profile_form
         data['password_form'] = self.password_form
+        data['using_sso'] = settings.DISCOURSE_SSO_ENABLED
         return data
 
     def post(self, request, *args, **kwargs):

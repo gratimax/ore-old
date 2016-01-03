@@ -3,8 +3,8 @@
 {% block title %}
 Profile Settings
 {% endblock %}
-{% block list-group-item-settings-profile %}active{% endblock %}
 {% block page %}
+{% if not using_sso %}
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Profile Settings</h3>
@@ -22,4 +22,14 @@ Profile Settings
     	{% crispy password_form %}
     </div>
 </div>
+{% else %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Profile Settings</h3>
+    </div>
+    <div class="panel-body">
+        To change your profile settings, please go to <a href="https://forums.spongepowered.org/users/{{ user.name }}/preferences">the forums profile settings page</a>.
+    </div>
+</div>
+{% endif %}
 {% endblock %}
