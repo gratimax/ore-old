@@ -88,3 +88,11 @@ class FormTestView(FormView):
     def form_valid(self, form):
         from pprint import pformat
         return HttpResponse(pformat(form.get_selected_permissions()), content_type='text/plain')
+
+
+class SettingsMixin(object):
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['active_settings'] = self.settings_name
+        return data

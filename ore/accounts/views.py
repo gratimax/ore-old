@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic import TemplateView, FormView
 from django.db import IntegrityError
 
-from ore.core.views import RequiresLoggedInMixin
+from ore.core.views import RequiresLoggedInMixin, SettingsMixin
 from ore.accounts import forms
 
 
@@ -61,14 +61,6 @@ class RegisterView(FormView):
         )
 
         return redirect('/')
-
-
-class SettingsMixin(object):
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['active_settings'] = self.settings_name
-        return data
 
 
 class ProfileSettings(RequiresLoggedInMixin, SettingsMixin, TemplateView):
