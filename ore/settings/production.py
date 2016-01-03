@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = TEMPLATE_DEBUG = False
+DEBUG = False
 
 SECRET_KEY = from_env('SECRET_KEY')
 

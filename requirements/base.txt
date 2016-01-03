@@ -1,11 +1,10 @@
-Django==1.8.8
+Django==1.9.1
 psycopg2==2.6.1
 Pillow==3.0.0
 django-crispy-forms==1.5.2
 django-model-utils==2.4
 django-reversion==1.10.0
 djangorestframework==3.3.2
-django-grappelli==2.7.2
 django-appconf==1.0.1
 django_compressor==1.6
 libsass==0.10.0

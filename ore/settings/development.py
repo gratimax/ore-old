@@ -3,9 +3,12 @@ from .base import *
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
 
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 
-#COMPRESS_ENABLED = True
+TEMPLATES[0]['OPTIONS']['debug'] = True
+TEMPLATES[0]['OPTIONS']['string_if_invalid'] = 'INVALID_TEMPLATE_VARIABLE'
+
+# COMPRESS_ENABLED = True
 
 DATABASES = {
     'default': {

@@ -26,8 +26,7 @@ def from_env(env_options, default=None):
         if default is not None:
             return default
         else:
-            raise ValueError(
-            "Environment variable(s) '{}' must be set or have a default".format(env_options))
+            raise ValueError("Environment variable(s) '{}' must be set or have a default".format(env_options))
     return value
 
 # Quick-start development settings - unsuitable for production
@@ -37,8 +36,6 @@ def from_env(env_options, default=None):
 SECRET_KEY = '9a+sonh+etrs&3q+g5&-5=)db@^az8dy*ngjeqi()66qy4q2dz'
 
 DEBUG = False
-
-TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -81,18 +78,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.request",
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "ore.core.context_processors.build_stamp",
-)
-
 ROOT_URLCONF = 'ore.urls'
 
 WSGI_APPLICATION = 'ore.wsgi.application'
@@ -133,7 +118,25 @@ COMPRESS_PRECOMPILERS = (
 )
 
 # Templates
-TEMPLATE_DIRS = ()
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': (
+                "django.core.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.core.context_processors.debug",
+                "django.core.context_processors.i18n",
+                "django.core.context_processors.media",
+                "django.core.context_processors.static",
+                "django.core.context_processors.tz",
+                "django.contrib.messages.context_processors.messages",
+                "ore.core.context_processors.build_stamp",
+            )
+        }
+    },
+]
 
 LOGIN_REDIRECT_URL = '/'
 
