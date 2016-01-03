@@ -18,5 +18,5 @@ if [[ $ARG == "inside" ]]; then
 	ln -s /usr/bin/pip3 /usr/bin/pip
 	exec $DIR/generate_wheels.sh "$@"
 else
-	exec docker run --rm=true -i -t -v $BASEDIR:/work debian:jessie /work/$(basename $DIR)/generate_wheels_docker.sh inside $ENVIRONMENT
+	exec docker run --rm=true -v $BASEDIR:/work debian:jessie /work/$(basename $DIR)/generate_wheels_docker.sh inside $ENVIRONMENT
 fi
