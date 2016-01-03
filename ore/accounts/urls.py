@@ -28,7 +28,7 @@ else:
 
 urlpatterns = [
     url(r'^accounts/', include(accounts_urlpatterns)),
-    url(r'^users/(?P<user_slug>' + EXTENDED_URL_REGEX + ')/settings/', include([
+    url(r'^users/(?P<namespace>' + EXTENDED_URL_REGEX + ')/settings/', include([
         url(r'^$', RedirectView.as_view(
             pattern_name='accounts-settings-profile', permanent=False),
             name='accounts-settings-root'),

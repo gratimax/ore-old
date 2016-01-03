@@ -14,7 +14,7 @@ Settings
                     <h3 class="panel-title">Your Settings</h3>
                 </div>
                 <div class="list-group">
-                    <a href="{% url "accounts-settings-profile" user_slug=user.name %}" class="list-group-item {% if active_settings == "profile" %}active{% endif %}">
+                    <a href="{% url "accounts-settings-profile" namespace=user.name %}" class="list-group-item {% if active_settings == "profile" %}active{% endif %}">
                         Profile<span class="pull-right"><i class="fa fa-user"></i></span>
                     </a>
                 </div>
@@ -27,7 +27,7 @@ Settings
                 </div>
                 <div class="list-group">
                     {% for org in user.owned_organizations %}
-                    <a href="{% url "organizations-settings" organization_slug=org.name %}" class="list-group-item {% if active_settings == org.name %}active{% endif %}">
+                    <a href="{% url "organizations-settings" namespace=org.name %}" class="list-group-item {% if active_settings == org.name %}active{% endif %}">
                         <div class="pull-right avatar-pull-right">{% include "core/avatar.html" with avatar=org.avatar type="org" alt=org.name only %}</div> {{ org.name }}
                     </a>
                     {% endfor %}
