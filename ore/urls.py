@@ -8,6 +8,7 @@ import ore.projects.urls
 import ore.versions.urls
 import ore.teams.urls
 import ore.discourse_sso.urls
+import ore.organizations.urls
 
 from django.views.generic import RedirectView
 from ore.core.regexs import EXTENDED_URL_REGEX
@@ -32,6 +33,7 @@ urlpatterns += [
         ),
 
     url(r'', include(ore.accounts.urls)),
+    url(r'', include(ore.organizations.urls)),
     url(r'', include(ore.projects.urls)),
     url(r'', include(ore.versions.urls)),
     url(r'', include(ore.teams.urls)),

@@ -60,6 +60,7 @@ INSTALLED_APPS = (
 
     'ore.core',
     'ore.accounts',
+    'ore.organizations',
     'ore.projects',
     'ore.teams',
     'ore.versions',
