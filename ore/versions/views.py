@@ -196,19 +196,18 @@ class ChannelsListView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ChannelsListView, self).get_context_data(**kwargs)
         context['form'] = NewChannelForm()
+        context['active_project_tab'] = 'versions'
         return context
 
-    def post(self, req, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, name=kwargs['project'])
-        form = NewChannelForm(req.POST)
+        form = NewChannelForm(request.POST)
         if form.is_valid():
             channel = form.save(commit=False)
             channel.project = project
             channel.save()
             form = NewChannelForm()
-            return render(req, 'channels/manage.html', {'proj': project, 'form': form})
-        else:
-            return render(req, 'channels/manage.html', {'proj': project, 'form': form})
+        return self.get(request, *args, **kwargs)
 
 
 class DeleteChannelView(RequiresPermissionMixin, FormView):
@@ -220,6 +219,7 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
         context = super(DeleteChannelView, self).get_context_data(**kwargs)
         context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['channel'] = Channel.objects.get(pk=self.kwargs['channel'])
+        context['active_project_tab'] = 'versions'
         return context
 
     def get_form(self, **kwargs):
@@ -250,6 +250,7 @@ class EditChannelView(FormView):
         context = super(EditChannelView, self).get_context_data(**kwargs)
         context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['editing'] = True
+        context['active_project_tab'] = 'versions'
         return context
 
     def get_form(self, **kwargs):
