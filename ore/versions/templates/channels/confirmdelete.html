@@ -1,0 +1,33 @@
+{% extends "projects/_page.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+    Delete A Channel
+{% endblock %}
+{% block page %}
+    <h1>Are you sure?</h1>
+
+    You are about to delete the channel '{{ channel.name }}' and <strong>{{ channel.version_set.count }}</strong> versions.
+
+    Are you sure you want to do this, You can't undo it.
+
+    <form action="" method="post">
+        {% csrf_token %}
+
+        {{ form.errors }}
+        {{ form.non_field_errors }}
+        <div>
+            {% crispy form %}
+        </div>
+
+        <input type="submit" id="do" class="btn btn-danger" value="Yes, Delete this channel">
+
+        <a class="btn btn-secondary" href="{% url 'project-channels' project=proj.name namespace=proj.namespace.name %}" role="button">No, Take me back</a>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'ore/js/file_upload.js' %}"></script>
+{% endblock %}

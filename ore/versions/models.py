@@ -7,7 +7,7 @@ from django.db.models import Q
 from model_utils import Choices
 from model_utils.fields import StatusField
 from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
-from ore.projects.models import Project
+from ore.projects.models import Project, Channel
 from ore.core.regexs import TRIM_NAME_REGEX
 from reversion import revisions as reversion
 
@@ -25,6 +25,7 @@ class Version(models.Model):
                             ])
     description = models.TextField('description')
     project = models.ForeignKey(Project, related_name='versions')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
 
     objects = UserFilteringManager()
 

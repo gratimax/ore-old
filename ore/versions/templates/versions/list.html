@@ -32,16 +32,18 @@ Issues | {{ proj.full_name }}
                     <h3 class="panel-title">Channels</h3>
                 </div>
                 <ul class="list-group">
+                    {% for channel in proj.channel_set.all %}
                     <li class="list-group-item">
-                        <span class="dot" style="background-color: #48c3ce;"></span> Release
+                        <span class="dot" style="background-color: #{{ channel.hex }};"></span> {{ channel.name }}
                     </li>
-                    <li class="list-group-item">
-                        <span class="dot" style="background-color: #ce427a;"></span> Snapshot
-                    </li>
+                {% endfor %}
 
                     {% ifanypermitted user "channel.create,channel.edit,channel.delete" proj %}
                         <li class="list-group-item text-right">
-                            <i class="fa fa-cog"></i> Edit
+                            <a href="{% url 'project-channels' namespace=proj.namespace.name project=proj.name %}">
+                                <i class="fa fa-cog"></i> Edit
+                            </a>
+
                         </li>
                     {% endifanypermitted %}
                 </ul>

@@ -1,12 +1,12 @@
 from ore.core.models import Namespace
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 
 # Create your views here.
-from django.views.generic import DetailView, CreateView
-from ore.projects.models import Project
+from django.views.generic import DetailView, CreateView, FormView, TemplateView
+from ore.projects.models import Project, Channel
 from ore.projects.views import ProjectNavbarMixin
 from ore.core.views import RequiresPermissionMixin
-from ore.versions.forms import NewVersionForm, NewVersionInnerFileFormset
+from ore.versions.forms import NewVersionForm, NewVersionInnerFileFormset, NewChannelForm, ChannelDeleteForm
 from ore.versions.models import Version, File
 
 
@@ -177,3 +177,89 @@ class VersionsDetailView(ProjectNavbarMixin, DetailView):
         context['namespace'] = self.get_namespace()
         context['proj'] = context['version'].project
         return context
+
+
+class ChannelsListView(DetailView):
+    model = Project
+    slug_field = 'name'
+    slug_url_kwarg = 'project'
+
+    template_name = 'channels/manage.html'
+    context_object_name = 'proj'
+
+    def get_queryset(self):
+        return Project.objects.filter(namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
+
+    def get_context_data(self, **kwargs):
+        context = super(ChannelsListView, self).get_context_data(**kwargs)
+        context['form'] = NewChannelForm()
+        return context
+
+    def post(self, req, *args, **kwargs):
+        project = get_object_or_404(Project, name=kwargs['project'])
+        form = NewChannelForm(req.POST)
+        if form.is_valid():
+            channel = form.save(commit=False)
+            channel.project = project
+            channel.save()
+            form = NewChannelForm()
+            return render(req, 'channels/manage.html', {'proj': project, 'form': form})
+        else:
+            return render(req, 'channels/manage.html', {'proj': project, 'form': form})
+
+
+class DeleteChannelView(FormView):
+    template_name = "channels/confirmdelete.html"
+    form_class = ChannelDeleteForm
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteChannelView, self).get_context_data(**kwargs)
+        context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
+        context['channel'] = Channel.objects.get(pk=self.kwargs['channel'])
+        return context
+
+    def get_form(self, **kwargs):
+        return ChannelDeleteForm(
+            Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace']),
+            Channel.objects.get(pk=self.kwargs['channel']),
+            **self.get_form_kwargs())
+
+    def form_valid(self, form):
+        project = get_object_or_404(Project, name=self.kwargs['project'])
+        channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
+        if not project.user_has_permission(self.request.user, "edit"):
+            return render(self.request, 'error/unauthorized.html')
+        if form.cleaned_data['transfer_to'] == "DEL":
+            channel.delete()
+        else:
+            versionsToTransfer = Version.objects.filter(channel=channel)
+            newChannel = Channel.objects.get(pk=form.cleaned_data['transfer_to'])
+            for version in versionsToTransfer:
+                version.channel = newChannel
+                version.save()
+            channel.delete()
+        return redirect('project-channels', namespace=project.namespace.name, project=project.name)
+
+
+class EditChannelView(FormView):
+    template_name = "channels/manage.html"
+    form_class = NewChannelForm
+
+    def get_context_data(self, **kwargs):
+        context = super(EditChannelView, self).get_context_data(**kwargs)
+        context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
+        context['editing'] = True
+        return context
+
+    def get_form(self, **kwargs):
+        return NewChannelForm(instance=Channel.objects.get(pk=self.kwargs['channel']),
+                                 **self.get_form_kwargs())
+
+    def form_valid(self, form):
+        project = get_object_or_404(Project, name=self.kwargs['project'])
+        channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
+        channel = form.save(commit=False)
+        channel.project = project
+        channel.save()
+        return redirect('project-channels', namespace=project.namespace.name, project=project.name)
+

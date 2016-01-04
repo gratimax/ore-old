@@ -103,6 +103,15 @@ class Project(models.Model):
     class Meta:
         unique_together = ('namespace', 'name')
 
+
+class Channel(models.Model):
+    name = models.CharField(max_length=100)
+    hex = models.CharField(max_length=6)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
 @reversion.register
 class Page(models.Model):
     STATUS = Choices('active', 'deleted')

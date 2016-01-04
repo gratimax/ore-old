@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm
-from ore.projects.models import Project, Page
+from ore.projects.models import Project, Page, Channel
 from ore.core.views import RequiresPermissionMixin
 from ore.versions.models import File
 
@@ -274,9 +274,16 @@ class ProjectsNewView(FormView):
                 'name', 'You do not have permission to create a project for that namespace')
             return self.form_invalid(form)
 
+
         project = Project.objects.create(
             name=name, namespace=namespace, description=description)
         project.save()
+
+        releaseChannel = Channel.objects.create(name="Stable", hex="2ECC40", project=project)
+        betaChannel = Channel.objects.create(name="Beta", hex="0074D9", project=project)
+
+        releaseChannel.save()
+        betaChannel.save()
 
         messages.success(self.request, "Your project has been created")
 

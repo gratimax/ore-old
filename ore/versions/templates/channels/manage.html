@@ -1,0 +1,53 @@
+{% extends "projects/_page.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+    Manage Channels
+{% endblock %}
+{% block page %}
+    <h1>Current Channels</h1>
+    <table class="table table-striped">
+        <tr>
+            <td>Name</td>
+            <td>Versions</td>
+            <td>Actions</td>
+        </tr>
+        {% for channel in proj.channel_set.all %}
+            <tr>
+                <td><i class="dot" style="background-color: #{{ channel.hex }}"></i> {{ channel.name }}</td>
+                <td>{{ channel.version_set.count }}</td>
+                <td>
+                    <a href="{% url 'channel-edit' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
+                       style="color:#000;"><span class="fa fa-edit" aria-hidden="true"></span></a>
+                    <a href="{% url 'channel-delete' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
+                       style="color:#000;"><span class="fa fa-trash" aria-hidden="true"></span></a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if editing == True %}
+    <h1>Edit a channel</h1>
+
+    {% else %}
+    <h1>Add a channel</h1>
+
+    {% endif %}
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div>
+            {% crispy form %}
+        </div>
+        {% if editing == True %}
+            <input type="submit" id="final-submit" class="btn btn-primary" value="Save">
+        {% else %}
+            <input type="submit" id="final-submit" class="btn btn-primary" value="Add">
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'ore/js/file_upload.js' %}"></script>
+{% endblock %}
