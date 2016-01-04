@@ -35,19 +35,19 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="{% url 'projects-new' %}">
-                                        New project
                                         <span class="pull-right text-muted">
                                             <i class="fa fa-book"></i>
                                         </span>
+                                        New project
                                     </a>
                                 </li>
                                 <li>
                                     <a class="disabled">
-                                        <span class="text-muted">
-                                            New org
-                                        </span>
                                         <span class="pull-right text-muted">
                                             <i class="fa fa-users"></i>
+                                        </span>
+                                        <span class="text-muted">
+                                            New org
                                         </span>
                                     </a>
                                 </li>
@@ -60,35 +60,35 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="{% url 'core-namespace' namespace=user.name %}">
-                                        <span class="hidden-sm hidden-xs">{{ user.name }}</span><span class="hidden-md hidden-lg">Profile</span>
                                         <span class="pull-right text-muted">
                                             <i class="fa fa-user"></i>
                                         </span>
+                                        <span class="hidden-sm hidden-xs">{{ user.name }}</span><span class="hidden-md hidden-lg">Profile</span>
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li><a href="{% url 'accounts-settings-profile' namespace=user.name %}">
-                                    Settings
                                     <span class="pull-right text-muted">
                                         <i class="fa fa-cog"></i>
                                     </span>
+                                    Settings
                                 </a></li>
                                 {% if user.is_staff %}
                                 <li><a href="{% url 'admin:index' %}">
-                                    Admin
                                     <span class="pull-right text-muted">
                                         <i class="fa fa-bomb"></i>
                                     </span>
+                                    Admin
                                 </a></li>
                                 {% endif %}
                                 <li><a class="logout-a">
                                     <form action="{% url 'accounts-logout' %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="nav-btn logout-link">
-                                            Sign out
                                             <span class="pull-right text-muted">
                                                 <i class="fa fa-sign-out"></i>
                                             </span>
+                                            Sign out
                                         </button>
                                     </form>
                                 </a></li>
