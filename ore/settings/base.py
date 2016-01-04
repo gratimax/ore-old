@@ -26,7 +26,8 @@ def from_env(env_options, default=None):
         if default is not None:
             return default
         else:
-            raise ValueError("Environment variable(s) '{}' must be set or have a default".format(env_options))
+            raise ValueError(
+                "Environment variable(s) '{}' must be set or have a default".format(env_options))
     return value
 
 # Quick-start development settings - unsuitable for production
@@ -170,6 +171,12 @@ PROHIBITED_NAMES = (
     'log-out',
     'user',
     'users',
+    'accounts',
+    'account',
+    'organization',
+    'organizations',
+    'org',
+    'orgs',
     'staff',
 )
 
@@ -182,5 +189,6 @@ if os.path.exists(BUILD_STAMP_PATH):
 
 DISCOURSE_SSO_ENABLED = from_env('DISCOURSE_SSO_ENABLED', False) == 'true'
 if DISCOURSE_SSO_ENABLED:
-    DISCOURSE_SSO_URL = from_env('DISCOURSE_SSO_URL', 'https://forums.spongepowered.org/session/sso_provider')
+    DISCOURSE_SSO_URL = from_env(
+        'DISCOURSE_SSO_URL', 'https://forums.spongepowered.org/session/sso_provider')
     DISCOURSE_SSO_SECRET = from_env('DISCOURSE_SSO_SECRET')

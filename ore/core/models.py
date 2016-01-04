@@ -57,7 +57,8 @@ class Permission(models.Model):
     slug = models.SlugField(max_length=64, unique=True)
     name = models.CharField(max_length=64)
     description = models.TextField()
-    applies_to_model = models.ForeignKey(ContentType, related_name='ore_permissions')
+    applies_to_model = models.ForeignKey(
+        ContentType, related_name='ore_permissions')
 
     def __str__(self):
         return '%s (%s)' % (self.slug, self.applies_to_model)
@@ -74,7 +75,7 @@ def organization_avatar_upload(instance, filename):
 
 class Organization(Namespace):
     avatar_image = models.ImageField(
-        upload_to=organization_avatar_upload, blank=True, null=True, default=None)
+        upload_to=organization_avatar_upload, blank=True, null=True, default=None, verbose_name="Avatar")
 
     objects = UserFilteringManager()
 
