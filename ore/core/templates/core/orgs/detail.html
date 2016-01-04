@@ -6,13 +6,19 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-2 user-box">
+        <div class="col-md-3 user-box hidden-xs hidden-sm">
             <div class="well">
-                {% include "core/avatar.html" with avatar=organization.avatar type="org" alt=organization.name only %}
+                {% include "core/avatar.html" with avatar=organization.avatar type="organization" alt=organization.name only %}
                 <h3>{{ organization.name }}</h3>
             </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-xs-12 hide visible-xs visible-sm mini-user-box">
+            <div class="mini-avatar pull-left">
+                {% include "core/avatar.html" with avatar=organization.avatar type="organization" alt=organization.name only %}
+            </div>
+            <h3>{{ organization.name }}</h3>
+        </div>
+        <div class="col-xs-12 col-md-9">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Projects</h3>

@@ -102,14 +102,12 @@ a {
 
 .user-box {
   text-align: center;
+
   h3 {
     margin-top: 0;
   }
 
   >.well {
-    > img {
-      padding-bottom: 7px;
-    }
     > h1, > div {
       padding: 0 10px;
     }
@@ -130,6 +128,18 @@ a {
   //Instead of the line below you could use @includebox-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   box-shadow: none;
   background: none;
+}
+
+.mini-avatar {
+  width: 30px;
+}
+.mini-user-box {
+  border-bottom: 1px solid whitesmoke;
+  margin-bottom: 0.8em;
+}
+.mini-user-box .mini-avatar {
+  margin-top: 1.2em;
+  margin-right: 0.6em;
 }
 
 .project-toolbar {
@@ -160,7 +170,7 @@ a {
 // and deduce their aspect ratio
 .avatar-container {
   .user-box > .well > & {
-    padding: 0;
+    padding: 0 0 10px 0;
   }
   
   position: relative;
