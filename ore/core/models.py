@@ -24,6 +24,7 @@ class Namespace(models.Model):
                                                           'invalid'),
                                 validate_not_prohibited,
                             ])
+    lower_name = models.CharField('name', max_length=32, unique=True, null=False, blank=True)
 
     objects = UserFilteringInheritanceManager()
 
@@ -44,6 +45,10 @@ class Namespace(models.Model):
                 )
             )
         )
+
+    def save(self, *args, **kwargs):
+        self.lower_name = self.name.lower()
+        return super(Namespace, self).save(*args, **kwargs)
 
     @property
     def is_visible(self):
