@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load compress %}
+{% load permissions %}
 <!doctype html>
 <html lang="en">
 
@@ -23,7 +24,7 @@
 
     </head>
 
-    <body class="navbar-space">
+    <body class="navbar-space{% ifviewinghidden %} viewing-hidden{% endifviewinghidden %}">
 
         <script src="{% static "ore/js/topofpage.js" %}"></script>
 

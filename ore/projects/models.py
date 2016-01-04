@@ -67,6 +67,10 @@ class Project(models.Model):
             )
         )
 
+    @property
+    def is_visible(self):
+        return self.namespace.is_visible and self.status == self.STATUS.active
+
     def full_name(self):
         return "{}/{}".format(self.namespace.name, self.name)
 

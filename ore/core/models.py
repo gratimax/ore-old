@@ -45,6 +45,10 @@ class Namespace(models.Model):
             )
         )
 
+    @property
+    def is_visible(self):
+        return self.status == self.STATUS.active
+
     def get_absolute_url(self):
         return reverse('core-namespace', kwargs={'namespace': self.name})
 
