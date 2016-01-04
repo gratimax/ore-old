@@ -27,12 +27,12 @@ class ExtendedNameRegexTest(RegexTestCase, UnitTestTestCase):
         self.assertMatches("1234567890")
 
     def test_allows_some_symbols(self):
-        for symbol in "@+.-_":
+        for symbol in "-_.":
             self.assertMatches(
                 symbol, msg="Didn't match {} but should've".format(symbol))
 
     def test_disallows_symbols(self):
-        for symbol in "!#$%^&/*()[]=;'\",/":
+        for symbol in "!#$%^&/*()[]=;'\",/+@":
             self.assertDoesNotMatch(
                 symbol, msg="Matched {} but shouldn't".format(symbol))
 

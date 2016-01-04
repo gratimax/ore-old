@@ -1,5 +1,5 @@
 from ore.core.models import Namespace, Organization
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AnonymousUser, UserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AnonymousUser, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db import models
@@ -11,29 +11,32 @@ from ore.core.util import UserFilteringQuerySet
 from reversion import revisions as reversion
 
 
-OreUserManagerBase = UserManager.from_queryset(UserFilteringQuerySet)
+OreUserManagerBase = BaseUserManager.from_queryset(UserFilteringQuerySet)
 
 
 class OreUserManager(OreUserManagerBase):
 
-    def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
+    def create_user(self, name, password=None, email=None, **extra_fields):
         now = timezone.now()
-        if not username:
-            raise ValueError("The given username must be set")
         email = self.normalize_email(email)
         user = self.model(
-            name=username,
-            email=email,
-            is_staff=is_staff,
-            status=OreUser.STATUS.active,
-            is_superuser=is_superuser,
-            date_joined=now,
+            name=name,
             **extra_fields
         )
-        if self.count() == 0:
+        user.set_password(password)
+
+        # we'll create a superuser if this is the only user
+        if not self.exists():
             user.is_staff = True
             user.is_superuser = True
-        user.set_password(password)
+
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, name, password, email=None, **extra_fields):
+        user = self.create_user(name, password, email, **extra_fields)
+        user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
