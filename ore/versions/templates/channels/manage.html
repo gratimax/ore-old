@@ -1,6 +1,6 @@
 {% extends "projects/_page.html" %}
 {% load crispy_forms_tags %}
-{% load static %}
+{% load permissions %}
 {% block title %}
     Manage channels | {{ proj.full_name }}
 {% endblock %}
@@ -15,34 +15,52 @@
             <tr>
                 <td>Name</td>
                 <td>Versions</td>
+{% ifanypermitted user "channel.edit,channel.delete" proj %}
                 <td>Actions</td>
+{% endifanypermitted %}
             </tr>
             {% for channel in proj.channel_set.all %}
                 <tr>
                     <td><i class="dot" style="background-color: #{{ channel.hex }}"></i> {{ channel.name }}</td>
                     <td>{{ channel.version_set.count }}</td>
+{% ifanypermitted user "channel.edit,channel.delete" proj %}
                     <td>
+{% ifpermitted user "channel.edit" proj %}
                         <a href="{% url 'channel-edit' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
                            style="color:#000;"><span class="fa fa-edit" aria-hidden="true"></span></a>
+{% endifpermitted %}{% ifpermitted user "channel.delete" proj %}
                         <a href="{% url 'channel-delete' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
                            style="color:#000;"><span class="fa fa-trash" aria-hidden="true"></span></a>
+{% endifpermitted %}
                     </td>
+{% endifanypermitted %}
                 </tr>
             {% endfor %}
         </table>
     </div>
 </div>
 
+{% if editing %}
+{% ifpermitted user "channel.edit" proj %}
 <div class="panel panel-default">
     <div class="panel-heading">
-        {% if editing == True %}
-            <h3 class="panel-title">Edit a channel</h3>
-        {% else %}
-            <h3 class="panel-title">Add a channel</h3>
-        {% endif %}
+        <h3 class="panel-title">Edit a channel</h3>
     </div>
     <div class="panel-body">
         {% crispy form %}
     </div>
 </div>
+{% endifpermitted %}
+{% else %}
+{% ifpermitted user "channel.create" proj %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Create a channel</h3>
+    </div>
+    <div class="panel-body">
+        {% crispy form %}
+    </div>
+</div>
+{% endifpermitted %}
+{% endif %}
 {% endblock %}
