@@ -1,10 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.urlresolvers import reverse
 from django.forms import widgets
+from django.utils.html import escape
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, Hidden
+from crispy_forms.layout import Layout, Field, Submit, Hidden, HTML
+from crispy_forms.bootstrap import StrictButton, FieldWithButtons
 from io import BytesIO
 from PIL import Image
 
@@ -22,6 +25,9 @@ class OrganizationSettingsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(OrganizationSettingsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.form_action = reverse(
+            'organizations-settings', kwargs={'namespace': self.instance.name},
+        )
         self.helper.layout = Layout(
             Field('name', readonly=True),
             Field('avatar_image', css_class='js-crop-field',
@@ -131,3 +137,73 @@ class OrganizationSettingsForm(forms.ModelForm):
     class Meta:
         model = models.Organization
         fields = ['name', 'avatar_image']
+
+
+class OrganizationDeleteForm(forms.Form):
+
+    lock = forms.CharField(max_length=64)
+
+    def __init__(self, *args, **kwargs):
+        self.instance = kwargs.pop('instance')
+        super(OrganizationDeleteForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+        self.helper.form_action = reverse(
+            'organizations-delete', kwargs={'namespace': self.instance.name},
+        )
+        self.helper.form_show_labels = False
+        self.helper.form_class = ""
+        self.helper.attrs = {
+            'data-confirm': self.instance.name,
+            'data-input': 'input[name="lock"]',
+            'data-locks': 'button',
+        }
+        self.helper.layout = Layout(
+            HTML("""
+                <p>Deleting removes all data, including projects and files, related to this organization forever and is <em>not reversible</em>.</p>
+                <p>Please type the name of the organization (<tt>{}</tt>) to confirm deletion.</p>
+            """.format(escape(self.instance.name))),
+            FieldWithButtons(
+                Field('lock'), StrictButton('<i class="fa fa-times"></i> Delete', css_class='btn-danger', type='submit')),
+        )
+
+    def clean_lock(self):
+        lock = self.cleaned_data['lock']
+        if lock != self.instance.name:
+            raise ValidationError(
+                'You must type the organization name exactly, including any capitalisation.')
+        return lock
+
+
+class OrganizationRenameForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizationRenameForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+        self.helper.form_action = reverse(
+            'organizations-rename', kwargs={'namespace': self.instance.name},
+        )
+        self.helper.form_show_labels = False
+
+        and_the_projects_it_contains = ""
+        project_count = self.instance.projects.count()
+        if project_count > 1:
+            and_the_projects_it_contains = " and the {} projects it contains".format(project_count)
+        elif project_count == 1:
+            and_the_projects_it_contains = " and its project"
+
+        self.helper.layout = Layout(
+            HTML("""
+                <p>Are you sure you wish to rename this organization?</p>
+                <p>While this operation is reversible, no redirects of any kind are set up and former links to your organization{} may not work as expected.</p>
+                <p>In addition, no reservations are made, so the old name will be made available for other users immediately.</p>
+            """.format(escape(and_the_projects_it_contains), escape(self.instance.name))),
+            FieldWithButtons(
+                Field('name'), StrictButton('<i class="fa fa-edit"></i> Rename', css_class='btn-warning', type='submit')),
+        )
+
+    class Meta:
+        model = models.Organization
+        fields = ['name']
+

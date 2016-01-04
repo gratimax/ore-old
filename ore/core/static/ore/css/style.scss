@@ -8,6 +8,13 @@ body {
   color: #000;
 }
 
+body:not(.has-js) .only-with-js {
+  display: none !important;
+}
+body.has-js .only-without-js {
+  display: none !important;
+}
+
 .white-background {
   background-color: $white;
 }

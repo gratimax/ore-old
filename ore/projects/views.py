@@ -50,6 +50,7 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
         context_data['listed_pages'] = home_page.listed.as_user(self.request.user).all()
         return context_data
 
+
 class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
 
     model = Project

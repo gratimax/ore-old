@@ -1,24 +1,25 @@
 (function () {
-    // taken from https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+  // taken from https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
 
-    var csrfSafeMethod = function (method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    };
+  var csrfSafeMethod = function (method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  };
 
-    var csrftoken = "{{ csrf_token }}";
+  var csrftoken = "{{ csrf_token }}";
 
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+      }
+  });
 
 })();
 
-$(function () {
+
+jQuery(function ($) {
   var toggled;
 
   var drop = function () {
@@ -191,4 +192,13 @@ $(function () {
 
     });
    });
+
+  var toShowModals = $('[data-show-modal-immediately="true"]');
+  if (toShowModals.length > 1) {
+    console.error("Multiple modals with data-show-modal-immediately attribute detected!");
+    toShowModals = toShowModals.first();
+  }
+  toShowModals.removeClass('fade').on('bs.modal.shown', function() {
+    toShowModals.addClass('fade');
+  }).modal('show');
 });

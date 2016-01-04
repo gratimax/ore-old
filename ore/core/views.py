@@ -2,8 +2,11 @@ from ore.accounts.models import OreUser
 from ore.core import decorators
 from ore.core.models import Namespace, Organization
 from django.http import HttpResponse
+from django.contrib import messages
 from django.views.generic import FormView, DetailView, ListView, View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.views.generic.edit import DeletionMixin, ProcessFormView, FormMixin
+from django.views.generic.detail import SingleObjectTemplateResponseMixin, SingleObjectMixin
 from django.contrib.auth.decorators import login_required
 from ore.projects.models import Project
 from ore.teams.forms import TeamPermissionsForm
@@ -96,3 +99,50 @@ class SettingsMixin(object):
         data = super().get_context_data(**kwargs)
         data['active_settings'] = self.settings_name
         return data
+
+
+class MultiFormMixin(object):
+
+    form_name = 'form'
+
+    def construct_forms(self):
+        return {}
+
+    def get_context_data(self, **inkwargs):
+
+        kwargs = self.construct_forms()
+        kwargs.update(inkwargs)
+
+        kwargs = super(
+            MultiFormMixin, self
+        ).get_context_data(**kwargs)
+
+        # alias form to some other, more useful name
+        kwargs[self.form_name] = kwargs['form']
+        kwargs['submitted_form'] = self.form_name
+
+        return kwargs
+
+# NB: the lock is bypassed if the HTTP action is "DELETE". This is intentional.
+class LockedDeleteView(SingleObjectTemplateResponseMixin, DeletionMixin, SingleObjectMixin, FormMixin, ProcessFormView):
+
+    success_message = None
+
+    def post(self, request, *args, **kwargs):
+        # need to bypass DeletionMixin's handler for POST
+        return ProcessFormView.post(self, request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        resp = super(LockedDeleteView, self).delete(request, *args, **kwargs)
+
+        success_message = self.get_success_message()
+        if success_message:
+            messages.success(request, success_message)
+
+        return resp
+
+    def get_success_message(self):
+        return self.success_message
+
+    def form_valid(self, form):
+        return self.delete(self.request, self.args, self.kwargs)

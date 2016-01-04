@@ -1,17 +1,89 @@
 {% extends "settings/base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags permissions %}
 {% block title %}
 Organization Settings
 {% endblock %}
 {% block page %}
+{% ifpermitted user "organization.edit" org %}
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Organization Settings</h3>
     </div>
     <div class="panel-body">
-    	{% crispy form %}
+    	{% crispy settings_form %}
     </div>
 </div>
+{% endifpermitted %}
+
+{% ifanypermitted user "organization.rename,organization.delete" org %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Destructive Actions</h3>
+    </div>
+    <div class="panel-body only-with-js">
+        <div class="btn-group">
+            {% ifpermitted user "organization.rename" org %}
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#rename-modal">
+                    <i class="fa fa-edit"></i>
+                    Rename
+                </button>
+            {% endifpermitted %}
+            {% ifpermitted user "organization.delete" org %}
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
+                    <i class="fa fa-times"></i>
+                    Delete
+                </button>
+            {% endifpermitted %}
+        </div>
+    </div>
+    <ul class="list-group only-without-js">
+        {% ifpermitted user "organization.rename" org %}
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading spacey-heading">Rename Organization</h4>
+                {% crispy rename_form %}
+            </li>
+        {% endifpermitted %}
+        {% ifpermitted user "organization.delete" org %}
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading spacey-heading">Delete Organization</h4>
+                {% crispy delete_form %}
+            </li>
+        {% endifpermitted %}
+    </ul>
+</div>
+{% endifanypermitted %}
+
+{% ifpermitted user "organization.delete" org %}
+<div class="modal fade" id="delete-modal" tabindex="-1"{% if submitted_form == "delete_form" %} data-show-modal-immediately="true"{% endif %}>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                <h4 class="modal-title">Delete organization</h4>
+            </div>
+            <div class="modal-body">
+                {% crispy delete_form %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endifpermitted %}
+
+{% ifpermitted user "organization.rename" org %}
+<div class="modal fade" id="rename-modal" tabindex="-1"{% if submitted_form == "rename_form" %} data-show-modal-immediately="true"{% endif %}>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                <h4 class="modal-title">Rename organization</h4>
+            </div>
+            <div class="modal-body">
+                {% crispy rename_form %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endifpermitted %}
 {% endblock %}
 
 {% block scripts %}
