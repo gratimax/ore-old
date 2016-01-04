@@ -20,7 +20,7 @@ class Namespace(models.Model):
 
     name = models.CharField('name', max_length=32, unique=True,
                             validators=[
-                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Enter a namespace organization name.',
+                                validators.RegexValidator(EXTENDED_NAME_REGEX, 'Names can only contain letters, numbers, underscores and hyphens.',
                                                           'invalid'),
                                 validate_not_prohibited,
                             ])
