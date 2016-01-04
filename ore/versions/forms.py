@@ -12,8 +12,11 @@ class NewVersionForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.disable_csrf = True
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            Fieldset('Version', 'name', 'description')
+            'name',
+            'description',
         )
 
     class Meta:
@@ -38,12 +41,16 @@ class NewFileForm(forms.ModelForm):
         self.helper.layout = Layout(
             'file'
         )
+        if kwargs['prefix'] == 'file-0':
+            self.fields['file'].label = 'Primary file'
+        else:
+            self.fields['file'].label = 'Additional file'
 
     class Meta:
         model = File
         fields = ('file',)
 
-BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm)
+BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm, max_num=5, validate_max=True)
 
 
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
@@ -53,6 +60,9 @@ class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            Fieldset('File', 'name', 'file')
+            #Fieldset('File', 'name', 'file')
+            'file'
         )

@@ -15,7 +15,7 @@ class ProjectForm(forms.ModelForm):
     namespace = forms.ModelChoiceField(
         label='Owner User / Organization', queryset=None, empty_label=None)
     description = forms.CharField(
-        label='Tagline (optional)', widget=forms.TextInput(), required=False)
+        label='Tagline (optional)', widget=forms.TextInput(), required=False, help_text=Project._meta.get_field('description').help_text)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -25,7 +25,7 @@ class ProjectForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Create project'))
 
         namespace = self.fields['namespace']
-        namespace.queryset = Namespace.objects.select_subclasses(Organization, OreUser).filter(
+        namespace.queryset = Namespace.objects.as_user(user).select_subclasses(Organization, OreUser).filter(
             Q(oreuser=user) |
             (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(
                 organization__teams__permissions__slug='org.project.create')))
@@ -41,7 +41,7 @@ class ProjectForm(forms.ModelForm):
 class ProjectDescriptionForm(forms.ModelForm):
 
     description = forms.CharField(
-        label='Tagline (optional)', widget=forms.TextInput(), required=False)
+        label='Tagline (optional)', widget=forms.TextInput(), required=False, help_text=Project._meta.get_field('description').help_text)
 
     def __init__(self, *args, **kwargs):
         namespace = kwargs.pop('namespace')

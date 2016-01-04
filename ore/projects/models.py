@@ -30,7 +30,7 @@ class Project(models.Model):
                                 validate_not_prohibited,
                             ])
     namespace = models.ForeignKey(Namespace, related_name='projects')
-    description = models.TextField('description', blank=True, null=False)
+    description = models.TextField(blank=True, null=False, help_text="Try to sum your plugin up in 140 characters or less.", verbose_name="Tagline (optional)")
     stargazers = models.ManyToManyField(OreUser, related_name='starred')
 
     objects = UserFilteringManager()

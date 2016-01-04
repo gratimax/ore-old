@@ -5,23 +5,36 @@
 Upload New Version
 {% endblock %}
 {% block page %}
-<h1>Create new version</h1>
 
-<form action="" method="POST" enctype="multipart/form-data" class="form-horizontal">
-    {% csrf_token %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Create new version</h3>
+                </div>
+                <div class="panel-body">
+				    <p>A version represents a single, self-contained release of your plugin.</p>
+				    <p>You can upload multiple files, but in most cases you will only need to upload one - the plugin itself.</p>
+				    <p>The <em>Primary file</em> will be the file linked to the download button, and should preferably be a plug-and-play JAR.</p>
 
-    <p>A version represents a single, self-contained release of your plugin.</p>
-    <p>You can upload multiple files, but in most cases you will only need to upload one - the plugin itself.</p>
-    <p>The <em>Primary file</em> will be the file linked to the download button, and should preferably be a plug-and-play JAR.</p>
+					<form action="" method="POST" enctype="multipart/form-data" class="form-horizontal">
+					    {% csrf_token %}
 
-    <div>
-        {% crispy form %}
+					    <div>
+					        {% crispy form %}
 
-        {% crispy multi_form %}
+					        {% crispy multi_form %}
+					    </div>
+
+					    <input type="submit" id="final-submit" class="btn btn-primary" value="Create">
+					</form>
+
+                </div>
+            </div>
+        </div>
     </div>
-
-    <input type="submit" id="final-submit" class="btn btn-primary" value="Create">
-</form>
+</div>
 {% endblock %}
 
 {% block scripts %}

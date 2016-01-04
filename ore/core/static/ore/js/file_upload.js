@@ -1,17 +1,29 @@
 $(function () {
 
+    var performReplacement = function(newVal) {
+        for (var i = 0; i < this.attributes.length; i++) {
+            var attr = this.attributes[i];
+            attr.value = attr.value.replace(/-0-/g, '-' + newVal + '-');
+        }
+        if (this.tagName.toUpperCase() == 'LABEL') {
+            this.childNodes[0].textContent = 'Additional file';
+        }
+        for (var i = 0; i < this.children.length; i++) {
+            performReplacement.call(this.children[i], newVal);
+        }
+    };
+
     var tpl = function (i) {
-        return '' +
-            '<fieldset>' +
-            '   <legend>File</legend>' +
-            '   <div id="div_id_file-' + i + '-file" class="form-group">' +
-            '       <label for="id_file-' + i + '-file" class="control-label requiredField">File</label>' +
-            '       <div class="controls">' +
-            '           <input class="clearablefileinput" id="id_file-' + i + '-file" name="file-'+ i + '-file" type="file">' +
-            '       </div>' +
-            '   </div>' +
-            '</fieldset>' +
-            '<input id="id_file-' + i + '-id" name="file-' + i + '-id" type="hidden">';
+        i = ~~i;
+
+        // look for div_id_file-0-file and work upwards
+        var $fieldset = $('#div_id_file-0-file').closest('.form-group').clone(false);
+        performReplacement.call($fieldset[0], i);
+        var $div = $("<div></div>");
+        $div.append($fieldset);
+        $div.append('<input id="id_file-' + i + '-id" name="file-' + i + '-id" type="hidden">');
+        console.log($fieldset, $div);
+        return $div.html();
     };
 
     var next_file = function (i) {
