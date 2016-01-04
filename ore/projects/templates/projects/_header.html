@@ -40,18 +40,13 @@
             {% csrf_token %}
             <button class="btn btn-default btn-sm" type="submit"
                     data-toggle="tooltip" data-placement="bottom" title="Show support and stay updated">
-                <i class="fa fa-star"></i> {{ proj.stargazers.count }}
-                {% if proj.stargazers|contains_user:user %}
-                    Unstar
-                {% else %}
-                    Star
-                {% endif %}
+                <i class="fa fa-star{% if not proj.stargazers|contains_user:user %}-o{% endif %}"></i> {{ proj.stargazers.count }}
             </button>
         </form>
     {% else %}
         <button class="btn btn-default btn-sm" type="submit"
                 data-toggle="tooltip" data-placement="bottom" title="Show support and stay updated">
-            <i class="fa fa-star"></i> {{ proj.stargazers.count }} Star
+            <i class="fa fa-star-o"></i> {{ proj.stargazers.count }}
         </button>
     {% endif %}
     {% ifpermitted user "project.edit" proj %}
