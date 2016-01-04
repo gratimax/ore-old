@@ -393,7 +393,7 @@ a {
 
   a {
     &:hover {
-      background-color: $navbar_link_hover_background !important;
+      background-color: $navbar_link_hover_background;
     }
     &:visited {
       color: $color_alto_approx;
@@ -424,7 +424,7 @@ a {
     a {
       color: #333;
       &:hover {
-        background-color: #f5f5f5 !important;
+        background-color: #f5f5f5;
         color: #262626;
       }
       &:visited {
