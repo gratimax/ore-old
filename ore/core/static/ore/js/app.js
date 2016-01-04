@@ -198,7 +198,7 @@ jQuery(function ($) {
     console.error("Multiple modals with data-show-modal-immediately attribute detected!");
     toShowModals = toShowModals.first();
   }
-  toShowModals.removeClass('fade').on('bs.modal.shown', function() {
+  toShowModals.removeClass('fade').on('shown.bs.modal', function() {
     toShowModals.addClass('fade');
   }).modal('show');
 });

@@ -7,24 +7,19 @@ Manage | {{ proj.name }}
 {% endblock %}
 {% block page %}
 
+{% ifpermitted user "project.edit" proj %}
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Options</h3>
     </div>
     <ul class="list-group">
-        {% ifpermitted user "project.edit" proj %}
-            <li class="list-group-item">
-                <h4 class="list-group-item-heading spacey-heading">Change Description</h4>
-                {% crispy description_form %}
-            </li>
-        {% endifpermitted %}
-
         <li class="list-group-item">
-            <h4 class="list-group-item-heading">Other List Item</h4>
-            other list item...
+            <h4 class="list-group-item-heading spacey-heading">Change Description</h4>
+            {% crispy description_form %}
         </li>
     </ul>
 </div>
+{% endifpermitted %}
 
 <div class="panel panel-default">
     <div class="panel-heading">

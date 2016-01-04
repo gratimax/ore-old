@@ -1,6 +1,6 @@
 from ore.core.views import RequiresPermissionMixin, RequiresLoggedInMixin, SettingsMixin, MultiFormMixin, LockedDeleteView
 from django.contrib import messages
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, CreateView
 from django.core.urlresolvers import reverse
 
 from . import models, forms
@@ -76,3 +76,15 @@ class OrganizationDeleteView(OrganizationSettingsMixin, LockedDeleteView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super(OrganizationDeleteView, self).post(request, *args, **kwargs)
+
+
+class OrganizationCreateView(CreateView):
+
+    form_class = forms.OrganizationCreateForm
+
+    template_name = 'organizations/new.html'
+
+    def form_valid(self, form):
+        resp = super(OrganizationCreateView, self).form_valid(form)
+        self.object.teams.get(is_owner_team=True).users = [self.request.user]
+        return resp

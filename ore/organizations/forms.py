@@ -19,17 +19,13 @@ class AvatarFileInput(widgets.ClearableFileInput):
         '%(initial_text)s: <img src="%(initial_url)s" alt="Current avatar"> %(clear_template)s<br />%(input_text)s: %(input)s'
     )
 
-
-class OrganizationSettingsForm(forms.ModelForm):
+class BaseOrganizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(OrganizationSettingsForm, self).__init__(*args, **kwargs)
+        super(BaseOrganizationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_action = reverse(
-            'organizations-settings', kwargs={'namespace': self.instance.name},
-        )
         self.helper.layout = Layout(
-            Field('name', readonly=True),
+            Field('name'),
             Field('avatar_image', css_class='js-crop-field',
                   data_width_field="input[name='avatar_width']",
                   data_height_field="input[name='avatar_height']",
@@ -49,9 +45,6 @@ class OrganizationSettingsForm(forms.ModelForm):
         self.fields['avatar_height'] = forms.IntegerField(required=False)
         self.fields['avatar_x'] = forms.IntegerField(required=False)
         self.fields['avatar_y'] = forms.IntegerField(required=False)
-
-    def clean_name(self):
-        return self.instance.name
 
     def clean(self):
         try:
@@ -137,6 +130,39 @@ class OrganizationSettingsForm(forms.ModelForm):
     class Meta:
         model = models.Organization
         fields = ['name', 'avatar_image']
+
+
+class OrganizationSettingsForm(BaseOrganizationForm):
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizationSettingsForm, self).__init__(*args, **kwargs)
+        self.helper.form_action = reverse(
+            'organizations-settings', kwargs={'namespace': self.instance.name},
+        )
+        self.helper.layout[0].readonly = True
+
+    def clean_name(self):
+        return self.instance.name
+
+
+class OrganizationCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizationCreateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('name'),
+            Submit('submit', 'Create organization'),
+        )
+    
+    def clean_name(self):
+        if models.Organization.objects.filter(name=self.cleaned_data['name']).exists():
+            raise ValidationError("Sorry, but this name is already in use. Try another?")
+        return self.cleaned_data['name']
+
+    class Meta:
+        model = models.Organization
+        fields = ['name']
 
 
 class OrganizationDeleteForm(forms.Form):
