@@ -17,7 +17,7 @@ urlpatterns = [
                 url(r'^(?P<file>' + TRIM_URL_REGEX + ')(?P<file_extension>\.[a-zA-Z0-9-]+)',
                     FileDownloadView.as_view(), name='versions-files-download'),
         ])),
-        url(r'^channels/', include([
+        url(r'^manage/channels/', include([
             url(r'^$', ChannelsListView.as_view(), name='project-channels'),
             url(r'^(?P<channel>' + EXTENDED_URL_REGEX + ')/', include([
                 url(r'^$', EditChannelView.as_view(), name='channel-edit'),
