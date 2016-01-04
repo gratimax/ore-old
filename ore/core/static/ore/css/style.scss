@@ -535,7 +535,7 @@ a {
   padding: 3px;
   border-radius: 4px;
   margin-right: 10px;
-  width: 100px;
+  min-width: 100px;
 }
 .namespace-option-selected {
   background-color: #337ab7;
@@ -544,7 +544,8 @@ a {
 }
 .namespace-option-avatar {
   display: block;
-  margin-bottom: 7px;
+  width: 100px;
+  margin: 0 auto 7px auto;
 }
 .namespace-option-name {
   display: block;
