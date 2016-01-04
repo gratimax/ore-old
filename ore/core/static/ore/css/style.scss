@@ -524,3 +524,28 @@ a {
 .breadcrumb {
   margin-top: 10px;
 }
+
+.namespace-fancy-select {
+  display: block;
+}
+.namespace-option {
+  display: inline-block;
+  text-align: center;
+  border: 1px solid #ddd;
+  padding: 3px;
+  border-radius: 4px;
+  margin-right: 10px;
+  width: 100px;
+}
+.namespace-option-selected {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  color: white;
+}
+.namespace-option-avatar {
+  display: block;
+  margin-bottom: 7px;
+}
+.namespace-option-name {
+  display: block;
+}

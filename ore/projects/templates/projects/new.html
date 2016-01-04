@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags static %}
 {% block title %}
 Create Project
 {% endblock %}
@@ -19,4 +19,9 @@ Create Project
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static "ore/js/namespaceselect.js" %}"></script>
 {% endblock %}

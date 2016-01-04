@@ -7,12 +7,33 @@ from django import forms
 from django.core import validators
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.utils.encoding import force_text
+from django.utils.html import conditional_escape, format_html, html_safe
+from django.utils.safestring import mark_safe
 from ore.projects.models import Project, Page
 
 
+class NamespaceSelectWidget(forms.Select):
+
+    def render_option(self, selected_choices, option_value, option_label):
+        icon = option_label.avatar
+        option_label = option_label.name
+        addl_attrs = format_html('data-avatar="{}" ', icon)
+        sup = super(NamespaceSelectWidget, self).render_option(selected_choices, option_value, option_label)
+        assert sup[0:8] == '<option '
+        sup = sup[0:8] + addl_attrs + sup[8:]
+        return sup
+    
+
+class NamespaceSelectField(forms.ModelChoiceField):
+    widget = NamespaceSelectWidget
+
+    def label_from_instance(self, obj):
+        return obj
+
 class ProjectForm(forms.ModelForm):
 
-    namespace = forms.ModelChoiceField(
+    namespace = NamespaceSelectField(
         label='Owner User / Organization', queryset=None, empty_label=None)
     description = forms.CharField(
         label='Tagline (optional)', widget=forms.TextInput(), required=False, help_text=Project._meta.get_field('description').help_text)
@@ -29,9 +50,9 @@ class ProjectForm(forms.ModelForm):
             Q(oreuser=user) |
             (Q(organization__teams__users=user) & (Q(organization__teams__is_owner_team=True) | Q(
                 organization__teams__permissions__slug='org.project.create')))
-        )
-
+        ).order_by('oreuser__id', 'organization__name')
         namespace.initial = user.id
+
 
     class Meta:
         model = Project
