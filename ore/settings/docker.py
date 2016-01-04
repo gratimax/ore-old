@@ -1,6 +1,9 @@
 from .production import *
 import raven
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = '/app/media'
+
 ALLOWED_HOSTS = [
     '*'
 ]
