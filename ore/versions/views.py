@@ -236,9 +236,7 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
         else:
             versions_to_transfer = Version.objects.filter(channel=channel)
             new_channel = Channel.objects.get(pk=form.cleaned_data['transfer_to'], project=project)
-            for version in versions_to_transfer:
-                version.channel = new_channel
-                version.save()
+            versions_to_transfer.update(channel=new_channel)
             channel.delete()
         return redirect('project-channels', namespace=project.namespace.name, project=project.name)
 
