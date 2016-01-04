@@ -29,10 +29,5 @@ class Migration(migrations.Migration):
             field=models.CharField(null=True, blank=True, max_length=32, unique=False, verbose_name='name'),
         ),
         migrations.RunSQL("UPDATE core_namespace SET lower_name=LOWER(name)"),
-        migrations.RunSQL("DELETE FROM core_namespace WHERE id IN (SELECT DISTINCT a.id FROM core_namespace a LEFT JOIN core_namespace b ON a.lower_name=b.lower_name AND a.id > b.id)"),
-        migrations.AlterField(
-            model_name='namespace',
-            name='lower_name',
-            field=models.CharField(blank=True, max_length=32, unique=True, verbose_name='name'),
-        ),
+        migrations.RunSQL("DELETE FROM core_namespace WHERE id IN (SELECT DISTINCT a.id FROM core_namespace a INNER JOIN core_namespace b ON a.lower_name=b.lower_name AND a.id > b.id)"),
     ]
