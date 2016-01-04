@@ -104,6 +104,10 @@ class Organization(Namespace):
             return self.avatar_image.url
         return "//www.gravatar.com/avatar/mysteryman?f=y&d=mm"
 
+    def members(self):
+        from ore.accounts.models import OreUser
+        return OreUser.objects.filter(organizationteams__organization=self).distinct()
+
     def user_has_permission(self, user, perm_slug, project=None):
         if isinstance(user, AnonymousUser):
             return False

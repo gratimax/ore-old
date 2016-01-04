@@ -25,6 +25,23 @@
                 </div>
                 {% include "projects/_projects_list.html" with namespace=organization projects=organization.projects.all|as_user:user only %}
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Members</h3>
+                </div>
+                <ul class="list-group org-members-list-group">
+                    {% for member in organization.members %}
+                        <li class="list-group-item org-members-list-group-item">
+                            <a href="{% url 'users-root' namespace=member.name %}" class="org-members-list-link">
+                                <div class="org-members-listing-avatar">
+                                    {% include "core/avatar.html" with avatar=member.avatar type="oreuser" alt=member.name only %}
+                                </div>
+                                <span class="org-members-listing-name">{{ member.name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>

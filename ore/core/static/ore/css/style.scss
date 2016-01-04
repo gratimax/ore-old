@@ -549,3 +549,21 @@ a {
 .namespace-option-name {
   display: block;
 }
+
+.org-members-listing-avatar {
+  display: inline-block;
+  width: 20px;
+  vertical-align: sub;
+  margin-right: 0.2em;
+}
+.org-members-list-link:hover {
+  text-decoration: none;
+}
+.org-members-list-group-item {
+  padding: 0;
+}
+.org-members-list-link {
+  font-size: 1.2em;
+  display: block;
+  padding: 10px 15px;
+}
