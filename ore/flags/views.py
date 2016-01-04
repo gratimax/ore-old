@@ -24,6 +24,8 @@ class FlagView(FormView):
         context['content'] = self._get_content()
         context['content_text'] = self._get_content_friendly_text(
             context['content'])
+        context['content_title'] = self._get_content_title_text(
+            context['content'])
         return context
 
     def form_valid(self, form):
@@ -47,6 +49,9 @@ class FlagView(FormView):
         pass
 
     def _get_content_friendly_text(self, content):
+        pass
+
+    def _get_content_title_text(self, content):
         pass
 
     # Where to redirect the user if successful
@@ -77,7 +82,10 @@ class ProjectsFlagView(FlagView):
         return get_object_or_404(Project.objects.as_user(self.request.user), name=self.project, namespace__name=self.namespace)
 
     def _get_content_friendly_text(self, content):
-        return "{} by {}".format(content.name, content.namespace)
+        return "Project {}".format(content.full_name())
+
+    def _get_content_title_text(self, content):
+        return content.full_name()
 
 
 class VersionsFlagView(FlagView):
