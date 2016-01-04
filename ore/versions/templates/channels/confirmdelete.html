@@ -2,13 +2,13 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block title %}
-    Delete A Channel
+    Delete channel {{ channel.name }} | {{ proj.full_name }}
 {% endblock %}
 {% block page %}
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Delete Channel: {{ channel.name }}</h3>
+        <h3 class="panel-title">Delete channel: {{ channel.name }}</h3>
     </div>
     <div class="panel-body">
 
