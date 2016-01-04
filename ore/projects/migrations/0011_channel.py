@@ -3,6 +3,20 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+def create_channels(apps, schema_editor):
+    Project = apps.get_model('projects', 'Project')
+    Channel = apps.get_model('projects', 'Channel')
+    db_alias = schema_editor.connection.alias
+    projects = Project.objects.using(db_alias).all()
+    for proj in projects:
+        Channel(name='Stable', hex='2ECC40', project=proj).save(using=db_alias)
+        Channel(name='Beta', hex='0074D9', project=proj).save(using=db_alias)
+
+def delete_channels(apps, schema_editor):
+    Channel = apps.get_model('projects', 'Channel')
+    db_alias = schema_editor.connection.alias
+    Channel.objects.using(db_alias).all().delete()
+
 
 class Migration(migrations.Migration):
 
@@ -20,4 +34,5 @@ class Migration(migrations.Migration):
                 ('project', models.ForeignKey(to='projects.Project')),
             ],
         ),
+        migrations.RunPython(create_channels, delete_channels)
     ]
