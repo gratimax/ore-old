@@ -29,7 +29,7 @@ urlpatterns += [
         RedirectView.as_view(pattern_name='core-namespace', permanent=False),
         name='users-root'
         ),
-    url(r'^organizations/(?P<namespace>' + EXTENDED_URL_REGEX + ')/$',
+    url(r'^orgs/(?P<namespace>' + EXTENDED_URL_REGEX + ')/$',
         RedirectView.as_view(pattern_name='core-namespace', permanent=False),
         name='organizations-root'
         ),
