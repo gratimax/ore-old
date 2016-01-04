@@ -15,12 +15,12 @@ from ore.teams.forms import TeamPermissionsForm
 class RequiresPermissionMixin(object):
     permissions = []
 
-    def get_permissions(self):
+    def get_permissions(self, request, *args, **kwargs):
         return self.permissions
 
     def dispatch(self, request, *args, **kwargs):
         return decorators.permission_required(
-            self.get_permissions()
+            self.get_permissions(request, *args, **kwargs)
         )(
             super(RequiresPermissionMixin, self).dispatch
         )(request, *args, **kwargs)

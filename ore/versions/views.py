@@ -1,7 +1,5 @@
 from ore.core.models import Namespace
 from django.shortcuts import get_object_or_404, render, redirect
-
-# Create your views here.
 from django.views.generic import DetailView, CreateView, FormView, TemplateView
 from ore.projects.models import Project, Channel
 from ore.projects.views import ProjectNavbarMixin
@@ -187,6 +185,11 @@ class ChannelsListView(DetailView):
     template_name = 'channels/manage.html'
     context_object_name = 'proj'
 
+    def get_permissions(self, request, *args, **kwargs):
+        if request.method.lower() == 'post':
+            return ('project.manage', 'channel.create')
+        return ('project.manage',)
+
     def get_queryset(self):
         return Project.objects.filter(namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
 
@@ -208,9 +211,10 @@ class ChannelsListView(DetailView):
             return render(req, 'channels/manage.html', {'proj': project, 'form': form})
 
 
-class DeleteChannelView(FormView):
+class DeleteChannelView(RequiresPermissionMixin, FormView):
     template_name = "channels/confirmdelete.html"
     form_class = ChannelDeleteForm
+    permissions = ('project.manage', 'channel.delete',)
 
     def get_context_data(self, **kwargs):
         context = super(DeleteChannelView, self).get_context_data(**kwargs)
@@ -227,15 +231,13 @@ class DeleteChannelView(FormView):
     def form_valid(self, form):
         project = get_object_or_404(Project, name=self.kwargs['project'])
         channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
-        if not project.user_has_permission(self.request.user, "edit"):
-            return render(self.request, 'error/unauthorized.html')
         if form.cleaned_data['transfer_to'] == "DEL":
             channel.delete()
         else:
-            versionsToTransfer = Version.objects.filter(channel=channel)
-            newChannel = Channel.objects.get(pk=form.cleaned_data['transfer_to'])
-            for version in versionsToTransfer:
-                version.channel = newChannel
+            versions_to_transfer = Version.objects.filter(channel=channel)
+            new_channel = Channel.objects.get(pk=form.cleaned_data['transfer_to'], project=project)
+            for version in versions_to_transfer:
+                version.channel = new_channel
                 version.save()
             channel.delete()
         return redirect('project-channels', namespace=project.namespace.name, project=project.name)
@@ -244,6 +246,7 @@ class DeleteChannelView(FormView):
 class EditChannelView(FormView):
     template_name = "channels/manage.html"
     form_class = NewChannelForm
+    permissions = ('project.manage', 'channel.edit',)
 
     def get_context_data(self, **kwargs):
         context = super(EditChannelView, self).get_context_data(**kwargs)

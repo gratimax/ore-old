@@ -5,29 +5,18 @@
     Delete A Channel
 {% endblock %}
 {% block page %}
-    <h1>Are you sure?</h1>
 
-    You are about to delete the channel '{{ channel.name }}' and <strong>{{ channel.version_set.count }}</strong> versions.
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Delete Channel: {{ channel.name }}</h3>
+    </div>
+    <div class="panel-body">
 
-    Are you sure you want to do this, You can't undo it.
+        <p>You are about to delete the channel <em>{{ channel.name }}</em>{% if channel.version_set.count %} and <strong>{{ channel.version_set.count }}</strong> version{% if channel.version_set.count > 1 %}s{% endif %}{% endif %}.</p>
 
-    <form action="" method="post">
-        {% csrf_token %}
+        <p>Are you absolutely sure?</p>
 
-        {{ form.errors }}
-        {{ form.non_field_errors }}
-        <div>
-            {% crispy form %}
-        </div>
-
-        <input type="submit" id="do" class="btn btn-danger" value="Yes, Delete this channel">
-
-        <a class="btn btn-secondary" href="{% url 'project-channels' project=proj.name namespace=proj.namespace.name %}" role="button">No, Take me back</a>
-    </form>
-
-{% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-    <script src="{% static 'ore/js/file_upload.js' %}"></script>
+        {% crispy form %}
+    </div>
+</div>
 {% endblock %}

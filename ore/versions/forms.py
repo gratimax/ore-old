@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset
+from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from django import forms
+from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory
 from ore.projects.models import Channel
 from ore.versions.models import Version, File
@@ -39,18 +40,21 @@ class NewChannelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(NewChannelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.disable_csrf = True
+        self.helper.form_class = "form-horizontal"
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+        label = 'Create new channel' if not self.instance.id else 'Edit channel'
         self.helper.layout = Layout(
-            Fieldset('Channel', 'name', 'hex')
+            'name', 'hex',
+            Submit('submit', label, css_class="col-lg-offset-2")
         )
 
     class Meta:
         model = Channel
         fields = ('name','hex')
 
-    COLOUR_CHOICES=(
-        ('001f3f', 'Navy'),
+    COLOUR_CHOICES = (
+        ('001F3F', 'Navy'),
         ('0074D9', 'Blue'),
         ('7FDBFF', 'Aqua'),
         ('39CCCC', 'Teal'),
@@ -60,32 +64,33 @@ class NewChannelForm(forms.ModelForm):
         ('FFDC00', 'Yellow'),
         ('FF851B', 'Orange'),
         ('FF4136', 'Red'),
-        ('85144b', 'Maroon'),
+        ('85144B', 'Maroon'),
         ('F012BE', 'Fuchsia'),
         ('B10DC9', 'Purple'),
         ('111111', 'Black'),
         ('AAAAAA', 'Gray'),
         ('DDDDDD', 'Silver'),
-
     )
 
     hex = forms.ChoiceField(choices=COLOUR_CHOICES, required=True)
 
 
 class ChannelDeleteForm(forms.Form):
-    def __init__(self, project, currentChannel, *args, **kwargs):
+    def __init__(self, project, current_channel, *args, **kwargs):
         super(ChannelDeleteForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.disable_csrf = True
-        channels = Channel.objects.filter(project=project)
-        choices = (('DEL', 'None, Delete them.'),)
-        for channel in channels:
-            if channel.id == currentChannel.id:
-                continue
-            choices = choices + ((str(channel.id), channel.name),)
-        self.fields['transfer_to'] = forms.ChoiceField(choices=choices,required=False)
-
+        self.helper.form_class = "form-horizontal"
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
+        get_out_of_here = reverse('project-channels', kwargs={'namespace': project.namespace.name, 'project': project.name})
+        self.helper.layout = Layout(
+            'transfer_to',
+            Submit('submit', 'Delete it!', css_class='btn-danger col-lg-offset-2'),
+            HTML("<a href=\"{}\" class='btn'>Get me out of here!</a>".format(get_out_of_here))
+        )
+        channels = Channel.objects.filter(project=project).exclude(id=current_channel.id)
+        choices = [('DEL', 'None, delete them.'),] + [(str(channel.id), channel.name) for channel in channels]
+        self.fields['transfer_to'] = forms.ChoiceField(choices=choices, required=False)
 
 
 

@@ -5,49 +5,44 @@
     Manage Channels
 {% endblock %}
 {% block page %}
-    <h1>Current Channels</h1>
-    <table class="table table-striped">
-        <tr>
-            <td>Name</td>
-            <td>Versions</td>
-            <td>Actions</td>
-        </tr>
-        {% for channel in proj.channel_set.all %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Current channels</h3>
+    </div>
+    <div class="panel-body">
+        <p>Channels are used for showing what sort of shape the software you're releasing is in.</p>
+        <table class="table table-striped">
             <tr>
-                <td><i class="dot" style="background-color: #{{ channel.hex }}"></i> {{ channel.name }}</td>
-                <td>{{ channel.version_set.count }}</td>
-                <td>
-                    <a href="{% url 'channel-edit' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
-                       style="color:#000;"><span class="fa fa-edit" aria-hidden="true"></span></a>
-                    <a href="{% url 'channel-delete' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
-                       style="color:#000;"><span class="fa fa-trash" aria-hidden="true"></span></a>
-                </td>
+                <td>Name</td>
+                <td>Versions</td>
+                <td>Actions</td>
             </tr>
-        {% endfor %}
-    </table>
+            {% for channel in proj.channel_set.all %}
+                <tr>
+                    <td><i class="dot" style="background-color: #{{ channel.hex }}"></i> {{ channel.name }}</td>
+                    <td>{{ channel.version_set.count }}</td>
+                    <td>
+                        <a href="{% url 'channel-edit' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
+                           style="color:#000;"><span class="fa fa-edit" aria-hidden="true"></span></a>
+                        <a href="{% url 'channel-delete' namespace=proj.namespace.name project=proj.name channel=channel.id %}"
+                           style="color:#000;"><span class="fa fa-trash" aria-hidden="true"></span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 
-    {% if editing == True %}
-    <h1>Edit a channel</h1>
-
-    {% else %}
-    <h1>Add a channel</h1>
-
-    {% endif %}
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <div>
-            {% crispy form %}
-        </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
         {% if editing == True %}
-            <input type="submit" id="final-submit" class="btn btn-primary" value="Save">
+            <h3 class="panel-title">Edit a channel</h3>
         {% else %}
-            <input type="submit" id="final-submit" class="btn btn-primary" value="Add">
+            <h3 class="panel-title">Add a channel</h3>
         {% endif %}
-    </form>
-{% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-    <script src="{% static 'ore/js/file_upload.js' %}"></script>
+    </div>
+    <div class="panel-body">
+        {% crispy form %}
+    </div>
+</div>
 {% endblock %}

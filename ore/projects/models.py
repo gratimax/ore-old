@@ -106,7 +106,7 @@ class Project(models.Model):
 
 class Channel(models.Model):
     name = models.CharField(max_length=100)
-    hex = models.CharField(max_length=6)
+    hex = models.CharField(max_length=6, verbose_name="Colour")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self):
