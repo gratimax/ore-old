@@ -7,8 +7,12 @@ Upload New Version
 {% block page %}
 <h1>Create new version</h1>
 
-<form action="" method="POST" enctype="multipart/form-data">
+<form action="" method="POST" enctype="multipart/form-data" class="form-horizontal">
     {% csrf_token %}
+
+    <p>A version represents a single, self-contained release of your plugin.</p>
+    <p>You can upload multiple files, but in most cases you will only need to upload one - the plugin itself.</p>
+    <p>The <em>Primary file</em> will be the file linked to the download button, and should preferably be a plug-and-play JAR.</p>
 
     <div>
         {% crispy form %}
