@@ -13,6 +13,7 @@ ALLOWED_TAGS = [
     'acronym',
     'b',
     'blockquote',
+    'br',
     'code',
     'div',
     'em',
@@ -62,7 +63,9 @@ MARKDOWN_EXTRAS = [
     'header-ids',
     'markdown-in-html',
     'spoilers',
-    'tables'
+    'tables',
+    'footnotes',
+    "break-on-newline"
 ]
 
 PAGE_REGEX = re.compile('^(?:page!)?(?P<page>' + EXTENDED_URL_REGEX + ')$')
