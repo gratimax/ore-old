@@ -42,7 +42,7 @@ Yes.
 
 ## Development
 
-Written with python 3 and django 1.7.
+Written with Python 3 and Django 1.9.
 You should probably use virtualenv.
 
 1.  Create a new virtualenv - my suggestion is to use `virtualenv venv` in the root of the project.
@@ -85,7 +85,7 @@ If you need to migrate a production database:
 ```bash
 $ docker run -t --link webdb:webdb \
     -e DB_USER=repo -e DB_PASSWORD=much_secret -e SECRET_KEY=much_secret \
-    spongepowered/ore python3 manage.py migrate
+    spongepowered/ore python3 ore/manage.py migrate
 
 ```
 
@@ -93,7 +93,7 @@ $ docker run -t --link webdb:webdb \
 
 We really appreciate any and all contributions!
 Contribute code with a PR or ideas with issues and/or discussion.
-If you wish to discuss something that isn't a project issue, please discuss Ore in the [sponge web subforum](https://forums.spongepowered.org/c/sponge/sponge-web) instead.
+If you wish to discuss something that isn't a project issue, please discuss Ore in the [Sponge Web subforum](https://forums.spongepowered.org/c/sponge/sponge-web) instead.
 
 By contributing code to Ore, you agree to license your contribution under the MIT license to this project.
 You still hold copyright to your work, as detailed in the [license](https://github.com/SpongePowered/Ore/blob/master/LICENSE.txt#L4).
