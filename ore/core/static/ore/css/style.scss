@@ -401,7 +401,7 @@ a {
     height: 56px;
   }
 
-  a {
+  .nav > li > a, a {
     &:hover {
       background-color: $navbar_link_hover_background;
     }
