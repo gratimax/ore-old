@@ -2,6 +2,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.core import validators
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from model_utils import Choices
@@ -22,7 +23,8 @@ class Namespace(models.Model):
                                                           'invalid'),
                                 validate_not_prohibited,
                             ])
-    lower_name = models.CharField('name', max_length=32, unique=True, null=False, blank=True)
+    lower_name = models.CharField(
+        'name', max_length=32, unique=True, null=False, blank=True)
 
     objects = UserFilteringInheritanceManager()
 
@@ -43,6 +45,16 @@ class Namespace(models.Model):
                 )
             )
         )
+
+    def validate_unique(self, *args, **kwargs):
+        lower_name = self.name.lower()
+        qs = Namespace.objects.filter(lower_name=lower_name)
+        if self.pk:
+            qs = qs.exclude(id=self.pk)
+        if qs.exists():
+            raise ValidationError(
+                {"name": "A namespace with this name already exists."})
+        super(Namespace, self).validate_unique(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         self.lower_name = self.name.lower()
@@ -109,6 +121,10 @@ class Organization(Namespace):
 
     def members(self):
         from ore.accounts.models import OreUser
+
+        if self.name == 'platform':
+            return OreUser.objects.filter(is_staff=True)
+
         return OreUser.objects.filter(organizationteams__organization=self).distinct()
 
     def user_has_permission(self, user, perm_slug, project=None):
