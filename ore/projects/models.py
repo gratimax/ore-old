@@ -1,4 +1,3 @@
-from colour import Color
 from django.contrib.auth.models import AnonymousUser
 from django.core import validators
 from django.core.urlresolvers import reverse
@@ -15,7 +14,7 @@ from ore.core.models import Namespace
 from ore.core.util import validate_not_prohibited, UserFilteringManager, add_prefix
 from ore.core.regexs import EXTENDED_NAME_REGEX
 from reversion import revisions as reversion
-from ore.util import markdown
+from ore.util import markdown, colour
 
 
 @reversion.register(follow=['pages'])
@@ -112,14 +111,7 @@ class Channel(models.Model):
 
     @property
     def color_class(self):
-        color = Color('#' + self.hex)
-        # see http://stackoverflow.com/a/596243 for info on perceptive luminance
-        perceptive_luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue
-
-        if perceptive_luminance > 0.5:
-            return 'channel-bg-light'
-        else:
-            return 'channel-bg-dark'
+        return 'channel-bg-light' if colour.is_light(self.hex) else 'channel-bg-dark'
 
     def __str__(self):
         return self.name

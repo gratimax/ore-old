@@ -586,3 +586,25 @@ pre code {
   max-height: 500px;
   display: block;
 }
+
+
+.colour-selector-dot {
+    float: left;
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    margin-right: 6px;
+    margin-top: 6px;
+}
+.colour-selector-dot-active {
+    border: 4px solid rgba(255, 255, 255, 0.5);
+}
+.colour-selector-dot-light.colour-selector-dot-active {
+    border: 4px solid rgba(0, 0, 0, 0.5);
+}
+.colour-selector-dot:hover {
+    border: 4px solid rgba(255, 255, 255, 0.5);
+}
+.colour-selector-dot-light.colour-selector-dot:hover {
+    border: 4px solid rgba(0, 0, 0, 0.8);
+}

@@ -177,7 +177,7 @@ class VersionsDetailView(ProjectNavbarMixin, DetailView):
         return context
 
 
-class ChannelsListView(DetailView):
+class ChannelsListView(RequiresPermissionMixin, DetailView):
     model = Project
     slug_field = 'name'
     slug_url_kwarg = 'project'
@@ -191,16 +191,17 @@ class ChannelsListView(DetailView):
         return ('project.manage',)
 
     def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
+        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
 
     def get_context_data(self, **kwargs):
         context = super(ChannelsListView, self).get_context_data(**kwargs)
-        context['form'] = NewChannelForm()
+        context['form'] = NewChannelForm(
+            used_colours=self.object.channel_set.values_list('hex', flat=True))
         context['active_project_tab'] = 'versions'
         return context
 
     def post(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, name=kwargs['project'])
+        self.object = project = self.get_object()
         form = NewChannelForm(request.POST)
         if form.is_valid():
             channel = form.save(commit=False)
@@ -217,14 +218,16 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteChannelView, self).get_context_data(**kwargs)
-        context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
+        context['proj'] = Project.objects.get(
+            name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['channel'] = Channel.objects.get(pk=self.kwargs['channel'])
         context['active_project_tab'] = 'versions'
         return context
 
     def get_form(self, **kwargs):
         return ChannelDeleteForm(
-            Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace']),
+            Project.objects.get(
+                name=self.kwargs['project'], namespace__name=self.kwargs['namespace']),
             Channel.objects.get(pk=self.kwargs['channel']),
             **self.get_form_kwargs())
 
@@ -235,7 +238,8 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
             channel.delete()
         else:
             versions_to_transfer = Version.objects.filter(channel=channel)
-            new_channel = Channel.objects.get(pk=form.cleaned_data['transfer_to'], project=project)
+            new_channel = Channel.objects.get(
+                pk=form.cleaned_data['transfer_to'], project=project)
             versions_to_transfer.update(channel=new_channel)
             channel.delete()
         return redirect('project-channels', namespace=project.namespace.name, project=project.name)
@@ -248,14 +252,15 @@ class EditChannelView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(EditChannelView, self).get_context_data(**kwargs)
-        context['proj'] = Project.objects.get(name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
+        context['proj'] = Project.objects.get(
+            name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['editing'] = True
         context['active_project_tab'] = 'versions'
         return context
 
     def get_form(self, **kwargs):
         return NewChannelForm(instance=Channel.objects.get(pk=self.kwargs['channel']),
-                                 **self.get_form_kwargs())
+                              **self.get_form_kwargs())
 
     def form_valid(self, form):
         project = get_object_or_404(Project, namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
@@ -264,4 +269,3 @@ class EditChannelView(FormView):
         channel.project = project
         channel.save()
         return redirect('project-channels', namespace=project.namespace.name, project=project.name)
-

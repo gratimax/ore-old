@@ -201,4 +201,88 @@ jQuery(function ($) {
   toShowModals.removeClass('fade').on('shown.bs.modal', function() {
     toShowModals.addClass('fade');
   }).modal('show');
+
+console.log('hi');
+  if ($('.colour-selector').length) {
+    (function() {
+      function parseColor(color) {
+        // thanks, http://stackoverflow.com/a/19366217/1189905
+        color = color.trim().toLowerCase();
+        var hex3 = color.match(/^#([0-9a-f]{3})$/i);
+        if (hex3) {
+          hex3 = hex3[1];
+          return [
+            parseInt(hex3.charAt(0),16)*0x11,
+            parseInt(hex3.charAt(1),16)*0x11,
+            parseInt(hex3.charAt(2),16)*0x11, 1
+          ];
+        }
+        var hex6 = color.match(/^#([0-9a-f]{6})$/i);
+        if (hex6) {
+          hex6 = hex6[1];
+          return [
+            parseInt(hex6.substr(0,2),16),
+            parseInt(hex6.substr(2,2),16),
+            parseInt(hex6.substr(4,2),16), 1
+          ];
+        }
+        var rgba = color.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+.*\d*)\s*\)$/i) || color.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        if( rgba ) {
+          return [rgba[1],rgba[2],rgba[3], rgba[4]===undefined?1:rgba[4]];
+        }
+        var rgb = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        if( rgb ) {
+          return [rgb[1],rgb[2],rgb[3],1];
+        }
+      }
+
+      var calculateLuminance = function(color) {
+        var color = parseColor(color).map(function(v) { return v / 255; });
+        return perceptiveLuminance = (0.299 * color[0] + 0.587 * color[1] + 0.114 * color[2]);
+      }
+
+      var isLight = function(color) {
+        return calculateLuminance(color) > 0.5;
+      }
+
+      var updateSelection = function(colour) {
+        var textColor = '#fff';
+        if (isLight(colour)) {
+          textColor = '#000';
+        }
+        $('#id_name').css({
+          backgroundColor: colour,
+          color: textColor,
+        });
+      };
+
+      var $select = $('.colour-selector');
+      $select.addClass('hide');
+      if ($select.find('option').length == 0) {
+        $select.after($('<div>There are no colours left. You used them all. How could you possibly need that many channels?!?</div>'))
+      } else {
+        var $prettySelect = $('<div></div>');
+        $select.after($prettySelect);
+        $select.find('option').each(function() {
+          var $option = $(this);
+          var $prettyOption =
+            $('<div></div>')
+              .attr({
+                class: 'colour-selector-dot' + ($select.val() == $option.val() ? ' colour-selector-dot-active' : '') + (isLight('#' + $option.val()) ? ' colour-selector-dot-light' : ' colour-selector-dot-dark')
+              })
+              .css({
+                backgroundColor: '#' + $option.val(),
+              })
+              .click(function() {
+                $select.val($option.val());
+                $prettySelect.find('.colour-selector-dot-active').removeClass('colour-selector-dot-active');
+                $prettyOption.addClass('colour-selector-dot-active');
+                updateSelection('#' + $option.val());
+              })
+              .appendTo($prettySelect);
+        });
+        updateSelection('#' + $select.val());
+      }
+    })();
+  }
 });

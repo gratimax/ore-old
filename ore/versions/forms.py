@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, HTML
+from crispy_forms.layout import Layout, Submit, HTML, Field
 from django import forms
 from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory
@@ -8,6 +8,7 @@ from ore.versions.models import Version, File
 
 
 class NewVersionForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(NewVersionForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -37,21 +38,28 @@ class NewVersionForm(forms.ModelForm):
 
 
 class NewChannelForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
+        used_colours = kwargs.pop('used_colours', set())
         super(NewChannelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = "form-horizontal"
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         label = 'Create new channel' if not self.instance.id else 'Edit channel'
+        if self.instance.id:
+            used_colours.remove(self.instance.hex)
         self.helper.layout = Layout(
-            'name', 'hex',
+            'name',
+            Field('hex', css_class="colour-selector only-without-js"),
             Submit('submit', label, css_class="col-lg-offset-2")
         )
+        self.fields['hex'].choices = [
+            (hex, name) for (hex, name) in self.fields['hex'].choices if hex not in used_colours]
 
     class Meta:
         model = Channel
-        fields = ('name','hex')
+        fields = ('name', 'hex')
 
     COLOUR_CHOICES = (
         ('001F3F', 'Navy'),
@@ -72,29 +80,37 @@ class NewChannelForm(forms.ModelForm):
         ('DDDDDD', 'Silver'),
     )
 
-    hex = forms.ChoiceField(choices=COLOUR_CHOICES, required=True)
+    hex = forms.ChoiceField(
+        choices=COLOUR_CHOICES, required=True, label='Colour')
 
 
 class ChannelDeleteForm(forms.Form):
+
     def __init__(self, project, current_channel, *args, **kwargs):
         super(ChannelDeleteForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = "form-horizontal"
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
-        get_out_of_here = reverse('project-channels', kwargs={'namespace': project.namespace.name, 'project': project.name})
+        get_out_of_here = reverse(
+            'project-channels', kwargs={'namespace': project.namespace.name, 'project': project.name})
         self.helper.layout = Layout(
             'transfer_to',
-            Submit('submit', 'Delete it!', css_class='btn-danger col-lg-offset-2'),
-            HTML("<a href=\"{}\" class='btn'>Get me out of here!</a>".format(get_out_of_here))
+            Submit(
+                'submit', 'Delete it!', css_class='btn-danger col-lg-offset-2'),
+            HTML(
+                "<a href=\"{}\" class='btn'>Get me out of here!</a>".format(get_out_of_here))
         )
-        channels = Channel.objects.filter(project=project).exclude(id=current_channel.id)
-        choices = [('DEL', 'None, delete them.'),] + [(str(channel.id), channel.name) for channel in channels]
-        self.fields['transfer_to'] = forms.ChoiceField(choices=choices, required=False)
-
+        channels = Channel.objects.filter(
+            project=project).exclude(id=current_channel.id)
+        choices = [('DEL', 'None, delete them.'), ] + \
+            [(str(channel.id), channel.name) for channel in channels]
+        self.fields['transfer_to'] = forms.ChoiceField(
+            choices=choices, required=False)
 
 
 class NewFileForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(NewFileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -110,10 +126,12 @@ class NewFileForm(forms.ModelForm):
         model = File
         fields = ('file',)
 
-BaseNewVersionInnerFileFormset = modelformset_factory(File, form=NewFileForm, max_num=5, validate_max=True)
+BaseNewVersionInnerFileFormset = modelformset_factory(
+    File, form=NewFileForm, max_num=5, validate_max=True)
 
 
 class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
+
     def __init__(self, *args, **kwargs):
         super(NewVersionInnerFileFormset, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
