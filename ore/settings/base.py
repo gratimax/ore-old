@@ -149,6 +149,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 PROHIBITED_NAMES = (
     'manage',
     'new',
+    'create',
     'delete',
     'flag',
     'explore',
@@ -178,6 +179,12 @@ PROHIBITED_NAMES = (
     'org',
     'orgs',
     'staff',
+    'sponge',
+    'spongepowered',
+    'spongeproject',
+    'platform',
+    'admins',
+    'ore',
 )
 
 BUILD_STAMP_PATH = os.path.join(os.path.dirname(BASE_DIR), 'build_stamp.txt')
