@@ -406,3 +406,4 @@ class PagesUpdateView(ProjectNavbarMixin, RequiresPermissionMixin, UpdateView):
         context_data['listed_by'] = self.get_object().listed_by.as_user(
             self.request.user).all()
         return context_data
+
