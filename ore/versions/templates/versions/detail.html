@@ -5,14 +5,13 @@
 {% endblock %}
 {% block page %}
 
-    <h2>
-        <strong>
-            {{version.name}}
-        </strong>
-    </h2>
+    <div>
+        <div class="dotblock">
+            <h2><span class="dot-container"><span class="dot" style="background-color: #{{ version.channel.hex }};" data-toggle="tooltip" data-placement="bottom" title="{{ version.channel.name }}"></span></span>{{version.name}}</h2>
 
-
-    <p class="pull-left">{{version.description}}</p>
+            <p>{{version.description}}</p>
+        </div>
+    </div>
 
     <div class="clearfix"></div>
 

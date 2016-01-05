@@ -12,8 +12,10 @@ Versions | {{ proj.full_name }}
                     <li class="list-group-item version-list-group-item">
                         <a href="{% url 'versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
                            class="version-listing">
-                            <span class="version-listing-name">{{version.name}}</span>
-                            <span class="version-listing-tagline">{{version.description}}</span>
+                            <div class="dotblock">
+                                <span class="version-listing-name"><span class="dot-container"><span class="dot" style="background-color: #{{ version.channel.hex }};" data-toggle="tooltip" data-placement="bottom" title="{{ version.channel.name }}"></span></span>{{version.name}}</span>
+                                <span class="version-listing-tagline">{{version.description}}</span>
+                            </div>
                         </a>
                     </li>
                 {% endfor %}

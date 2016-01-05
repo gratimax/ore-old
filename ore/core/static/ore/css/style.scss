@@ -226,6 +226,25 @@ a {
 
 }
 
+.dotblock {
+  padding-left: 16px;
+
+  .dot-container {
+    position: relative;
+  }
+
+  .dot {
+    position: absolute;
+    left: -16px;
+    top: 0.2em;
+    vertical-align: middle;
+  }
+
+  h2 .dot {
+    top: 0.6em;
+  }
+}
+
 .version-list-group {
 
   .version-list-group-item {
