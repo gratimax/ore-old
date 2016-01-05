@@ -50,7 +50,7 @@ class NewChannelForm(forms.ModelForm):
         if self.instance.id:
             used_colours.remove(self.instance.hex)
         self.helper.layout = Layout(
-            'name',
+            Field('name', placeholder="My Awesome Channel"),
             Field('hex', css_class="colour-selector only-without-js"),
             Submit('submit', label, css_class="col-lg-offset-2")
         )
