@@ -1,0 +1,18 @@
+{% extends "projects/_manage.html" %}
+{% load crispy_forms_tags %}
+{% load permissions %}
+{% load static %}
+{% block title %}
+Create Team | {{ proj.full_name }}
+{% endblock %}
+{% block settings_pane %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Create Team</h3>
+    </div>
+    <div class="panel-body">
+            {% crispy settings_form %}
+    </div>
+</div>
+{% endblock %}

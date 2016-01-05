@@ -28,7 +28,7 @@ def add_prefix_value(prefix, v, sep='__'):
 class UserFilteringQuerySet(models.QuerySet):
 
     def as_user(self, user):
-        return self.filter(self.model.is_visible_q(user))
+        return self.filter(id__in=self.model.objects.filter(self.model.is_visible_q(user)).values('id'))
 
 UserFilteringManager = models.Manager.from_queryset(UserFilteringQuerySet)
 

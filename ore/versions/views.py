@@ -103,7 +103,7 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixi
     multi_prefix = 'file'
     multi_initial = {}
 
-    permissions = ['version.create', 'file.create']
+    permissions = ['project.manage', 'version.create', 'file.create']
 
     def get_project(self):
         return get_object_or_404(Project, name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])

@@ -80,7 +80,7 @@ class Permission(models.Model):
         ContentType, related_name='ore_permissions')
 
     def __str__(self):
-        return '%s (%s)' % (self.slug, self.applies_to_model)
+        return self.slug
 
 
 def organization_avatar_upload(instance, filename):

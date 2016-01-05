@@ -11,7 +11,7 @@ from django.views.generic import DetailView, UpdateView, DeleteView, RedirectVie
 from django.views.generic.detail import SingleObjectMixin
 from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm, PageEditForm
 from ore.projects.models import Project, Page, Channel
-from ore.core.views import RequiresPermissionMixin
+from ore.core.views import RequiresPermissionMixin, SettingsMixin
 from ore.versions.models import File
 
 
@@ -53,7 +53,7 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
         return context_data
 
 
-class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView):
+class ProjectsManageView(RequiresPermissionMixin, SettingsMixin, ProjectNavbarMixin, DetailView):
 
     model = Project
     slug_field = 'name'
@@ -62,6 +62,7 @@ class ProjectsManageView(RequiresPermissionMixin, ProjectNavbarMixin, DetailView
     template_name = 'projects/manage.html'
     context_object_name = 'proj'
     active_project_tab = 'manage'
+    settings_name = 'project'
 
     permissions = ['project.edit']
 
@@ -406,4 +407,3 @@ class PagesUpdateView(ProjectNavbarMixin, RequiresPermissionMixin, UpdateView):
         context_data['listed_by'] = self.get_object().listed_by.as_user(
             self.request.user).all()
         return context_data
-

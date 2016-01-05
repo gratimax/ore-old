@@ -1,0 +1,108 @@
+{% extends "projects/_manage.html" %}
+{% load crispy_forms_tags %}
+{% load permissions %}
+{% load static %}
+{% block title %}
+Team Settings | {{ proj.full_name }}
+{% endblock %}
+{% block settings_pane %}
+
+{% ifpermitted user "project.team.edit" proj %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Team Settings</h3>
+    </div>
+    <div class="panel-body">
+            {% crispy settings_form %}
+    </div>
+</div>
+{% else %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Team Details</h3>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>Name</dt>
+                <dd>{{ team.name }}</dd>
+
+            {% if team.description %}
+                <dt>Description</dt>
+                    <dd>{{ team.description }}</dd>
+            {% endif %}
+        </dl>
+    </div>
+</div>
+{% endifpermitted %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Membership</h3>
+    </div>
+    <div class="panel-body">
+        <h4>Current Members</h4>
+        {% if team.users.exists %}
+            <ul{% ifanypermitted user "project.team.manage" proj %} class="list-unstyled"{% endifanypermitted %}>
+            {% for team_user in team.users.all %}
+                {% ifanypermitted user "project.team.manage" proj %}
+                    <form action="{% url 'projects-team-remove-member' namespace=proj.namespace.name project=proj.name team=team.name %}" method="POST">
+                    {% csrf_token %}
+                {% endifanypermitted %}
+                <li>
+                    {% ifanypermitted user "project.team.manage" proj %}
+                        <input type="hidden" name="user" value="{{ team_user.name }}"><button class="btn btn-danger"><i class="fa fa-remove"></i></button>
+                    {% endifanypermitted %}
+
+                    {{ team_user.name }}
+                </li>
+                {% ifanypermitted user "project.team.manage" proj %}
+                    </form>
+                {% endifanypermitted %}
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>There's no one in this team yet :(</p>
+        {% endif %}
+
+        {% ifanypermitted user "project.team.manage" proj %}
+            <h4>Add Member</h4>
+            {% crispy member_add_form %}
+        {% endifanypermitted %}
+    </div>
+</div>
+{% ifanypermitted user "project.team.delete" proj %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Destructive Actions</h3>
+    </div>
+    <div class="panel-body only-with-js">
+        <div class="btn-group">
+            {% ifpermitted user "project.team.delete" proj %}
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">
+                    <i class="fa fa-times"></i>
+                    Delete
+                </button>
+            {% endifpermitted %}
+        </div>
+    </div>
+    <div class="panel-body only-without-js">
+        <h3>Delete Team</h3>
+        {% crispy delete_form %}
+    </div>
+</div>
+
+<div class="modal fade" id="delete-modal" tabindex="-1"{% if show_modal == "delete-modal" %} data-show-modal-immediately="true"{% endif %}>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span><i class="fa fa-times"></i></span></button>
+                <h4 class="modal-title">Delete team</h4>
+            </div>
+            <div class="modal-body">
+                {% crispy delete_form %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endifanypermitted %}
+{% endblock %}

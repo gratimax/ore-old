@@ -2,10 +2,9 @@ from ore.accounts.models import OreUser
 from ore.core.models import Permission, Namespace, Organization
 from django.core import validators
 from django.db import models
-
-# Create your models here.
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.urlresolvers import reverse
 from ore.core.util import validate_not_prohibited
 from ore.projects.models import Project
 from ore.core.regexs import EXTENDED_NAME_REGEX
@@ -19,6 +18,8 @@ class Team(models.Model):
                                     EXTENDED_NAME_REGEX, 'Enter a valid team name.', 'invalid'),
                                 validate_not_prohibited,
                             ])
+    description = models.CharField(
+        default='', blank=True, null=False, max_length=140, verbose_name="Description (optional)")
     users = models.ManyToManyField(
         OreUser, related_name='%(class)ss', blank=True)
     permissions = models.ManyToManyField(
@@ -53,6 +54,12 @@ class OrganizationTeam(Team):
     def check_consistent(self):
         return self.projects.exclude(namespace=self.organization).count() == 0
 
+    def get_member_add_url(self):
+        return reverse('organizations-team-add-member', kwargs={
+            'namespace': self.project.namespace.name,
+            'team': self.name,
+        })
+
     def __str__(self):
         props = (['all_projects'] if self.is_all_projects else []) + \
                 (['owner'] if self.is_owner_team else [])
@@ -69,6 +76,13 @@ class ProjectTeam(Team):
     def __str__(self):
         props = ['owner'] if self.is_owner_team else []
         return '%s in %s [%s]' % (self.name, self.project.name, ' '.join(props))
+
+    def get_member_add_url(self):
+        return reverse('projects-team-add-member', kwargs={
+            'namespace': self.project.namespace.name,
+            'project': self.project.name,
+            'team': self.name,
+        })
 
     # TODO: we need to check here that if we're a user's project and we're the
     # owner team, that that user is in us!

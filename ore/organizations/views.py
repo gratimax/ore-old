@@ -14,10 +14,7 @@ class OrganizationSettingsMixin(RequiresLoggedInMixin, RequiresPermissionMixin, 
     slug_url_kwarg = 'namespace'
     slug_field = 'name'
     context_object_name = 'org'
-
-    @property
-    def settings_name(self):
-        return self.kwargs['namespace']
+    settings_name = 'organization'
 
     def construct_forms(self):
         return {
@@ -50,7 +47,8 @@ class OrganizationRenameView(OrganizationSettingsMixin, UpdateView):
 
     def form_valid(self, form):
         resp = super(OrganizationRenameView, self).form_valid(form)
-        messages.success(self.request, "Your organization was renamed successfully!")
+        messages.success(
+            self.request, "Your organization was renamed successfully!")
         return resp
 
 

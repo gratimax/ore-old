@@ -26,9 +26,9 @@ Settings
                     <h3 class="panel-title">Organization Settings</h3>
                 </div>
                 <div class="list-group">
-                    {% for org in user.owned_organizations %}
-                    <a href="{% url "organizations-settings" namespace=org.name %}" class="list-group-item {% if active_settings == org.name %}active{% endif %}">
-                        <div class="pull-right avatar-pull-right">{% include "core/avatar.html" with avatar=org.avatar type="org" alt=org.name only %}</div> {{ org.name }}
+                    {% for uorg in user.owned_organizations %}
+                    <a href="{% url "organizations-settings" namespace=uorg.name %}" class="list-group-item {% if active_settings == "organization" and uorg == org %}active{% endif %}">
+                        <div class="pull-right avatar-pull-right">{% include "core/avatar.html" with avatar=uorg.avatar type="org" alt=uorg.name only %}</div> {{ uorg.name }}
                     </a>
                     {% endfor %}
                 </div>

@@ -1,11 +1,11 @@
-{% extends "projects/_page.html" %}
+{% extends "projects/_manage.html" %}
 {% load crispy_forms_tags %}
 {% load permissions %}
 {% load static %}
 {% block title %}
 Manage | {{ proj.full_name }}
 {% endblock %}
-{% block page %}
+{% block settings_pane %}
 
 {% ifpermitted user "project.edit" proj %}
 <div class="panel panel-default">
@@ -20,15 +20,6 @@ Manage | {{ proj.full_name }}
     </ul>
 </div>
 {% endifpermitted %}
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Team Management</h3>
-    </div>
-    <div class="panel-body">
-        Coming soon™...
-    </div>
-</div>
 
 {% ifanypermitted user "project.rename,project.delete" proj %}
 <div class="panel panel-default">

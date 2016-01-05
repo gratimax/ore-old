@@ -180,7 +180,7 @@ class OrganizationDeleteForm(forms.Form):
             'organizations-delete', kwargs={'namespace': self.instance.name},
         )
         self.helper.form_show_labels = False
-        self.helper.form_class = ""
+        self.helper.form_class = "js-lock-form"
         self.helper.attrs = {
             'data-confirm': self.instance.name,
             'data-input': 'input[name="lock"]',
