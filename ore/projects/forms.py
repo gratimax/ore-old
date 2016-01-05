@@ -141,7 +141,6 @@ class PageEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PageEditForm, self).__init__(*args, **kwargs)
-        print(self.instance)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
