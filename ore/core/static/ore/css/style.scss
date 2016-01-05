@@ -587,3 +587,8 @@ a {
   display: block;
   padding: 10px 15px;
 }
+
+pre code {
+  max-height: 500px;
+  display: block;
+}

@@ -42,7 +42,7 @@ ALLOWED_ATTRIBUTES = {
     'acronym': ['title'],
     # NOTE: While bleach does a good job at cleaning out <img src="javascript:alert('XSS')"> hacks,
     # perhaps some greater care should be taken
-    'img': ['src', 'alt']
+    'img': ['src', 'alt', 'width', 'height']
 }
 
 ALLOWED_STYLES = [
@@ -132,5 +132,10 @@ def compile(text, context={}):
                     x: y for x, y in ctx.items() if x in ('namespace', 'project', 'page')
                 }
                 link['href'] = reverse('projects-pages-detail', kwargs=ctx)
+
+    for img in bs.find_all('img'):
+        src = img.get('src', '')
+        if src and src.startswith('/uploads/default'):
+            img['src'] = 'https://forums.spongepowered.org' + src
 
     return str(bs)
