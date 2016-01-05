@@ -19,6 +19,7 @@ class AvatarFileInput(widgets.ClearableFileInput):
         '%(initial_text)s: <img src="%(initial_url)s" alt="Current avatar"> %(clear_template)s<br />%(input_text)s: %(input)s'
     )
 
+
 class BaseOrganizationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -139,7 +140,7 @@ class OrganizationSettingsForm(BaseOrganizationForm):
         self.helper.form_action = reverse(
             'organizations-settings', kwargs={'namespace': self.instance.name},
         )
-        self.helper.layout[0].readonly = True
+        self.helper['name'].update_attributes(readonly=True)
 
     def clean_name(self):
         return self.instance.name
@@ -154,10 +155,11 @@ class OrganizationCreateForm(forms.ModelForm):
             Field('name'),
             Submit('submit', 'Create organization'),
         )
-    
+
     def clean_name(self):
         if models.Organization.objects.filter(name=self.cleaned_data['name']).exists():
-            raise ValidationError("Sorry, but this name is already in use. Try another?")
+            raise ValidationError(
+                "Sorry, but this name is already in use. Try another?")
         return self.cleaned_data['name']
 
     class Meta:
@@ -215,7 +217,8 @@ class OrganizationRenameForm(forms.ModelForm):
         and_the_projects_it_contains = ""
         project_count = self.instance.projects.count()
         if project_count > 1:
-            and_the_projects_it_contains = " and the {} projects it contains".format(project_count)
+            and_the_projects_it_contains = " and the {} projects it contains".format(
+                project_count)
         elif project_count == 1:
             and_the_projects_it_contains = " and its project"
 
@@ -232,4 +235,3 @@ class OrganizationRenameForm(forms.ModelForm):
     class Meta:
         model = models.Organization
         fields = ['name']
-

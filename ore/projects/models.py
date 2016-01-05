@@ -112,6 +112,7 @@ class Channel(models.Model):
     def __str__(self):
         return self.name
 
+
 @reversion.register
 class Page(models.Model):
     STATUS = Choices('active', 'deleted')
