@@ -150,8 +150,8 @@ a {
     float: left;
 
     .btn {
-      border-radius: 0;
-      border-right: none;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
       border-left: none;
     }
   }
