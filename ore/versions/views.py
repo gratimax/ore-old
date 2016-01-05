@@ -229,7 +229,7 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
             **self.get_form_kwargs())
 
     def form_valid(self, form):
-        project = get_object_or_404(Project, name=self.kwargs['project'])
+        project = get_object_or_404(Project, namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
         channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
         if form.cleaned_data['transfer_to'] == "DEL":
             channel.delete()
@@ -258,7 +258,7 @@ class EditChannelView(FormView):
                                  **self.get_form_kwargs())
 
     def form_valid(self, form):
-        project = get_object_or_404(Project, name=self.kwargs['project'])
+        project = get_object_or_404(Project, namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
         channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
         channel = form.save(commit=False)
         channel.project = project
