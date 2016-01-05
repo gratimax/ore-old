@@ -196,6 +196,7 @@ class ChannelsListView(RequiresPermissionMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ChannelsListView, self).get_context_data(**kwargs)
         context['form'] = NewChannelForm(
+            initial={'name': 'my awesome new channel'},
             used_colours=self.object.channel_set.values_list('hex', flat=True))
         context['active_project_tab'] = 'versions'
         return context

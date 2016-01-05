@@ -43,7 +43,7 @@ class NewChannelForm(forms.ModelForm):
         used_colours = kwargs.pop('used_colours', set())
         super(NewChannelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_class = "form-horizontal"
+        self.helper.form_class = "form-horizontal colour-form"
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         label = 'Create new channel' if not self.instance.id else 'Edit channel'

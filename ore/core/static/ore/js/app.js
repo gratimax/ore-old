@@ -202,7 +202,6 @@ jQuery(function ($) {
     toShowModals.addClass('fade');
   }).modal('show');
 
-console.log('hi');
   if ($('.colour-selector').length) {
     (function() {
       function parseColor(color) {
