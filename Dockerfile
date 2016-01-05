@@ -17,4 +17,4 @@ ENV DJANGO_SETTINGS_MODULE=ore.settings.docker \
     DB_PASSWORD=lemons \
     DB_HOST=lemons
 
-RUN bower install && cd /app && git rev-list --reverse --max-count=1 master > build_stamp.txt
+RUN bower install && cd /app && git describe --always > build_stamp.txt
