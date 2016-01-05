@@ -146,7 +146,7 @@ class PageEditForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field('title', readonly=self.instance.slug == 'home'),
             'content',
-            Submit('submit', 'Edit page'),
+            Submit('submit', 'Save'),
         )
 
     def clean_title(self):
