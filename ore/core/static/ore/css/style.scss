@@ -351,15 +351,18 @@ a {
 .channel {
   //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
   border-radius: 6px;
-  padding: 1px 6px;
+  padding: 4px 6px;
   display: inline-block;
   position: relative;
   top: 1px;
   font-size: 1.3rem;
   vertical-align: middle;
   margin-right: 10px;
+  font-weight: bold;
+  line-height: 1;
 
   &.channel-bg-light {
+    color: #222;
   }
 
   &.channel-bg-dark {
