@@ -218,7 +218,7 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(DeleteChannelView, self).get_context_data(**kwargs)
-        context['proj'] = Project.objects.get(
+        context['proj'] = Project.objects.as_user(self.request.user).get(
             name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['channel'] = Channel.objects.get(pk=self.kwargs['channel'])
         context['active_project_tab'] = 'versions'
@@ -232,7 +232,8 @@ class DeleteChannelView(RequiresPermissionMixin, FormView):
             **self.get_form_kwargs())
 
     def form_valid(self, form):
-        project = get_object_or_404(Project, namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
+        project = get_object_or_404(Project.objects.as_user(
+            self.request.user), namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
         channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
         if form.cleaned_data['transfer_to'] == "DEL":
             channel.delete()
@@ -252,7 +253,7 @@ class EditChannelView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(EditChannelView, self).get_context_data(**kwargs)
-        context['proj'] = Project.objects.get(
+        context['proj'] = Project.objects.as_user(self.request.user).get(
             name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
         context['editing'] = True
         context['active_project_tab'] = 'versions'
@@ -263,7 +264,8 @@ class EditChannelView(FormView):
                               **self.get_form_kwargs())
 
     def form_valid(self, form):
-        project = get_object_or_404(Project, namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
+        project = get_object_or_404(
+            Project.objects.as_user(self.request.user), namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
         channel = get_object_or_404(Channel, pk=self.kwargs['channel'])
         channel = form.save(commit=False)
         channel.project = project
