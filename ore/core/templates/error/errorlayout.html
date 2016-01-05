@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<h2>{% block errorhead %}Something's gone horribly wrong...{% endblock %}</h2>
+			<img src="{% static 'ore/img/spongie-sad.png' %}" alt="Sad Spongie is Sad">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12 text-center">
+			{% block errortext %}
+			{% endblock %}
+		</div>
+	</div>
+</div>
+{% endblock %}

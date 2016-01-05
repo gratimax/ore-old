@@ -1,0 +1,10 @@
+{% extends "error/errorlayout.html" %}
+{% block title %}
+Bad Request
+{% endblock %}
+
+{% block errorhead %}400: Parlez-vous HTTP?{% endblock %}
+
+{% block errortext %}
+The request that your web browser (or other client software, we don't discriminate here) made was malformed in some way and we couldn't work out what you wanted.
+{% endblock %}

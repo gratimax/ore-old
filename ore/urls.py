@@ -39,3 +39,8 @@ urlpatterns += [
     url(r'', include(ore.core.urls)),
 
 ]
+
+handler404 = 'ore.core.views.error400'
+handler404 = 'ore.core.views.error403'
+handler404 = 'ore.core.views.error404'
+handler500 = 'ore.core.views.error500'

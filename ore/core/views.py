@@ -3,6 +3,8 @@ from ore.core import decorators
 from ore.core.models import Namespace, Organization
 from django.http import HttpResponse
 from django.contrib import messages
+from django.shortcuts import render, render_to_response
+from django.views.decorators.csrf import requires_csrf_token
 from django.views.generic import FormView, DetailView, ListView, View
 from django.views.generic.base import TemplateResponseMixin, ContextMixin
 from django.views.generic.edit import DeletionMixin, ProcessFormView, FormMixin
@@ -123,8 +125,10 @@ class MultiFormMixin(object):
 
         return kwargs
 
-# NB: the lock is bypassed if the HTTP action is "DELETE". This is intentional.
+
 class LockedDeleteView(SingleObjectTemplateResponseMixin, DeletionMixin, SingleObjectMixin, FormMixin, ProcessFormView):
+    # NB: the lock is bypassed if the HTTP action is "DELETE". This is
+    # intentional.
 
     success_message = None
 
@@ -146,3 +150,26 @@ class LockedDeleteView(SingleObjectTemplateResponseMixin, DeletionMixin, SingleO
 
     def form_valid(self, form):
         return self.delete(self.request, self.args, self.kwargs)
+
+
+@requires_csrf_token
+def error404(request, exception):
+    return render(request, 'error/404.html', context={'exception': exception}, status=404)
+
+
+@requires_csrf_token
+def error500(request, exception):
+    try:
+        return render(request, 'error/500.html', context={'exception': exception}, status=500)
+    except:
+        return render_to_response('error/500fallback.html', context={'exception': exception}, status=500)
+
+
+@requires_csrf_token
+def error400(request, exception):
+    return render(request, 'error/400.html', context={'exception': exception}, status=400)
+
+
+@requires_csrf_token
+def error403(request, exception):
+    return render(request, 'error/403.html', context={'exception': exception}, status=403)

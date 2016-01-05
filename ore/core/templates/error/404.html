@@ -1,0 +1,10 @@
+{% extends "error/errorlayout.html" %}
+{% block title %}
+Not Found
+{% endblock %}
+
+{% block errorhead %}404: Block? What Block?{% endblock %}
+
+{% block errortext %}
+Whoops, we couldn't find that - it's possible that the item has been deleted, or you're not allowed to see it (maybe try <a href="{% url 'accounts-login' %}">logging in?</a>).
+{% endblock %}
