@@ -6,11 +6,9 @@
 {% block page %}
 
     <div>
-        <div class="dotblock">
-            <h2><span class="dot-container"><span class="dot" style="background-color: #{{ version.channel.hex }};" data-toggle="tooltip" data-placement="bottom" title="{{ version.channel.name }}"></span></span>{{version.name}}</h2>
+        <h2><span class="channel {{ version.channel.color_Class }}" style="background-color: #{{ version.channel.hex }};"> {{ version.channel.name }}</span>{{version.name}}</h2>
 
-            <p>{{version.description}}</p>
-        </div>
+        <p>{{version.description}}</p>
     </div>
 
     <div class="clearfix"></div>

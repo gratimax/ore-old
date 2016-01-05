@@ -21,7 +21,7 @@
             </tr>
             {% for channel in proj.channel_set.all %}
                 <tr>
-                    <td><i class="dot" style="background-color: #{{ channel.hex }}"></i> {{ channel.name }}</td>
+                    <td><span class="channel {{ channel.color_class }}" style="background-color: #{{ channel.hex }}">{{ channel.name }}</span></td>
                     <td>{{ channel.version_set.count }}</td>
 {% ifanypermitted user "channel.edit,channel.delete" proj %}
                     <td>

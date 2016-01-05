@@ -226,25 +226,6 @@ a {
 
 }
 
-.dotblock {
-  padding-left: 16px;
-
-  .dot-container {
-    position: relative;
-  }
-
-  .dot {
-    position: absolute;
-    left: -16px;
-    top: 0.2em;
-    vertical-align: middle;
-  }
-
-  h2 .dot {
-    top: 0.6em;
-  }
-}
-
 .version-list-group {
 
   .version-list-group-item {
@@ -367,15 +348,26 @@ a {
   margin-top: 10px;
 }
 
-.dot {
-  width: 12px;
-  height: 12px;
+.channel {
   //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
   border-radius: 6px;
+  padding: 1px 6px;
   display: inline-block;
   position: relative;
   top: 1px;
+  font-size: 1.3rem;
+  vertical-align: middle;
+  margin-right: 10px;
+
+  &.channel-color-light {
+    color: #333;
+  }
+
+  &.channel-color-dark {
+    color: #fff;
+  }
 }
+
 
 .btn-panel {
   margin-bottom: 20px;

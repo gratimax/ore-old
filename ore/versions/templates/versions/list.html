@@ -12,10 +12,11 @@ Versions | {{ proj.full_name }}
                     <li class="list-group-item version-list-group-item">
                         <a href="{% url 'versions-detail' namespace=proj.namespace.name project=proj.name version=version.name %}"
                            class="version-listing">
-                            <div class="dotblock">
-                                <span class="version-listing-name"><span class="dot-container"><span class="dot" style="background-color: #{{ version.channel.hex }};" data-toggle="tooltip" data-placement="bottom" title="{{ version.channel.name }}"></span></span>{{version.name}}</span>
-                                <span class="version-listing-tagline">{{version.description}}</span>
-                            </div>
+                            <span class="version-listing-name">
+                                   <span class="channel {{ version.channel.color_class }}" style="background-color: #{{ version.channel.hex }}">{{ version.channel.name }}</span>
+                                    {{version.name}}
+                                </span>
+                            <span class="version-listing-tagline">{{version.description}}</span>
                         </a>
                     </li>
                 {% endfor %}
@@ -36,7 +37,7 @@ Versions | {{ proj.full_name }}
                 <ul class="list-group">
                     {% for channel in proj.channel_set.all %}
                     <li class="list-group-item">
-                        <span class="dot" style="background-color: #{{ channel.hex }};"></span> {{ channel.name }}
+                        <span class="channel {{ channel.color_class }}" style="background-color: #{{ channel.hex }}">{{ channel.name }}</span>
                     </li>
                 {% endfor %}
 

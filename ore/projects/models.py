@@ -1,4 +1,4 @@
-
+from colour import Color
 from django.contrib.auth.models import AnonymousUser
 from django.core import validators
 from django.core.urlresolvers import reverse
@@ -109,6 +109,14 @@ class Channel(models.Model):
     name = models.CharField(max_length=100)
     hex = models.CharField(max_length=6, verbose_name="Colour")
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    @property
+    def color_class(self):
+        color = Color('#' + self.hex)
+        if color.luminance > 0.45:
+            return 'channel-color-light'
+        else:
+            return 'channel-color-dark'
 
     def __str__(self):
         return self.name
