@@ -113,10 +113,13 @@ class Channel(models.Model):
     @property
     def color_class(self):
         color = Color('#' + self.hex)
-        if color.luminance > 0.45:
-            return 'channel-color-light'
+        # see http://stackoverflow.com/a/596243 for info on perceptive luminance
+        perceptive_luminance = 1 - (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue)
+
+        if perceptive_luminance < 0.5:
+            return 'channel-bg-light'
         else:
-            return 'channel-color-dark'
+            return 'channel-bg-dark'
 
     def __str__(self):
         return self.name
