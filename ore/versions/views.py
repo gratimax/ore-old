@@ -261,7 +261,9 @@ class EditChannelView(FormView):
         return context
 
     def get_form(self, **kwargs):
-        return NewChannelForm(instance=Channel.objects.get(pk=self.kwargs['channel']),
+        channel = Channel.objects.get(pk=self.kwargs['channel'])
+        return NewChannelForm(instance=channel,
+                              used_colours=channel.project.channel_set.values_list('hex', flat=True),
                               **self.get_form_kwargs())
 
     def form_valid(self, form):

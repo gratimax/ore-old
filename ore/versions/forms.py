@@ -40,7 +40,7 @@ class NewVersionForm(forms.ModelForm):
 class NewChannelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        used_colours = kwargs.pop('used_colours', set())
+        used_colours = set(kwargs.pop('used_colours', set()))
         super(NewChannelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = "form-horizontal colour-form"
