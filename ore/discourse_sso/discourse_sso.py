@@ -5,9 +5,11 @@ import json
 import urllib.parse
 import time
 
+
 def newrand():
     with open('/dev/urandom', 'rb') as f:
         return f.read(16)
+
 
 def newnonce(key):
     inner_nonce = base64.b64encode(newrand()).decode('utf-8')
@@ -16,6 +18,7 @@ def newnonce(key):
     signature = signdata(nonce_pair.encode('utf-8'), key)
     signed_nonce_pair = '{}:{}'.format(signature, nonce_pair)
     return signed_nonce_pair
+
 
 def checknonce(nonce, key, now=None, allowed_skew=10):
     now = now or time.time()
@@ -27,11 +30,14 @@ def checknonce(nonce, key, now=None, allowed_skew=10):
     timestamp = float(timestamp_str)
     return timestamp >= (now - allowed_skew)
 
+
 def newpayload(d):
     return base64.b64encode(urllib.parse.urlencode(d).encode('utf-8'))
 
+
 def signdata(text, key):
     return hmac.new(key.encode('utf-8'), text, hashlib.sha256).hexdigest()
+
 
 def unsigndata(sso, sig, key):
     valid_sig = signdata(sso.encode('utf-8'), key)
@@ -41,7 +47,8 @@ def unsigndata(sso, sig, key):
     qs = base64.b64decode(sso)
     data = urllib.parse.parse_qs(qs)
     data = {k.decode('utf-8'): v[0].decode('utf-8') for k, v in data.items()}
-    bools = ['avatar_force_update', 'admin', 'moderator', 'require_activation', 'suppress_welcome_message']
+    bools = ['avatar_force_update', 'admin', 'moderator',
+             'require_activation', 'suppress_welcome_message']
     for booln in bools:
         if booln not in data.keys():
             continue
@@ -51,11 +58,13 @@ def unsigndata(sso, sig, key):
         data[booln] = data[booln] == 'true'
     return data
 
+
 def generate_payload(ret_url, privkey):
     return newpayload({
         'return_sso_url': ret_url,
         'nonce': newnonce(privkey),
     })
+
 
 def generate_signed_query(ret_url, key, privkey):
     payload = generate_payload(ret_url, privkey)
@@ -65,9 +74,11 @@ def generate_signed_query(ret_url, key, privkey):
         'sig': payload_sig,
     })
 
+
 def unsign_query(query, key, privkey):
     resp_url_qsd = {k: v[0] for k, v in urllib.parse.parse_qs(query).items()}
-    ddata = unsigndata(resp_url_qsd['sso'].encode('utf-8'), resp_url_qsd['sig'], key)
+    ddata = unsigndata(
+        resp_url_qsd['sso'].encode('utf-8'), resp_url_qsd['sig'], key)
     if not checknonce(ddata['nonce']):
         raise Exception('nonce out of data or invalid')
     return ddata

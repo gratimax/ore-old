@@ -96,7 +96,7 @@
                         <li><a href="{% url 'accounts-register' %}">
                             <i class="fa fa-user"></i> Create account
                         </a></li>
-                        <li><a href="{% url 'accounts-login' %}">
+                        <li><a href="{% url 'accounts-login' %}?next={{ request.path|urlencode }}">
                             <i class="fa fa-sign-in"></i> Sign in
                         </a></li>
                     {% endif %}
