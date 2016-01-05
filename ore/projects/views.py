@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView
 from django.views.generic.detail import SingleObjectMixin
-from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm
+from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm, PageEditForm
 from ore.projects.models import Project, Page, Channel
 from ore.core.views import RequiresPermissionMixin
 from ore.versions.models import File
@@ -189,12 +189,14 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
         name = form.cleaned_data['name']
         namespace = self.get_namespace()
 
-        # if namespace.projects.filter(name=name).count():
-        #     form.add_error(
-        #         'name', 'That project already exists for the given namespace')
-        #     return self.form_invalid(form)
+        if name != self.object.name:
+            if namespace.projects.filter(name=name).exists():
+                form.add_error(
+                    'name', 'That project already exists for the given namespace')
+                return self.form_invalid(form)
 
-        messages.success(self.request, "The project's name has been changed.")
+            messages.success(
+                self.request, "The project's name has been changed.")
         return redirect(reverse('projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
@@ -274,13 +276,14 @@ class ProjectsNewView(FormView):
                 'name', 'You do not have permission to create a project for that namespace')
             return self.form_invalid(form)
 
-
         project = Project.objects.create(
             name=name, namespace=namespace, description=description)
         project.save()
 
-        releaseChannel = Channel.objects.create(name="Stable", hex="2ECC40", project=project)
-        betaChannel = Channel.objects.create(name="Beta", hex="0074D9", project=project)
+        releaseChannel = Channel.objects.create(
+            name="Stable", hex="2ECC40", project=project)
+        betaChannel = Channel.objects.create(
+            name="Beta", hex="0074D9", project=project)
 
         releaseChannel.save()
         betaChannel.save()
@@ -332,14 +335,13 @@ class PagesDetailView(ProjectNavbarMixin, DetailView):
     template_name = 'projects/pages/detail.html'
     context_object_name = 'page'
     active_project_tab = 'docs'
-    fields = 'stargazers'
 
     def get_queryset(self):
         return Page.objects.as_user(self.request.user).filter(
             Q(
                 project__namespace__name=self.kwargs['namespace'],
                 project__name=self.kwargs['project'],
-            ) & ~Q(slug='home')).select_related('project')
+            )).select_related('project')
 
     def get_namespace(self):
         if not hasattr(self, "_namespace"):
@@ -351,6 +353,51 @@ class PagesDetailView(ProjectNavbarMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context_data = super(PagesDetailView, self).get_context_data(**kwargs)
+        context_data['namespace'] = self.get_namespace()
+        context_data['proj'] = context_data['page'].project
+        context_data['active_page'] = self.get_object().slug
+        context_data['listed_pages'] = self.get_object().listed.as_user(
+            self.request.user).all()
+        context_data['listed_by'] = self.get_object().listed_by.as_user(
+            self.request.user).all()
+        return context_data
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.slug == 'home':
+            return redirect(self.object)
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+
+class PagesUpdateView(ProjectNavbarMixin, RequiresPermissionMixin, UpdateView):
+
+    model = Page
+    slug_field = 'slug'
+    slug_url_kwarg = 'page'
+
+    template_name = 'projects/pages/edit.html'
+    active_project_tab = 'docs'
+    permissions = ('project.edit',)
+    form_class = PageEditForm
+
+    def get_queryset(self):
+        return Page.objects.as_user(self.request.user).filter(
+            Q(
+                project__namespace__name=self.kwargs['namespace'],
+                project__name=self.kwargs['project'],
+            )).select_related('project')
+
+    def get_namespace(self):
+        if not hasattr(self, "_namespace"):
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            return self._namespace
+        else:
+            return self._namespace
+
+    def get_context_data(self, **kwargs):
+        context_data = super(PagesUpdateView, self).get_context_data(**kwargs)
         context_data['namespace'] = self.get_namespace()
         context_data['proj'] = context_data['page'].project
         context_data['active_page'] = self.get_object().slug

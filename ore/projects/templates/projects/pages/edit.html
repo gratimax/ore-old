@@ -1,0 +1,20 @@
+{% extends "projects/_page.html" %}
+{% load permissions %}
+{% load querysets %}
+{% load crispy_forms_tags %}
+{% block title %}
+Editing {{ page.title }} | {{ proj.full_name }}
+{% endblock %}
+{% block page_wrapper %}
+<div class="container light-background">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="center-card">
+                <h1>Editing: <em>{{ page.title }}</em></h1>
+                {% crispy form %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

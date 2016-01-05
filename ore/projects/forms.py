@@ -2,7 +2,7 @@ from ore.accounts.models import OreUser
 from ore.core.models import Namespace, Organization
 from ore.core.regexs import EXTENDED_NAME_REGEX
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Div, ButtonHolder, Fieldset, HTML
+from crispy_forms.layout import Submit, Layout, Div, ButtonHolder, Fieldset, HTML, Field
 from django import forms
 from django.core import validators
 from django.core.urlresolvers import reverse
@@ -19,17 +19,19 @@ class NamespaceSelectWidget(forms.Select):
         icon = option_label.avatar
         option_label = option_label.name
         addl_attrs = format_html('data-avatar="{}" ', icon)
-        sup = super(NamespaceSelectWidget, self).render_option(selected_choices, option_value, option_label)
+        sup = super(NamespaceSelectWidget, self).render_option(
+            selected_choices, option_value, option_label)
         assert sup[0:8] == '<option '
         sup = sup[0:8] + addl_attrs + sup[8:]
         return sup
-    
+
 
 class NamespaceSelectField(forms.ModelChoiceField):
     widget = NamespaceSelectWidget
 
     def label_from_instance(self, obj):
         return obj
+
 
 class ProjectForm(forms.ModelForm):
 
@@ -52,7 +54,6 @@ class ProjectForm(forms.ModelForm):
                 organization__teams__permissions__slug='org.project.create')))
         ).order_by('oreuser__id', 'organization__name')
         namespace.initial = user.id
-
 
     class Meta:
         model = Project
@@ -139,11 +140,20 @@ class ProjectRenameForm(forms.ModelForm):
 class PageEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        namespace = kwargs.pop('namespace')
-        project = kwargs.pop('project')
         super(PageEditForm, self).__init__(*args, **kwargs)
+        print(self.instance)
 
         self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('title', readonly=self.instance.slug == 'home'),
+            'content',
+            Submit('submit', 'Edit page'),
+        )
+
+    def clean_title(self):
+        if self.instance.slug == 'home':
+            return self.instance.title
+        return self.cleaned_data['title']
 
     class Meta:
         model = Page

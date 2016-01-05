@@ -13,26 +13,38 @@
                 <h1 class="pull-left"> {{ home_page.title }}</h1>
                 {% ifpermitted user "project.edit" proj %}
                 <div class="btn-group pull-right page-edit">
-                    <a class="btn btn-default">
+                    <a class="btn btn-default" href="{% url 'projects-pages-edit' namespace=proj.namespace.name project=proj.name page=home_page.slug %}">
                         <i class="fa fa-edit"></i>
                         Edit
                     </a>
                 </div>
                 {% endifpermitted %}
                 <div class="clearfix"></div>
-                {{ home_page.html|safe }}
-                {% if listed_pages %}
-                <h2>Listed Pages</h2>
-                <ul>
-                    {% for listed in listed_pages %}
-                    <li>
-                        <a href="{{ listed.get_absolute_url }}">
-                            {{ listed.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                <div class="row">
+                    <div class="col-md-9">
+                        {{ home_page.html|safe }}
+                    </div>
+                    <div class="col-md-3">
+                        {% if listed_pages %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Listed Pages</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul>
+                                        {% for listed in listed_pages %}
+                                        <li>
+                                            <a href="{{ listed.get_absolute_url }}">
+                                                {{ listed.title }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>    
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

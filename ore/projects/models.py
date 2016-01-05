@@ -30,7 +30,8 @@ class Project(models.Model):
                                 validate_not_prohibited,
                             ])
     namespace = models.ForeignKey(Namespace, related_name='projects')
-    description = models.TextField(blank=True, null=False, help_text="Try to sum your plugin up in 140 characters or less.", verbose_name="Tagline (optional)")
+    description = models.TextField(
+        blank=True, null=False, help_text="Try to sum your plugin up in 140 characters or less.", verbose_name="Tagline (optional)")
     stargazers = models.ManyToManyField(OreUser, related_name='starred')
 
     objects = UserFilteringManager()
@@ -120,7 +121,8 @@ class Page(models.Model):
 
     project = models.ForeignKey(Project, related_name='pages')
 
-    listed = models.ManyToManyField('Page', related_name='listed_by', blank=True)
+    listed = models.ManyToManyField(
+        'Page', related_name='listed_by', blank=True)
 
     title = models.CharField(max_length=64)
     slug = models.SlugField(editable=False)
@@ -130,7 +132,8 @@ class Page(models.Model):
     objects = UserFilteringManager()
 
     def save(self, *args, **kwargs):
-        self.html = markdown.compile(self.content)
+        self.html = markdown.compile(self.content, context={
+                                     'namespace': self.project.namespace.name, 'project': self.project.name, 'page': self.slug})
         self.slug = slugify(self.title)
         super(Page, self).save(*args, **kwargs)
 
@@ -172,6 +175,7 @@ class Page(models.Model):
             ('project', 'slug'),
             ('project', 'title')
         )
+
 
 @receiver(post_save, sender=Project)
 def create_home_page(sender, instance, created, **kwargs):

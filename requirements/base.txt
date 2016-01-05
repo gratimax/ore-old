@@ -13,3 +13,4 @@ markdown2==2.3.0
 Pygments==2.0.2
 bleach==1.4.2
 html5lib==0.9999999
+beautifulsoup4==4.4.1

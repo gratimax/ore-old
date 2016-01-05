@@ -2,7 +2,7 @@
 {% load permissions %}
 {% load querysets %}
 {% block title %}
-{{ proj.namespace.name }} | {{ page.title }}
+{{ page.title }} | {{ proj.full_name }}
 {% endblock %}
 {% block page_wrapper %}
 <div class="container light-background">
@@ -12,39 +12,58 @@
                 <h1 class="pull-left"> {{ page.title }}</h1>
                 {% ifpermitted user "project.edit" proj %}
                 <div class="btn-group pull-right page-edit">
-                    <a class="btn btn-default">
+                    <a class="btn btn-default" href="{% url 'projects-pages-edit' namespace=proj.namespace.name project=proj.name page=home_page.slug %}">
                         <i class="fa fa-edit"></i>
                         Edit
                     </a>
                 </div>
                 {% endifpermitted %}
                 <div class="clearfix"></div>
-                {{ page.html|safe }}
-                {% if listed_pages %}
-                <h2>Listed Pages</h2>
-                <ul>
-                    {% for listed in listed_pages %}
-                    <li>
-                        <a href="{{ listed.get_absolute_url }}">
-                        {{ listed.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% if listed_by %}
-                <ol class="breadcrumb">
-                    <li class="active">Listed by:</li>
-                    {% for listing in listed_by %}
-
-                    <li>
-                        <a href="{{ listing.get_absolute_url }}">
-                            {{ listing.title }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ol>
-                {% endif %}
+                <div class="row">
+                    <div class="{% if listed_by or listed_pages %}col-md-9{% else %}col-md-12{% endif %}">
+                        {{ page.html|safe }}
+                    </div>
+                    {% if listed_by or listed_pages %}
+                    <div class="col-md-3">
+                        {% if listed_pages %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Listed Pages</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul>
+                                        {% for listed in listed_pages %}
+                                        <li>
+                                            <a href="{{ listed.get_absolute_url }}">
+                                                {{ listed.title }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>    
+                        {% endif %}
+                        {% if listed_pages %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Listed By</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <ul>
+                                        {% for listed in listed_by %}
+                                        <li>
+                                            <a href="{{ listed.get_absolute_url }}">
+                                                {{ listed.title }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>    
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
