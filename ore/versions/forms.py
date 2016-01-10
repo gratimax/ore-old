@@ -50,8 +50,8 @@ class NewChannelForm(forms.ModelForm):
         if self.instance.id:
             used_colours.remove(self.instance.hex)
         self.helper.layout = Layout(
-            'name',
-            Field('hex', css_class="colour-selector only-without-js", autocomplete="off"),
+            Field('name', autocomplete='off'),
+            Field('hex', css_class="colour-selector only-without-js"),
             Submit('submit', label, css_class="col-lg-offset-2")
         )
         self.fields['hex'].choices = [
