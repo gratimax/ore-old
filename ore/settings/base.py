@@ -56,7 +56,7 @@ INSTALLED_APPS = (
 
     'crispy_forms',
     'reversion',
-    'act_stream',
+    'actstream',
 
     'rest_framework',
 
