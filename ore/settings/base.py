@@ -148,9 +148,7 @@ LOGIN_REDIRECT_URL = '/'
 ACTSTREAM_SETTINGS = {
     'MANAGER': 'actstream.managers.ActionManager',
     'FETCH_RELATIONS': True,
-    'USE_PREFETCH': True,
-    'USE_JSONFIELD': True,
-    'GFK_FETCH_DEPTH': 1,
+    'USE_JSONFIELD': False,
 }
 
 # Crispy Forms
