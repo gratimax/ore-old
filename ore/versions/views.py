@@ -266,7 +266,6 @@ class EditChannelView(RequiresPermissionMixin, FormView):
         context['active_project_tab'] = 'versions'
         return context
 
-    @property
     def get_project(self):
         return get_object_or_404(
             Project.objects.as_user(self.request.user), namespace__name=self.kwargs['namespace'], name=self.kwargs['project'])
