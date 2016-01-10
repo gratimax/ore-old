@@ -11,17 +11,18 @@ body {
 body:not(.has-js) .only-with-js {
   display: none !important;
 }
+
 body.has-js .only-without-js {
   display: none !important;
 }
 
 body.viewing-hidden {
   background: repeating-linear-gradient(
-    -55deg,
-    #eee,
-    #eee 10px,
-    #fff 10px,
-    #fff 20px
+                  -55deg,
+                  #eee,
+                  #eee 10px,
+                  #fff 10px,
+                  #fff 20px
   );
 }
 
@@ -107,7 +108,7 @@ a {
     margin-top: 0;
   }
 
-  >.well {
+  > .well {
     > h1, > div {
       padding: 0 10px;
     }
@@ -133,10 +134,12 @@ a {
 .mini-avatar {
   width: 30px;
 }
+
 .mini-user-box {
   border-bottom: 1px solid whitesmoke;
   margin-bottom: 0.8em;
 }
+
 .mini-user-box .mini-avatar {
   margin-top: 1.2em;
   margin-right: 0.6em;
@@ -172,7 +175,7 @@ a {
   .user-box > .well > & {
     padding: 0 0 10px 0;
   }
-  
+
   position: relative;
   width: 100%;
 
@@ -191,10 +194,10 @@ a {
     right: 0;
   }
 }
+
 .avatar-pull-right {
   width: 1.4em;
 }
-
 
 .project-list-group {
 
@@ -253,7 +256,6 @@ a {
   }
 
 }
-
 
 .file-list-group {
 
@@ -370,7 +372,6 @@ a {
   }
 }
 
-
 .btn-panel {
   margin-bottom: 20px;
 }
@@ -406,8 +407,6 @@ a {
       width: 26px; // ARbaelkrbnaelrkbnaer firefox why
     }
   }
-
-
 
   .col-md-12 {
     white-space-collapse: discard;
@@ -500,6 +499,7 @@ a {
 .not-in-flow {
   position: relative;
 }
+
 .not-in-flow-child {
   position: absolute;
   left: 0;
@@ -525,7 +525,6 @@ a {
   text-align: left;
 }
 
-
 .breadcrumb > li + li:before {
   display: none;
 }
@@ -541,6 +540,7 @@ a {
 .namespace-fancy-select {
   display: block;
 }
+
 .namespace-option {
   display: inline-block;
   text-align: center;
@@ -549,17 +549,30 @@ a {
   border-radius: 4px;
   margin-right: 10px;
   min-width: 100px;
+  cursor: pointer;
+
+  &:hover {
+    background: #e9e9e9;
+  }
 }
+
 .namespace-option-selected {
   background-color: #337ab7;
   border-color: #2e6da4;
   color: white;
+
+  &:hover {
+    background-color: #3a8bce;
+    border-color: #3680c1;
+  }
 }
+
 .namespace-option-avatar {
   display: block;
   width: 100px;
   margin: 0 auto 7px auto;
 }
+
 .namespace-option-name {
   display: block;
 }
@@ -570,12 +583,15 @@ a {
   vertical-align: sub;
   margin-right: 0.2em;
 }
+
 .org-members-list-link:hover {
   text-decoration: none;
 }
+
 .org-members-list-group-item {
   padding: 0;
 }
+
 .org-members-list-link {
   font-size: 1.2em;
   display: block;
@@ -601,22 +617,27 @@ pre code {
 }
 
 .colour-selector-dot {
-    float: left;
-    width: 32px;
-    height: 32px;
-    border-radius: 100%;
-    margin-right: 6px;
-    margin-top: 6px;
+  float: left;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  margin-right: 6px;
+  margin-top: 6px;
+  cursor: pointer;
 }
+
 .colour-selector-dot-active {
-    border: 4px solid rgba(255, 255, 255, 0.5);
+  border: 4px solid rgba(255, 255, 255, 0.5);
 }
+
 .colour-selector-dot-light.colour-selector-dot-active {
-    border: 4px solid rgba(0, 0, 0, 0.5);
+  border: 4px solid rgba(0, 0, 0, 0.5);
 }
+
 .colour-selector-dot:hover {
-    border: 4px solid rgba(255, 255, 255, 0.5);
+  border: 4px solid rgba(255, 255, 255, 0.5);
 }
+
 .colour-selector-dot-light.colour-selector-dot:hover {
-    border: 4px solid rgba(0, 0, 0, 0.8);
+  border: 4px solid rgba(0, 0, 0, 0.8);
 }
