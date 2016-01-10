@@ -1,6 +1,7 @@
 # Ore
 
 [![Build Status](https://travis-ci.org/SpongePowered/Ore.svg?branch=master)](https://travis-ci.org/SpongePowered/Ore)
+[![Slack Status](https://slackin.spongepowered.org/badge.svg)](https://slackin.spongepowered.org)
 
 __Travelers, BEWARE!!__ This is essentially _gamma_-stage software.
 While bugfixes and PRs and such are welcome, they will most likely get overwritten as I develop this app further.
