@@ -13,5 +13,6 @@ INSTALLED_APPS += (
 )
 
 RAVEN_CONFIG = {
-    'dsn': from_env('SENTRY_DSN')
+    'dsn': from_env('SENTRY_DSN'),
+    'release': BUILD_STAMP,
 }
