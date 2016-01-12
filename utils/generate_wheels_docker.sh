@@ -14,7 +14,7 @@ if [[ $ARG == "inside" ]]; then
 
 	apt-get update
 	apt-get -y install python3 python3-pip 
-	apt-get -y install libjpeg-dev libpng-dev libz-dev libwebp-dev libopenjpeg-dev liblcms2-dev libtiff-dev libfreetype6-dev libpq-dev
+	apt-get -y install libjpeg-dev libpng-dev libz-dev libwebp-dev libopenjpeg-dev liblcms2-dev libtiff-dev libfreetype6-dev libpq-dev git
 	ln -s /usr/bin/pip3 /usr/bin/pip
 	exec $DIR/generate_wheels.sh "$@"
 else
