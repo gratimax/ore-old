@@ -91,21 +91,6 @@ class ProjectTeam(Team):
         unique_together = ('project', 'name')
 
 
-@receiver(post_save, sender=Project)
-def create_project_owner_team(sender, instance, created, **kwargs):
-    if instance and created:
-        owning_namespace = Namespace.objects.get_subclass(
-            id=instance.namespace_id)
-        if isinstance(owning_namespace, OreUser):
-            team = ProjectTeam.objects.create(
-                project=instance,
-                is_owner_team=True,
-                name='Owners',
-            )
-            team.users = [owning_namespace]
-            team.save()
-
-
 @receiver(post_save, sender=Organization)
 def create_organization_owner_team(sender, instance, created, **kwargs):
     if instance and created:
