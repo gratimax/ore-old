@@ -140,7 +140,7 @@ class DiscourseProjectThread(models.Model):
             data=payload
         )
         resp.raise_for_status()
-        self.topic_id = resp['post']['topic_id']
+        self.topic_id = resp.json()['post']['topic_id']
         return True
 
 
