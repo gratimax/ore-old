@@ -6,7 +6,8 @@ from .forms import ProjectTeamForm, OrganizationTeamForm, MembershipManageForm, 
 from django.views.generic import UpdateView, CreateView, FormView
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
+
 
 class TeamManagementMixin(MultiFormMixin):
 
@@ -16,6 +17,7 @@ class TeamManagementMixin(MultiFormMixin):
             'settings_form': self.get_settings_form(self.object),
             'delete_form': TeamDeleteForm(instance=self.object),
         }
+
 
 class NamespaceMixin(object):
 
@@ -84,6 +86,9 @@ class ProjectTeamMixin(object):
 
     def dispatch(self, request, *args, **kwargs):
         self.project = self.get_project()
+        if not self.project.should_have_teams:
+            raise Http404("Organization-owned projects cannot have teams")
+
         return super(ProjectTeamMixin, self).dispatch(request, *args, **kwargs)
 
     def get_teams(self):
@@ -127,6 +132,7 @@ class BaseTeamManageMembershipView(RequiresPermissionMixin, TeamManagementMixin,
             'direction': self.direction,
         })
         return kwargs
+
 
 class ProjectTeamUpdateView(SettingsMixin, ProjectTeamMixin, BaseTeamUpdateView):
 
@@ -176,6 +182,7 @@ class ProjectTeamNewView(SettingsMixin, ProjectTeamMixin, BaseTeamNewView):
         initial['namespace'] = self.namespace
         initial['project'] = self.project
         return initial
+
 
 class ProjectTeamManageMembershipView(SettingsMixin, ProjectTeamMixin, BaseTeamManageMembershipView):
 
@@ -234,7 +241,7 @@ class ProjectTeamDeleteView(TeamManagementMixin, SettingsMixin, ProjectTeamMixin
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super(ProjectTeamDeleteView, self).post(request, *args, **kwargs)
-        
+
     def get_context_data(self, **kwargs):
         kwargs.update({
             'team': self.get_team(),

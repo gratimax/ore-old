@@ -97,6 +97,11 @@ class Project(models.Model):
 
         return Namespace.objects.get_subclass(id=self.namespace_id).user_has_permission(user, perm_slug, project=self)
 
+    @property
+    def should_have_teams(self):
+        # if our namespace is an OreUser, then yes
+        return OreUser.objects.filter(pk=self.namespace_id).exists()
+
     def __str__(self):
         return '%s by %s' % (self.name, self.namespace.name)
 

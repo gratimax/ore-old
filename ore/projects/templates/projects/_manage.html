@@ -20,23 +20,25 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Team Management</h3>
+            {% if proj.should_have_teams %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Team Management</h3>
+                    </div>
+                    <div class="list-group">
+                        {% for pteam in proj.teams.all %}
+                            <a href="{% url 'projects-team-manage' namespace=proj.namespace.name project=proj.name team=pteam.name %}" class="list-group-item {% if active_settings == "team" and team == pteam %}active{% endif %}">
+                                {{ pteam.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% ifpermitted user "project.team.create" proj %}
+                    <div class="panel-footer">
+                        <div class="text-right"><a href="{% url 'projects-team-new' namespace=proj.namespace.name project=proj.name %}"><i class="fa fa-plus"></i> New</a></div>
+                    </div>
+                    {% endifpermitted %}
                 </div>
-                <div class="list-group">
-                    {% for pteam in proj.teams.all %}
-                        <a href="{% url 'projects-team-manage' namespace=proj.namespace.name project=proj.name team=pteam.name %}" class="list-group-item {% if active_settings == "team" and team == pteam %}active{% endif %}">
-                            {{ pteam.name }}
-                        </a>
-                    {% endfor %}
-                </div>
-                {% ifpermitted user "project.team.create" proj %}
-                <div class="panel-footer">
-                    <div class="text-right"><a href="{% url 'projects-team-new' namespace=proj.namespace.name project=proj.name %}"><i class="fa fa-plus"></i> New</a></div>
-                </div>
-                {% endifpermitted %}
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>
