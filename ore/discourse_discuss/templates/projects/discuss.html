@@ -19,7 +19,7 @@
 {% block scripts %}
 <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://forums.spongepowered.org/',
-                     topicId: 10736 };
+                     topicId: {{ project_thread.topic_id }} };
 
   (function() {
     var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;

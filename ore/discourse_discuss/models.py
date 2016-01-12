@@ -51,6 +51,7 @@ class DiscourseProjectThreadManager(models.Manager):
 class DiscourseProjectThread(models.Model):
     project = models.OneToOneField(Project, primary_key=True)
     post_id = models.PositiveIntegerField(null=False, blank=False)
+    topic_id = models.PositiveIntegerField(null=False, blank=False)
 
     objects = DiscourseProjectThreadManager()
 
@@ -94,6 +95,7 @@ class DiscourseProjectThread(models.Model):
         )
         resp.raise_for_status()
         self.post_id = resp.json()['id']
+        self.topic_id = resp.json()['topic_id']
 
     def update_on_discourse(self):
         if self.post_id is None:
@@ -138,6 +140,7 @@ class DiscourseProjectThread(models.Model):
             data=payload
         )
         resp.raise_for_status()
+        self.topic_id = resp['topic_id']
         return True
 
 
