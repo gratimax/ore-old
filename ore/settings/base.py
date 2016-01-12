@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     'ore.versions',
     'ore.flags',
     'ore.discourse_sso',
+    'ore.discourse_discuss',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -209,3 +210,14 @@ if DISCOURSE_SSO_ENABLED:
     DISCOURSE_SSO_URL = from_env(
         'DISCOURSE_SSO_URL', 'https://forums.spongepowered.org/session/sso_provider')
     DISCOURSE_SSO_SECRET = from_env('DISCOURSE_SSO_SECRET')
+
+DISCOURSE_DISCUSS_ENABLED = from_env(
+    'DISCOURSE_DISCUSS_ENABLED', False) == 'true'
+if DISCOURSE_DISCUSS_ENABLED:
+    DISCOURSE_DISCUSS_API = from_env(
+        'DISCOURSE_DISCUSS_API', 'https://forums.spongepowered.org')
+    DISCOURSE_DISCUSS_CATEGORY = from_env(
+        'DISCOURSE_DISCUSS_CATEGORY', 'ore')
+    DISCOURSE_DISCUSS_API_KEY = from_env('DISCOURSE_DISCUSS_API_KEY')
+    DISCOURSE_DISCUSS_ORE_SITE_BASE = from_env(
+        'DISCOURSE_DISCUSS_ORE_SITE_BASE', 'https://ore-staging.spongepowered.org')

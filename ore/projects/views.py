@@ -1,14 +1,14 @@
 from django.db.models import Q
-from ore.core.models import Namespace, Organization
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
-
-# Create your views here.
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView
 from django.views.generic.detail import SingleObjectMixin
+from django.conf import settings
+
+from ore.core.models import Namespace, Organization
 from ore.projects.forms import ProjectForm, ProjectDescriptionForm, ProjectRenameForm, PageEditForm
 from ore.projects.models import Project, Page, Channel
 from ore.core.views import RequiresPermissionMixin, SettingsMixin
@@ -23,6 +23,12 @@ class ProjectNavbarMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_project_tab'] = self.get_active_project_tab()
+        context['display_tabs'] = [
+            'docs',
+            'versions'
+        ]
+        if settings.DISCOURSE_DISCUSS_ENABLED:
+            context['display_tabs'] += ['discuss']
         return context
 
 

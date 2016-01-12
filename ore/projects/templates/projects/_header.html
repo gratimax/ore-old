@@ -14,17 +14,31 @@
 <div class="navbar navbar-default project-navbar pull-left">
     <div class="navbar-inner">
         <ul class="nav navbar-nav">
-            <li class="{% if active_project_tab == 'docs' %}active{% endif %}">
+        {% for tab in display_tabs %}
+            <li class="{% if active_project_tab == tab %}active{% endif %}">
+        {% if tab == 'docs' %}
                 <a href="{% url "projects-detail" namespace=proj.namespace.name project=proj.name %}">
                 <i class="fa fa-book"></i>
                 Docs
                 </a>
-            </li>
-            <li class="{% if active_project_tab == 'versions' %}active{% endif %}">
+        {% elif tab == 'versions' %}
                 <a href="{% url "versions-list" namespace=proj.namespace.name project=proj.name %}">
-                <i class="fa fa-download"></i> Versions
+                <i class="fa fa-download"></i>
+                Versions
                 </a>
+        {% elif tab == 'discuss' %}
+                <a href="{% url "projects-discuss" namespace=proj.namespace.name project=proj.name %}">
+                <i class="fa fa-users"></i>
+                Discuss
+                </a>
+        {% else %}
+                <a href="/">
+                <i class="fa fa-exclamation-circle"></i>
+                UNKNOWN TAB: {{ tab }}
+                </a>
+        {% endif %}
             </li>
+        {% endfor %}
         </ul>
     </div>
 </div>
