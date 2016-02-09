@@ -11,6 +11,12 @@ Don't get too attached to whatever you put there, because it's most likely going
 
 The Sponge package repository.
 
+Repositories that are part of this project:
+
+- [ore-node](https://github.com/gratimax/ore-node): node implementation of ore backend
+- [ore-frontend](https://github.com/gratimax/ore-frontend): new frontend for node in javascript
+- this repository: current implementation in javascript. Will put the canonical rest implementation here
+
 ## Faq
 
 __Q: Why is this on GitHub?__
