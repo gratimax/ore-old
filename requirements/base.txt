@@ -20,4 +20,4 @@ html5lib==0.9999999
 beautifulsoup4==4.4.1
 colour==0.1.2
 requests==2.9.1
-dukpy-lukegb==0.2.1
+dukpy-lukegb==0.2.2
