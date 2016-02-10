@@ -646,3 +646,19 @@ pre code {
   height: 1em;
   width: auto;
 }
+
+.oredown-container {
+  height: 240px;
+}
+.oredown-textarea-container, textarea.oredown, .oredown-preview {
+  height: 100%;
+}
+.oredown-preview {
+  overflow-x: auto;
+  overflow-y: scroll;
+
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+}

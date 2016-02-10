@@ -15,7 +15,8 @@
   "dependencies": {
     "markdown-it": "^5.1.0",
     "markdown-it-emoji": "^1.1.0",
-    "punycode": "^1.4.0"
+    "punycode": "^1.4.0",
+    "sanitize-html": "^1.11.3"
   },
   "devDependencies": {
     "regenerate": "^1.2.1",

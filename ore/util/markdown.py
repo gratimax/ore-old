@@ -1,7 +1,7 @@
 import os.path
 import dukpy
 
-basepath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+basepath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def load_dukpy_ctx():
@@ -26,4 +26,4 @@ def compile(text, context={}):
     if mdit is None:
         mdit = load_mdit(ctx)
 
-    return mdit.render(text)
+    return mdit(text)
