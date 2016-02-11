@@ -17,4 +17,4 @@ ENV DJANGO_SETTINGS_MODULE=ore.settings.docker \
     DB_PASSWORD=lemons \
     DB_HOST=lemons
 
-RUN npm install && bower install && make clean all && cd /app && git describe --always > build_stamp.txt
+RUN npm install -g npm && /usr/local/bin/npm install && bower install && make clean all && cd /app && git describe --always > build_stamp.txt
