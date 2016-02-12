@@ -9,13 +9,7 @@ While bugfixes and PRs and such are welcome, they will most likely get overwritt
 There is an instance staged to https://ore-staging.spongepowered.org with docker and magic web scale sauce™.
 Don't get too attached to whatever you put there, because it's most likely going to be reset.
 
-The Sponge package repository.
-
-Repositories that are part of this project:
-
-- [ore-node](https://github.com/gratimax/ore-node): node implementation of ore backend
-- [ore-frontend](https://github.com/gratimax/ore-frontend): new frontend for node in javascript
-- this repository: current implementation in python. Will put the canonical rest implementation here
+Also see [ore-frontend](https://github.com/gratimax/ore-frontend), the frontend for Ore.
 
 ## Faq
 
