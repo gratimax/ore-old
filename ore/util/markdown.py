@@ -1,5 +1,6 @@
 import os.path
 import dukpy
+from django.conf import settings
 
 basepath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -34,6 +35,10 @@ def load_mdit(ctx):
 
 ctx = load_dukpy_ctx()
 mdit = None
+if not settings.DEBUG:
+    import logging
+    logging.info("Loading markdown context")
+    mdit = load_mdit(ctx)
 
 
 def compile(text, context={}):

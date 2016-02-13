@@ -2,7 +2,7 @@ FROM spongepowered/ore-base
 MAINTAINER Sponge Web Team <web@spongepowered.org>
 
 EXPOSE 3000
-CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-"]
+CMD ["gunicorn","-w","3","-b","0.0.0.0:3000","ore.wsgi","--log-file","-","--preload"]
 
 WORKDIR /app
 
