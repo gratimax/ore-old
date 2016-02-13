@@ -17,8 +17,8 @@ class NewVersionForm(forms.ModelForm):
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            'name',
-            'description',
+            Field('name'),
+            Field('description', css_class="oredown"),
         )
         self.fields['channel'] = forms.ModelChoiceField(
             queryset=Channel.objects.filter(project_id=kwargs['instance'].project.id))
