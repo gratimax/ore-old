@@ -5,7 +5,7 @@ addons:
   postgresql: "9.3"
 env:
   - DJANGO_SETTINGS_MODULE="ore.settings.tests_travis"
-install: "pip install -r requirements/development.txt --use-mirrors"
+install: "npm install -g npm && /usr/local/bin/npm install && pip install -r requirements/development.txt --use-mirrors"
 script: "python ore/manage.py test"
 sudo: false
 notifications:
