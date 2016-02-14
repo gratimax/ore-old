@@ -59,6 +59,18 @@ class VersionRange(object):
             ']' if self.upper_bound_inclusive else ')',
         )
 
+    def to_json(self):
+        return {
+            'lower_bound': {
+                'version': str(self.lower_bound) if self.lower_bound else None,
+                'inclusive': self.lower_bound_inclusive,
+            },
+            'upper_bound': {
+                'version': str(self.upper_bound) if self.upper_bound else None,
+                'inclusive': self.upper_bound_inclusive,
+            }
+        }
+
 
 class Version(VersionRange):
 
@@ -75,6 +87,9 @@ class Version(VersionRange):
 
     def matches(self, version):
         return self.version == version
+
+    def to_json(self):
+        return {'raw_version': str(self.version)}
 
 
 class DependencyParser(NodeVisitor):
@@ -137,7 +152,7 @@ class DependencyParser(NodeVisitor):
     def visit_pluginidver(self, node, children):
         pluginid, maybeversion = children
         if not maybeversion:
-            return (pluginid, VersionRange(None, True, None, True))
+            return (pluginid, [VersionRange(None, True, None, True)])
         return (pluginid, maybeversion[0][1])
 
     def visit_target(self, node, children):
@@ -213,9 +228,24 @@ class SpongePoweredPlugin(object):
         # where `dependency` is
         # (required-)?(before|after):(*|`id`@`version`)
         if 'dependencies' in self.data:
-            return DependencyParser().parse(self.data['dependencies'])
+            dep_list = DependencyParser().parse(self.data['dependencies'])
+            deps = {}
+            for dep_type, dep in dep_list:
+                deps.setdefault(dep_type, []).append(dep)
+            return deps
         else:
-            return []
+            return {}
+
+    @property
+    def json_dependencies(self):
+        jdeps = {}
+        for k, v in self.dependencies.items():
+            jdeps[k] = []
+            d = jdeps[k]
+
+            for plugin_id, version_ranges in v:
+                d.append((plugin_id, [version_range.to_json() for version_range in version_ranges]))
+        return jdeps
 
     def __repr__(self):
         return "SpongePoweredPlugin(classname={0!r}, data={1!r}, dependencies={2!r})".format(self.classname, self.data, self.dependencies)
