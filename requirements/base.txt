@@ -22,3 +22,4 @@ colour==0.1.2
 requests==2.9.1
 dukpy-lukegb==0.2.2
 git+https://github.com/lukegb/Jawa.git@c0dde132389f167c382d29211d42055b2ccfeecc#egg=Jawa
+parsimonious==0.6.2

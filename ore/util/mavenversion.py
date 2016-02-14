@@ -158,6 +158,9 @@ class ListItem(Item):
 class ComparableVersion(CmpShim):
 
     def __init__(self, version):
+        if isinstance(version, ComparableVersion):
+            version = version.value
+
         self.value = version
 
         self.populate()
@@ -224,3 +227,6 @@ class ComparableVersion(CmpShim):
         if isinstance(item, ComparableVersion):
             return cmp(self.items, item.items)
         raise TypeError("unorderable {0!r} vs {1!r}".format(self, item))
+
+    def __repr__(self):
+        return self.canonical_value
