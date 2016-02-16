@@ -17,7 +17,7 @@
             allowedTags: ['pre', 'code', 'ul', 'ol', 'li', 'p', 'blockquote', 'hr', 'em', 'strong', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'caption', 'strike', 'b', 'u', 'i'],
             allowedAttributes: {
                 a: ['href', 'name', 'target'],
-                img: ['src', 'title', 'alt', 'class'],
+                img: ['src', 'title', 'alt', 'class', 'width', 'height'],
             },
             transformTags: {
                 'img': function(tagName, attribs) {
@@ -37,11 +37,25 @@
                         newAttribs.class = 'emoji';
                     }
 
+                    if (newAttribs.src.indexOf('/uploads/default/') === 0) {
+                        // this is a forums.spongepowered.org image
+                        // so we'll prepend it with the forums image root
+                        newAttribs.src = '//cdn.spongepowered.org' + newAttribs.src;
+                    }
+
+                    // check width and height are in bounds, IF explicitly specified
+                    if (attribs.hasOwnProperty('width')) {
+                        newAttribs.width = Math.max(1, Math.min(920, ~~attribs.width));
+                    }
+                    if (attribs.hasOwnProperty('height')) {
+                        newAttribs.height = Math.max(1, Math.min(600, ~~attribs.height));
+                    }
+
                     return {
                         tagName: 'img',
                         attribs: newAttribs
                     };
-                }
+                },
             }
         });
 
