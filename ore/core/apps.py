@@ -8,4 +8,4 @@ class CoreConfig(AppConfig):
         from actstream import registry
         from ore.core.models import Organization
         registry.register(Organization)
-        subprocess.run(["node", "ore/markdown"])
+        subprocess.Popen(["node", "ore/markdown"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
