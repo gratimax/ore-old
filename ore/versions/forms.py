@@ -112,12 +112,10 @@ class ChannelDeleteForm(forms.Form):
 class NewFileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        project = None
+        self.project = None
         if 'project' in kwargs:
-            project = kwargs.pop('project')
+            self.project = kwargs.pop('project')
         super(NewFileForm, self).__init__(*args, **kwargs)
-        if project:
-            self.project = project
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             Field('file'),
@@ -126,12 +124,15 @@ class NewFileForm(forms.ModelForm):
             self.fields['file'].label = 'Primary file'
         else:
             self.fields['file'].label = 'Additional file'
+        self.fields['project'].initial = self.project
 
     def clean(self):
         cleaned_data = super().clean()
-        if self.empty_permitted and not self.has_changed():
-            cleaned_data['project'] = self.project if 'file' in cleaned_data else None
+        cleaned_data['project'] = self.project
         return cleaned_data
+
+    def has_changed(self):
+        return 'file' in self.changed_data
 
     class Meta:
         model = File

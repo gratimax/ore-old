@@ -3,6 +3,7 @@ from zipfile import ZipFile
 from jawa.cf import ClassFile
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
+from parsimonious.exceptions import ParseError
 from .mavenversion import ComparableVersion
 
 DEPENDENCY_GRAMMAR = Grammar(r"""
