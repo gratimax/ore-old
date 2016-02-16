@@ -300,8 +300,12 @@ jQuery(function ($) {
     };
 
     var updatePreview = function() {
+      var lastContent = $this.data('last-content');
       var content = $this.val();
-      $preview.html(window.markdown(content));
+      if (!lastContent || lastContent !== content) {
+        $this.data('last-content', content);
+        $preview.html(window.markdown(content));
+      }
       scrollPreview();
     };
     updatePreview();
