@@ -117,3 +117,6 @@ Temporary Items
 /src
 
 /node_modules
+
+# local database
+/localdb/
