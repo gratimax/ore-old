@@ -52,5 +52,9 @@
         window.markdown = renderMarkdown;
     }
 
+    if (typeof module !== 'undefined') {
+        module.exports = renderMarkdown;
+    }
+
     return renderMarkdown;
 })();

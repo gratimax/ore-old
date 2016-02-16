@@ -140,8 +140,7 @@ class Page(models.Model):
     objects = UserFilteringManager()
 
     def save(self, *args, **kwargs):
-        self.html = markdown.compile(self.content, context={
-                                     'namespace': self.project.namespace.name, 'project': self.project.name, 'page': self.slug})
+        self.html = markdown.compile(self.content)
         self.slug = slugify(self.title)
         super(Page, self).save(*args, **kwargs)
 
