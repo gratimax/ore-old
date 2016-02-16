@@ -11,4 +11,4 @@ ENV DJANGO_SETTINGS_MODULE=ore.settings.development \
     SECRET_KEY=lemons \
     PYTHONPATH=/app
 
-RUN bower install
+RUN npm install
