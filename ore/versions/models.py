@@ -17,8 +17,8 @@ from reversion import revisions as reversion
 
 @reversion.register
 class Version(models.Model):
-    STATUS = Choices('active', 'deleted')
-    status = StatusField()
+    STATUS = Choices('unpublished', 'publishing', 'active', 'deleted')
+    status = StatusField(default='unpublished')
 
     name = models.CharField(max_length=32,
                             validators=[
@@ -97,8 +97,8 @@ def file_upload(instance, filename):
 
 @reversion.register
 class File(models.Model):
-    STATUS = Choices('active', 'deleted')
-    status = StatusField()
+    STATUS = Choices('unpublished', 'publishing', 'active', 'deleted')
+    status = StatusField(default='unpublished')
 
     project = models.ForeignKey(Project, related_name='files')
     version = models.ForeignKey(
