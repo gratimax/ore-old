@@ -1,40 +1,12 @@
+import zipfile
+
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, HTML, Field, Hidden
+from crispy_forms.layout import Layout, Submit, HTML, Field
 from django import forms
 from django.core.urlresolvers import reverse
-from django.forms import modelformset_factory
 from ore.projects.models import Channel
-from ore.versions.models import Version, File
-
-
-class NewVersionForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(NewVersionForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.disable_csrf = True
-        self.helper.label_class = 'col-lg-2'
-        self.helper.field_class = 'col-lg-8'
-        self.helper.layout = Layout(
-            Field('name'),
-            Field('description', css_class="oredown"),
-        )
-        self.fields['channel'] = forms.ModelChoiceField(
-            queryset=Channel.objects.filter(project_id=kwargs['instance'].project.id))
-
-    class Meta:
-        model = Version
-        fields = ('name', 'description', 'channel')
-
-        # def validate_unique(self):
-        #     exclude = self._get_validation_exclusions()
-        #     exclude.remove('version')
-        #
-        #     try:
-        #         self.instance.validate_unique(exclude=exclude)
-        #     except ValidationError as e:
-        #         self._update_errors(e.message_dict)
+from ore.versions.models import File
+from ore.util import plugalyzer
 
 
 class NewChannelForm(forms.ModelForm):
@@ -109,53 +81,89 @@ class ChannelDeleteForm(forms.Form):
             choices=choices, required=False)
 
 
-class NewFileForm(forms.ModelForm):
+class NewVersionForm(forms.Form):
+
+    file = forms.FileField(label='Plugin JAR', widget=forms.FileInput, required=True, allow_empty_file=False)
+    channel = forms.ChoiceField(label='Channel', required=True, choices=[])
 
     def __init__(self, *args, **kwargs):
-        self.project = None
-        if 'project' in kwargs:
-            self.project = kwargs.pop('project')
-        super(NewFileForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.layout = Layout(
-            Field('file'),
-        )
-        if kwargs['prefix'] == 'file-0':
-            self.fields['file'].label = 'Primary file'
-        else:
-            self.fields['file'].label = 'Additional file'
-        self.fields['project'].initial = self.project
-
-    def clean(self):
-        cleaned_data = super().clean()
-        cleaned_data['project'] = self.project
-        return cleaned_data
-
-    def has_changed(self):
-        return 'file' in self.changed_data
-
-    class Meta:
-        model = File
-        fields = ('file', 'project')
-        widgets = {'project': forms.HiddenInput()}
-
-BaseNewVersionInnerFileFormset = modelformset_factory(
-    File, form=NewFileForm, max_num=5, validate_max=True)
-
-
-class NewVersionInnerFileFormset(BaseNewVersionInnerFileFormset):
-
-    def __init__(self, *args, **kwargs):
-        project = kwargs.pop('project')
-        super(NewVersionInnerFileFormset, self).__init__(*args, **kwargs)
-        self.form_kwargs['project'] = project
-        #self.form.initial['project'] = self.form.project
+        self.project = kwargs.pop('project')
+        super(NewVersionForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            #Fieldset('File', 'name', 'file')
             Field('file'),
+            Field('channel'),
         )
+        channel_choices = []
+        for channel in Channel.objects.filter(project=self.project):
+            channel_choices.append((channel.id, channel.name))
+        self.fields['channel'].choices = channel_choices
+
+    def clean_file(self):
+        file = self.cleaned_data['file']
+
+        import posixpath
+        file_name, file_extension = posixpath.splitext(
+            posixpath.basename(file.name))
+        if file_extension != '.jar':
+            raise forms.ValidationError('Ore currently only supports direct .jar uploads of your plugin.', code='must_be_a_jar')
+
+        self.cleaned_data['file_name'] = file_name
+        self.cleaned_data['file_extension'] = file_extension
+
+        self.cleaned_data['file_size'] = file.size
+
+        file.open('rb')
+        try:
+            plugins = plugalyzer.Plugalyzer.analyze(file)
+        except zipfile.BadZipFile:
+            raise forms.ValidationError('The uploaded file doesn\'t appear to be a valid JAR file.', code='plugalyzer_invalid_jar')
+        except plugalyzer.ParseError as ex:
+            raise forms.ValidationError('The uploaded plugin has an invalid \'dependencies\' attribute on the @Plugin annotation: "{}"'.format(ex), code='plugalyzer_parse_error')
+
+        if len(plugins) < 1:
+            raise forms.ValidationError('The uploaded JAR doesn\'t seem to contain a Sponge plugin (there are no classes annotated with @Plugin).', code='plugalyzer_no_plugins')
+        if len(plugins) > 1:
+            raise forms.ValidationError('The uploaded JAR appears to contain more than one class annotated with @Plugin, which isn\'t presently supported.', code='plugalyzer_multiple_plugins')
+
+        plugin = plugins[0]
+        errors = plugin.validate()
+        if errors:
+            raise forms.ValidationError([forms.ValidationError(e) for e in errors])
+
+        self.cleaned_data['plugin'] = plugin
+
+        # validate uniqueness too
+        # two paths: we've got files with IDs, or we don't
+        has_previous_files = File.objects.filter(project=self.project).exclude(plugin_id=None).exists()
+        if has_previous_files:
+            # check if we've previously used this project ID
+            if not File.objects.filter(project=self.project, plugin_id=plugin.data['id']).exists():
+                previous_ids = set(File.objects.filter(project=self.project).exclude(plugin_id=None).values_list('plugin_id', flat=True).distinct())
+                raise forms.ValidationError(
+                    "This plugin doesn't use the same plugin ID you've been using previously (it uses '{}', but you've previously used '{}') - consider checking you're uploading to the right project, or contact a staff member.".format(
+                        plugin.data['id'],
+                        "', '".join(previous_ids),
+                    ),
+                    code='plugalyzer_different_plugin_id'
+                )
+
+            # check if we've previously used this version string
+            if File.objects.filter(project=self.project, version__name=plugin.data['version']).exists():
+                raise forms.ValidationError(
+                    "This plugin reuses the version of a file you've previously uploaded - this is probably a bad idea!",
+                    code='plugalyzer_conflicting_version'
+                )
+        else:
+            # check if someone else has previously used this project ID
+            if File.objects.filter(plugin_id=plugin.data['id']).exists():
+                raise forms.ValidationError(
+                    "This plugin uses the same plugin ID as a different plugin already uploaded to Ore. Consider changing it, or contact a staff member.",
+                    code='plugalyzer_conflicting_plugin_id'
+                )
+
+        return self.cleaned_data['file']

@@ -7,7 +7,7 @@ from parsimonious.exceptions import ParseError
 from .mavenversion import ComparableVersion
 
 DEPENDENCY_GRAMMAR = Grammar(r"""
-    start            = dependencies
+    start            = dependencies?
     dependencies     = dependency (";" dependency)*
     dependency       = instruction ":" target
     instruction      = "required-"? ("after" / "before")
@@ -177,6 +177,9 @@ class DependencyParser(NodeVisitor):
 
     def visit_pluginid(self, node, pluginid):
         return node.text
+
+    def visit_start(self, node, children):
+        return children[0] if children else []
 
 
 def class_name_to_filesystem_name(class_name):

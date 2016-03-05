@@ -1,10 +1,10 @@
 from ore.core.models import Namespace
-from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import DetailView, CreateView, FormView, TemplateView
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import DetailView, FormView, TemplateView
 from ore.projects.models import Project, Channel
 from ore.projects.views import ProjectNavbarMixin
 from ore.core.views import RequiresPermissionMixin
-from ore.versions.forms import NewVersionForm, NewVersionInnerFileFormset, NewChannelForm, ChannelDeleteForm
+from ore.versions.forms import NewVersionForm, NewChannelForm, ChannelDeleteForm
 from ore.versions.models import Version, File
 
 
@@ -19,102 +19,17 @@ class ProjectsVersionsListView(ProjectNavbarMixin, DetailView):
     active_project_tab = 'versions'
 
     def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
 
 
-class MultiFormMixin(object):
-    multi_form_class = None
-    multi_prefix = 'file'
-    multi_initial = {}
+class VersionsNewView(RequiresPermissionMixin, TemplateView):
 
-    def get_multi_form_class(self):
-        if self.multi_form_class is None:
-            raise ValueError(
-                "You must define multi_form_class or override get_multi_form_class!")
-        return self.multi_form_class
-
-    def get_multi_form_kwargs(self):
-        kwargs = {
-            'initial': self.get_multi_initial(),
-            'prefix': self.get_multi_prefix(),
-            'queryset': File.objects.none(),
-        }
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
-        return kwargs
-
-    def get_multi_initial(self):
-        return self.multi_initial.copy()
-
-    def get_multi_prefix(self):
-        return self.multi_prefix
-
-    def get_multi_form(self, form_class):
-        return form_class(**self.get_multi_form_kwargs())
-
-    def get(self, request, *args, **kwargs):
-        self.object = None
-
-        multi_form_class = self.get_multi_form_class()
-        multi_form = self.get_multi_form(multi_form_class)
-
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-
-        multi_form_class = self.get_multi_form_class()
-        multi_form = self.get_multi_form(multi_form_class)
-
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-
-        if form.is_valid() and multi_form.is_valid():
-            return self.form_valid(form, multi_form)
-        else:
-            return self.form_invalid(form, multi_form)
-
-    def form_invalid(self, form, multi_form):
-        return self.render_to_response(self.get_context_data(form=form, multi_form=multi_form))
-
-    def form_valid(self, form, multi_form):
-        self.object = form.save()
-        self.multi_objects = multi_form.save()
-
-        return super(MultiFormMixin, self).form_valid(form)
-
-
-class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixin, CreateView):
-
-    model = Version
     template_name = 'versions/new.html'
-
-    form_class = NewVersionForm
-    prefix = 'version'
-    active_project_tab = 'versions'
-
-    multi_form_class = NewVersionInnerFileFormset
-    multi_prefix = 'file'
-    multi_initial = {}
 
     permissions = ['project.manage', 'version.create', 'file.create']
 
     def get_project(self):
-        return get_object_or_404(Project, name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
-
-    def get_multi_form_kwargs(self):
-        kwargs = super(VersionsNewView, self).get_multi_form_kwargs()
-        kwargs.update({
-            'queryset': File.objects.none(),
-            'project': self.get_project(),
-        })
-        return kwargs
+        return get_object_or_404(Project.objects.as_user(self.request.user), name=self.kwargs['project'], namespace__name=self.kwargs['namespace'])
 
     def get_context_data(self, **kwargs):
         data = super(VersionsNewView, self).get_context_data(**kwargs)
@@ -123,33 +38,42 @@ class VersionsNewView(MultiFormMixin, RequiresPermissionMixin, ProjectNavbarMixi
         })
         return data
 
-    def form_valid(self, form, multi_form):
+    def get_form(self):
+        project = self.get_project()
+        if self.request.method == 'GET':
+            return NewVersionForm(project=project)
+        return NewVersionForm(self.request.POST, self.request.FILES, project=project)
 
-        name = form.cleaned_data['name']
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data(form=self.get_form()))
 
-        if self.get_project().versions.filter(name=name).count():
-            form.add_error(
-                'name', 'That version name already exists in this project')
-            return self.form_invalid(form, multi_form)
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            # create a new version
+            project = self.get_project()
+            channel = project.channel_set.get(id=form.cleaned_data['channel'])
+            version = Version(
+                name=form.cleaned_data['plugin'].data['version'],
+                project=project,
+                channel=channel,
+            )
+            file = File(
+                project=project,
+                version=version,
+                file=form.cleaned_data['file'],
+                file_name=form.cleaned_data['file_name'],
+                file_extension=form.cleaned_data['file_extension'],
+                file_size=form.cleaned_data['file_size'],
+                plugin_id=form.cleaned_data['plugin'].data['id'],
+                plugin_dependencies=form.cleaned_data['plugin'].json_dependencies,
+            )
+            version.save()
+            file.version = version
+            file.save()
+            return redirect(version)
 
-        self.object = form.save()
-
-        self.multi_objects = multi_form.save(commit=False)
-        for multi_object in self.multi_objects:
-            multi_object.version = self.object
-            multi_object.project = self.get_project()
-            multi_object.save()
-
-        return super(VersionsNewView, self).form_valid(form, multi_form)
-
-    def get_form_kwargs(self):
-        kwargs = super(VersionsNewView, self).get_form_kwargs()
-        if 'instance' not in kwargs or not kwargs['instance']:
-            instance = self.model(project=self.get_project())
-            kwargs.update({
-                'instance': instance,
-            })
-        return kwargs
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class VersionsDetailView(ProjectNavbarMixin, DetailView):

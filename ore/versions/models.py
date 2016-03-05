@@ -116,54 +116,6 @@ class File(models.Model):
 
     objects = UserFilteringManager()
 
-    def clean(self):
-        if self.file:
-            import posixpath
-            self.file_name, self.file_extension = posixpath.splitext(
-                posixpath.basename(self.file.name))
-            self.file_size = self.file.size
-
-            if self.file_extension.lower() != '.jar':
-                raise ValidationError({'file': "This file doesn't appear to be a Sponge plugin JAR."})
-
-            from ore.util import plugalyzer
-            self.file.open('rb')
-            try:
-                plugin_infos = plugalyzer.Plugalyzer.analyze(self.file)
-            except plugalyzer.ParseError as e:
-                raise ValidationError({'file': "The 'dependencies' attribute on your file seems to have a problem (or we have a bug!): {}".format(e)})
-
-            if len(plugin_infos) < 1:
-                raise ValidationError({'file': "The file you have uploaded doesn't seem to be a Sponge plugin (there were no classes with the @Plugin annotation)"})
-            elif len(plugin_infos) > 1:
-                raise ValidationError({'file': "The file you have uploaded appears to have multiple instances of the @Plugin annotation, which is presently unsupported"})
-            plugin_info = plugin_infos[0]
-            self.plugin_id = plugin_info.data['id']
-            self.plugin_dependencies = plugin_info.json_dependencies
-
-            if self.version and plugin_info.data['version'] != self.version.name:
-                raise ValidationError({'file': "The file you have uploaded has a version of '{}', which does not match the version you have given of '{}'.".format(
-                    plugin_info.data['version'], self.version.name)})
-
-    def validate_unique(self, exclude=None):
-        if self.file:
-            if self.file_extension.lower() != '.jar':
-                return super().validate_unique(exclude=exclude)
-
-            if 'project' not in exclude:
-                project_plugin_ids = File.objects.filter(project=self.project).values_list('plugin_id', flat=True)
-                if project_plugin_ids and not any(plid == self.plugin_id for plid in project_plugin_ids):
-                    raise ValidationError(
-                        {'file':
-                         "The plugin ID '{}' is not the same as the plugin ID you have used previously for this project. If you need to change it, please contact an administrator or create a new project.".format(
-                             self.plugin_id)
-                         })
-
-                if File.objects.exclude(project=self.project).filter(plugin_id=self.plugin_id).exists():
-                    raise ValidationError({'file': "The plugin ID '{}' is already in use by another project. Please pick a different one.".format(self.plugin_id)})
-
-        return super().validate_unique(exclude=exclude)
-
     @classmethod
     def is_visible_q(cls, user):
         if user.is_anonymous():
