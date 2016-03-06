@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView
+from django.views.generic import DetailView, UpdateView, DeleteView, RedirectView, FormView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.conf import settings
 
@@ -59,7 +59,7 @@ class ProjectsDetailView(ProjectNavbarMixin, DetailView):
         return context_data
 
 
-class ProjectsManageView(RequiresPermissionMixin, SettingsMixin, ProjectNavbarMixin, DetailView):
+class ProjectsManageMixin(RequiresPermissionMixin, SettingsMixin, ProjectNavbarMixin):
 
     model = Project
     slug_field = 'name'
@@ -84,7 +84,7 @@ class ProjectsManageView(RequiresPermissionMixin, SettingsMixin, ProjectNavbarMi
         return Project.objects.as_user(self.request.user).filter(namespace=self.get_namespace())
 
     def get_context_data(self, **kwargs):
-        context = super(ProjectsManageView, self).get_context_data(**kwargs)
+        context = super(ProjectsManageMixin, self).get_context_data(**kwargs)
         context['namespace'] = self.get_namespace()
         context['description_form'] = ProjectDescriptionForm(
             project=self.object.name, namespace=self.get_namespace().name,
@@ -95,37 +95,16 @@ class ProjectsManageView(RequiresPermissionMixin, SettingsMixin, ProjectNavbarMi
         return context
 
 
-class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
+class ProjectsManageView(ProjectsManageMixin, DetailView):
+    pass
 
-    model = Project
-    slug_field = 'name'
-    slug_url_kwarg = 'project'
 
-    template_name = 'projects/manage.html'
-    context_object_name = 'proj'
-    active_project_tab = 'manage'
-
-    permissions = ['project.edit']
+class ProjectsDescribeView(ProjectsManageMixin, UpdateView):
 
     form_class = ProjectDescriptionForm
 
-    def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
-
-    def get_namespace(self):
-        if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(
-                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
-            return self._namespace
-        else:
-            return self._namespace
-
     def get_context_data(self, **kwargs):
         context = super(ProjectsDescribeView, self).get_context_data(**kwargs)
-        context['namespace'] = self.get_namespace()
-        context['rename_form'] = ProjectRenameForm(
-            project=self.object.name, namespace=self.get_namespace().name,
-            initial=dict(name=self.object.name))
         context['description_form'] = kwargs['form']
         return context
 
@@ -149,39 +128,15 @@ class ProjectsDescribeView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateVi
             return self.http_method_not_allowed(request, *args, **kwargs)
 
 
-class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView):
-
-    model = Project
-    slug_field = 'name'
-    slug_url_kwarg = 'project'
-
-    template_name = 'projects/manage.html'
-    context_object_name = 'proj'
-    active_project_tab = 'manage'
-
-    permissions = ['project.rename']
+class ProjectsRenameView(ProjectsManageMixin, UpdateView):
 
     form_class = ProjectRenameForm
-
-    def get_queryset(self):
-        return Project.objects.as_user(self.request.user).filter(namespace__name=self.kwargs['namespace'])
-
-    def get_namespace(self):
-        if not hasattr(self, "_namespace"):
-            self._namespace = get_object_or_404(Namespace.objects.as_user(
-                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
-            return self._namespace
-        else:
-            return self._namespace
+    http_method_names = ['post']
 
     def get_context_data(self, **kwargs):
         context = super(ProjectsRenameView, self).get_context_data(**kwargs)
-        context['namespace'] = self.get_namespace()
         context['rename_form'] = kwargs['form']
         context['show_modal'] = 'rename-modal'
-        context['description_form'] = ProjectDescriptionForm(
-            project=self.object.name, namespace=self.get_namespace().name,
-            initial=dict(description=self.object.description))
         return context
 
     def get_form_kwargs(self):
@@ -207,36 +162,14 @@ class ProjectsRenameView(RequiresPermissionMixin, ProjectNavbarMixin, UpdateView
         return redirect(reverse('projects-manage',
                                 kwargs=dict(namespace=self.get_namespace().name, project=self.object.name)))
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.method.lower() == 'post':
-            return super(ProjectsRenameView, self).dispatch(request, *args, **kwargs)
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
 
-
-class ProjectsDeleteView(RequiresPermissionMixin, ProjectNavbarMixin, DeleteView):
-
-    model = Project
-    slug_field = 'name'
-    slug_url_kwarg = 'project'
-
-    template_name = 'projects/manage.html'
-    context_object_name = 'proj'
-    active_project_tab = 'manage'
+class ProjectsDeleteView(ProjectsManageMixin, DeleteView):
 
     permissions = ['project.delete']
-
-    def get_queryset(self):
-        return Project.objects.filter(namespace__name=self.kwargs['namespace'])
+    http_method_names = ['post']
 
     def get_success_url(self):
         return reverse('core-namespace', kwargs=dict(namespace=self.object.namespace.name))
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.method.lower() == 'post':
-            return super(ProjectsDeleteView, self).dispatch(request, *args, **kwargs)
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
 
 
 class FileDownloadView(RedirectView, SingleObjectMixin):
@@ -304,13 +237,12 @@ class ProjectsNewView(FormView):
         return super(ProjectsNewView, self).dispatch(request, *args, **kwargs)
 
 
-class ProjectsStarView(UpdateView):
+class ProjectsStarView(SingleObjectMixin, View):
 
     model = Project
     slug_field = 'name'
     slug_url_kwarg = 'project'
 
-    template_name = 'projects/manage.html'
     context_object_name = 'proj'
 
     def get_queryset(self):
@@ -325,12 +257,6 @@ class ProjectsStarView(UpdateView):
             else:
                 user.starred.add(project)
         return redirect(reverse('projects-detail', args=(project.namespace.name, project.name)))
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.method.lower() == 'post':
-            return super(ProjectsStarView, self).dispatch(request, *args, **kwargs)
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
 
 
 class PagesDetailView(ProjectNavbarMixin, DetailView):
