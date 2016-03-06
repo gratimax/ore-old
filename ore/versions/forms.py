@@ -1,12 +1,30 @@
 import zipfile
+import posixpath
+import re
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Field
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from ore.projects.models import Channel
-from ore.versions.models import File
+from ore.versions.models import File, Version
 from ore.util import plugalyzer
+from ore.core.regexs import TRIM_NAME_REGEX
+
+FILE_EXTENSION_RE = re.compile(r'^\.[a-zA-Z0-9\-]+$')
+TRIM_NAME_RE = re.compile(TRIM_NAME_REGEX)
+
+
+def filename_is_valid(filename):
+    file_name, file_extension = posixpath.splitext(
+            posixpath.basename(filename))
+    if not TRIM_NAME_RE.match(file_name):
+        raise ValidationError("Only letters, numbers, underscores, hyphens and spaces are permitted in filenames for compatibility reasons.")
+    if not FILE_EXTENSION_RE.match(file_extension):
+        raise ValidationError("File extensions must consist only of letters, numbers, and hyphens.")
+
+    return file_name, file_extension
 
 
 class NewChannelForm(forms.ModelForm):
@@ -106,9 +124,7 @@ class NewVersionForm(forms.Form):
     def clean_file(self):
         file = self.cleaned_data['file']
 
-        import posixpath
-        file_name, file_extension = posixpath.splitext(
-            posixpath.basename(file.name))
+        file_name, file_extension = filename_is_valid(file.name)
         if file_extension != '.jar':
             raise forms.ValidationError('Ore currently only supports direct .jar uploads of your plugin.', code='must_be_a_jar')
 
@@ -167,3 +183,49 @@ class NewVersionForm(forms.Form):
                 )
 
         return self.cleaned_data['file']
+
+
+class EditVersionForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EditVersionForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('description', css_class='oredown'),
+            Submit('submit', 'Set description'),
+        )
+        self.helper.form_show_labels = False
+
+    class Meta:
+        model = Version
+        fields = ('description',)
+
+
+class NewFileForm(forms.Form):
+
+    file = forms.FileField(label='Additional file', widget=forms.FileInput, required=True, allow_empty_file=False)
+
+    def __init__(self, *args, **kwargs):
+        self.version = kwargs.pop('version')
+        super(NewFileForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('file'),
+            Submit('submit', 'Upload additional file'),
+        )
+
+    def clean_file(self):
+        file = self.cleaned_data['file']
+
+        file_name, file_extension = filename_is_valid(file.name)
+        self.cleaned_data['file_name'] = file_name
+        self.cleaned_data['file_extension'] = file_extension
+
+        if self.version.files.filter(file_name=file_name, file_extension=file_extension).exists():
+            raise forms.ValidationError("Don't be silly, you can't upload multiple files with the same name to the same version.", code='duplicate-filename')
+
+        return file

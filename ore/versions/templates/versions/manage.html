@@ -1,0 +1,96 @@
+{% extends "projects/_page.html" %}
+{% load permissions crispy_forms_tags %}
+{% block title %}
+Manage | {{ version.full_name }}
+{% endblock %}
+{% block page %}
+
+    <div>
+        <h2><span class="channel {{ version.channel.color_class }}" style="background-color: #{{ version.channel.hex }};"> {{ version.channel.name }}</span>{{ version.name }}</h2>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Status Management</h3>
+        </div>
+        <div class="panel-body">
+            <p>Current status: <strong>{{ version.status }}</strong>.</p>
+
+{% if version.status == 'unpublished' %}
+            <p>When you are ready to go live with this version, click the button below and your plugin will begin going live.</p>
+            <p>Note that once you have done this, you will no longer be able to add any new files.</p>
+{% elif version.status == 'publishing' %}
+            <p>Your plugin's files are currently being pushed to our servers - this might take a couple minutes, but if it takes more than that, please contact an administrator.</p>
+            <p>If you want to delete this version while it's in this state, you'll need to wait until the files have all been pushed first. Sorry about that.</p>
+{% elif version.status == 'active' %}
+            <p>Hooray! This version is live and should be visible to everyone.</p>
+{% elif version.status == 'deleted' %}
+            <!-- RIP -->
+{% endif %}
+
+            <div class="btn-group" role="group">
+{% if version.status == 'unpublished' or version.status == 'active' %}
+                <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</button>
+{% endif %}
+{% if version.status == 'unpublished' %}
+                <button type="button" class="btn btn-success"><i class="fa fa-arrow-up"></i> Publish</button>
+{% endif %}
+            </div>
+        </div>
+    </div>
+
+{% if version.status == 'unpublished' %}
+{% ifpermitted user "file.create" proj %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Upload Files</h3>
+        </div>
+        <div class="panel-body">
+            <p>If you want to upload source code archives, or other supplementary files, you should upload them below, and then hit Publish above when you're done.</p>
+            <p>It's worth pointing out that, if possible, your plugin file should stand alone - it should, where possible, pick sensible defaults and <em>just work</em> out of the box when dropped in the plugins folder.</p>
+
+            <form action="{% url 'versions-upload' namespace=proj.namespace.name project=proj.name version=version.name %}" method="POST" enctype="multipart/form-data">
+                {% crispy new_file_form %}
+            </form>
+        </div>
+    </div>
+{% endifpermitted %}
+{% endif %}
+
+{% if version.has_supplementary_files %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Manage Additional Files</h3>
+        </div>
+        <ul class="list-group">
+        {% for supplementary_file in version.supplementary_files %}
+{% ifpermitted user "file.delete" proj %}
+        <form action="{% url 'versions-files-delete' namespace=proj.namespace.name project=proj.name version=version.name file=supplementary_file.file_name file_extension=supplementary_file.file_extension %}" method="POST">
+            {% csrf_token %}
+{% endifpermitted %}
+            <li class="list-group-item">
+{% ifpermitted user "file.delete" proj %}
+                <div class="pull-right"><button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></div>
+{% endifpermitted %}
+                <strong>{{supplementary_file.file_name}}</strong>{{supplementary_file.file_extension}}
+            </li>
+{% ifpermitted user "file.delete" proj %}
+        </form>
+{% endifpermitted %}
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Set Description</h3>
+        </div>
+        <div class="panel-body">
+            <form action="{% url 'versions-manage' namespace=proj.namespace.name project=proj.name version=version.name %}" method="POST">
+                {% crispy describe_form %}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

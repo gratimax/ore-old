@@ -1,10 +1,13 @@
 from ore.core.models import Namespace
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import DetailView, FormView, TemplateView
+from django.views.generic import DetailView, FormView, TemplateView, UpdateView, DeleteView
+from django.views.generic.detail import SingleObjectMixin
+from django.core.urlresolvers import reverse
+from django.http import Http404
 from ore.projects.models import Project, Channel
 from ore.projects.views import ProjectNavbarMixin
-from ore.core.views import RequiresPermissionMixin
-from ore.versions.forms import NewVersionForm, NewChannelForm, ChannelDeleteForm
+from ore.core.views import RequiresPermissionMixin, MultiFormMixin
+from ore.versions.forms import NewVersionForm, NewChannelForm, ChannelDeleteForm, EditVersionForm, NewFileForm
 from ore.versions.models import Version, File
 
 
@@ -71,7 +74,7 @@ class VersionsNewView(RequiresPermissionMixin, TemplateView):
             version.save()
             file.version = version
             file.save()
-            return redirect(version)
+            return redirect(reverse('versions-manage', kwargs={'namespace': self.kwargs['namespace'], 'project': self.kwargs['project'], 'version': version.name}))
 
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -100,6 +103,111 @@ class VersionsDetailView(ProjectNavbarMixin, DetailView):
         context['namespace'] = self.get_namespace()
         context['proj'] = context['version'].project
         return context
+
+
+class VersionsManageMixin(RequiresPermissionMixin, ProjectNavbarMixin, MultiFormMixin):
+
+    # override to some sensible defaults
+    template_name = 'versions/manage.html'
+    model = Version
+    slug_url_kwarg = 'version'
+    slug_field = 'name'
+    context_object_name = 'version'
+
+    permissions = ('versions.manage',)
+
+    active_project_tab = 'versions'
+
+    def construct_forms(self):
+        return {
+            'describe_form': EditVersionForm(instance=self.object),
+            'new_file_form': NewFileForm(version=self.object),
+        }
+
+    def get_queryset(self):
+        return Version.objects.as_user(self.request.user).filter(project__namespace__name=self.kwargs['namespace'], project__name=self.kwargs['project']).select_related('project')
+
+    def get_namespace(self):
+        if not hasattr(self, "_namespace"):
+            self._namespace = get_object_or_404(Namespace.objects.as_user(
+                self.request.user).select_subclasses(), name=self.kwargs['namespace'])
+            return self._namespace
+        else:
+            return self._namespace
+
+    def get_context_data(self, **kwargs):
+        context = super(VersionsManageMixin, self).get_context_data(**kwargs)
+        context['namespace'] = self.get_namespace()
+        context['proj'] = context['version'].project
+        return context
+
+
+class VersionsManageView(VersionsManageMixin, UpdateView):
+
+    form_name = 'describe_form'
+    form_class = EditVersionForm
+
+
+class VersionsDeleteView(VersionsManageView):
+    permissions = ('versions.delete',)
+
+
+class VersionsUploadView(VersionsManageMixin, SingleObjectMixin, FormView):
+
+    form_name = 'new_file_form'
+    form_class = NewFileForm
+
+    permissions = ('file.create',)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(VersionsUploadView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(VersionsUploadView, self).post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(VersionsUploadView, self).get_form_kwargs()
+        kwargs['version'] = self.object
+        return kwargs
+
+    def form_valid(self, form):
+        # create the new file
+        file_obj = form.cleaned_data['file']
+
+        file = File(
+            project=self.object.project,
+            version=self.object,
+            file=form.cleaned_data['file'],
+            file_name=form.cleaned_data['file_name'],
+            file_extension=form.cleaned_data['file_extension'],
+            file_size=file_obj.size,
+            plugin_id=None,
+        )
+        file.save()
+        return redirect(reverse('versions-manage', kwargs={'namespace': self.kwargs['namespace'], 'project': self.kwargs['project'], 'version': self.kwargs['version']}))
+
+
+class FileDeleteView(DeleteView):
+
+    http_method_names = ['post']
+
+    def get_queryset(self):
+        qs = File.objects.as_user(self.request.user).filter(version__project__namespace__name=self.kwargs['namespace'], version__project__name=self.kwargs['project'], version__name=self.kwargs['version'])
+        qs = qs.filter(plugin_id=None)  # must be non-primary file!
+        return qs.filter(file_name=self.kwargs['file'], file_extension=self.kwargs['file_extension'])
+
+    def get_object(self):
+        qs = self.get_queryset()
+
+        try:
+            return qs.get()
+        except qs.model.DoesNotExist:
+            raise Http404("No File found matching the query")
+
+    def get_success_url(self):
+        return reverse('versions-manage', kwargs={'namespace': self.kwargs['namespace'], 'project': self.kwargs['project'], 'version': self.kwargs['version']})
 
 
 class ChannelsListView(RequiresPermissionMixin, DetailView):

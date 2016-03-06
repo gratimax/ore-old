@@ -65,6 +65,12 @@ class Version(models.Model):
     def full_name(self):
         return "{}/{}".format(self.project.full_name(), self.name)
 
+    def has_supplementary_files(self):
+        return self.supplementary_files().exists()
+
+    def supplementary_files(self):
+        return self.files.filter(plugin_id=None)
+
     @classmethod
     def recalculate_ordering_ids_for_project(cls, project):
         qs = cls.objects.select_for_update().filter(project=project)
@@ -143,3 +149,4 @@ class File(models.Model):
 
     class Meta:
         ordering = ['-pk']
+        unique_together = ('version', 'file_name', 'file_extension')

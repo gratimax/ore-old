@@ -7,7 +7,7 @@ EXTENDED_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + r'$'
 # A regex that permits spaces along with the extended characters, but not
 # at the ends
 TRIM_NAME_REGEX = r'^' + EXTENDED_CHAR_REGEX + \
-    r'([\w.-_ ]*' + EXTENDED_CHAR_REGEX + r')?$'
+    r'([\w.\-_ ]*' + EXTENDED_CHAR_REGEX + r')?$'
 
 
 EXTENDED_URL_REGEX = EXTENDED_NAME_REGEX[1:-1]

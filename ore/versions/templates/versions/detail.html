@@ -6,6 +6,14 @@
 {% block page %}
 
     <div>
+
+        {% ifpermitted user "versions.edit" proj %}
+            <a href="{% url 'versions-manage' proj.namespace.name proj.name version.name %}" class="btn btn-default btn-sm pull-right"
+               data-toggle="tooltip" data-placement="bottom" title="Manage Version">
+                <i class="fa fa-wrench"></i>
+            </a>
+        {% endifpermitted %}
+
         <h2><span class="channel {{ version.channel.color_class }}" style="background-color: #{{ version.channel.hex }};"> {{ version.channel.name }}</span>{{version.name}}</h2>
 
         <p>{{version.description_html|safe}}</p>
@@ -21,7 +29,7 @@
                     <li class="list-group-item file-list-group-item">
                         <a href="{% url 'versions-files-download' namespace=namespace.name project=proj.name version=version.name file=file.file_name file_extension=file.file_extension %}" class="file-listing">
                             <span class="file-listing-size">{{file.file_size|filesizeformat}}</span>
-                            <span class="file-listing-name">{{file.file_name}}</span>
+                            <span class="file-listing-name"><strong>{{file.file_name}}</strong>{{file.file_extension}}</span>
                         </a>
                     </li>
                 {% endfor %}
